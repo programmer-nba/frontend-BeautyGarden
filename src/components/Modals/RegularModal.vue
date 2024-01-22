@@ -10,7 +10,7 @@
             <!--header-->
             <div class="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
               <h3 class="text-3xl font-semibold">
-                Modal Title
+                สร้างใบเสร็จรับเงิน
               </h3>
               <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" v-on:click="toggleModal()">
                 <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
@@ -20,13 +20,14 @@
             </div>
             <!--body-->
             <div class="relative p-6 flex-auto">
-              <p class="my-4 text-blueGray-500 text-lg leading-relaxed px-12">
+              <!-- <p class="my-4 text-blueGray-500 text-lg leading-relaxed px-12">
                 I always felt like I could do anything. That’s the main
                 thing people are controlled by! Thoughts- their perception
                 of themselves! They're slowed down by their perception of
                 themselves. If you're taught you can’t do anything, you
                 won’t do anything. I was taught I could do everything.
-              </p>
+              </p> -->
+              
             </div>
             <!--footer-->
             <div class="flex items-center justify-end p-6 border-t border-solid border-blueGray-200 rounded-b">
