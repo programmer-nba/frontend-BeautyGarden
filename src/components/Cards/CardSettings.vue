@@ -4,19 +4,36 @@
   >
     <div class="rounded-t bg-white mb-0 px-6 py-6">
       <div class="text-center flex justify-between">
-        <h6 class="text-blueGray-700 text-xl font-bold">My account</h6>
+        <h6 class="text-blueGray-700 text-xl font-bold">บ้านสวนสวยการ์เด้นคอร์เปอเรชั่น (สำนักงานใหญ่)</h6>
         <button
-          class="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+          class="bg-yellow-500 text-white active:bg-yellow-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
           type="button"
-        >
-          Settings
+          @click.prevent="isEdit()"
+          v-if="!edit"
+          >
+            ตั้งค่า
         </button>
+        <div class="flex gap-2" v-if="edit">
+          <button
+            class="bg-red-500 text-white active:bg-red-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+            type="button"
+            @click.prevent="edit=false"
+          >
+            ยกเลิก
+          </button>
+          <button
+            class="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+            type="button"
+          >
+            บันทึก
+          </button>
+        </div>
       </div>
     </div>
     <div class="flex-auto px-4 lg:px-10 py-10 pt-0">
       <form>
         <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-          User Information
+          ข้อมูล
         </h6>
         <div class="flex flex-wrap">
           <div class="w-full lg:w-6/12 px-4">
@@ -25,12 +42,14 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                Username
+                ชื่อกิจการ / บริษัท
               </label>
               <input
                 type="text"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="lucky.jesse"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="บ้านสวนสวยการ์เด้นคอร์เปอเรชั่น"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               />
             </div>
           </div>
@@ -40,12 +59,31 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                Email address
+                เลขประจำตัวผู้เสียภาษี (TAX ID)
+              </label>
+              <input
+                type="text"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="0-1055-66228-53-5"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
+              />
+            </div>
+          </div>
+          <div class="w-full lg:w-6/12 px-4">
+            <div class="relative w-full mb-3">
+              <label
+                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                htmlFor="grid-password"
+              >
+                อีเมล์
               </label>
               <input
                 type="email"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="jesse@example.com"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="บ้านสวนสวยการ์เด้น@gmail.com"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               />
             </div>
           </div>
@@ -55,27 +93,14 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                First Name
+                โทรศัพท์
               </label>
               <input
                 type="text"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="Lucky"
-              />
-            </div>
-          </div>
-          <div class="w-full lg:w-6/12 px-4">
-            <div class="relative w-full mb-3">
-              <label
-                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                htmlFor="grid-password"
-              >
-                Last Name
-              </label>
-              <input
-                type="text"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="Jesse"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="099-9999999"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               />
             </div>
           </div>
@@ -84,7 +109,7 @@
         <hr class="mt-6 border-b-1 border-blueGray-300" />
 
         <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-          Contact Information
+          ข้อมูลร้านค้า
         </h6>
         <div class="flex flex-wrap">
           <div class="w-full lg:w-12/12 px-4">
@@ -93,12 +118,14 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                Address
+                ที่อยู่
               </label>
               <input
                 type="text"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="146 ถนนจอมทองบูรณะ แขวงบางมด เขตบางมด กรุงเทพมหานคร 10150"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               />
             </div>
           </div>
@@ -108,12 +135,14 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                City
+                จังหวัด
               </label>
               <input
                 type="email"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="New York"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="กรุงเทพมหานคร"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               />
             </div>
           </div>
@@ -123,12 +152,14 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                Country
+                ประเทศ
               </label>
               <input
                 type="text"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="United States"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="ประเทศไทย"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               />
             </div>
           </div>
@@ -138,12 +169,14 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                Postal Code
+                รหัสไปรษณีย์
               </label>
               <input
                 type="text"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="Postal Code"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                value="10150"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               />
             </div>
           </div>
@@ -152,7 +185,7 @@
         <hr class="mt-6 border-b-1 border-blueGray-300" />
 
         <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-          About Me
+          เกี่ยวกับฉัน
         </h6>
         <div class="flex flex-wrap">
           <div class="w-full lg:w-12/12 px-4">
@@ -161,15 +194,16 @@
                 class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 htmlFor="grid-password"
               >
-                About me
+                อธิบายรายละเอียด
               </label>
               <textarea
                 type="text"
-                class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 rows="4"
+                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                :disabled="!edit"
               >
-                    A beautiful UI Kit and Admin for VueJS & Tailwind CSS. It is Free
-                    and Open Source.
+                    ให้บริการตัดแต่งสวน และจำหน่ายอุปกรณ์ตกแต่งสวน
                   </textarea
               >
             </div>
@@ -179,3 +213,15 @@
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+
+const edit = ref(false)
+
+// eslint-disable-next-line no-unused-vars
+const isEdit = () => {
+  edit.value = true
+}
+</script>
+
