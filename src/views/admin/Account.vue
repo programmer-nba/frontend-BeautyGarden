@@ -1,15 +1,15 @@
 <template>
   <div>
-    <CardQuotationForm/>
+    <CardReceiptForm/>
   </div>
   
 </template>
 <script>
-import CardQuotationForm from "../../components/Cards/CardQuotationForm.vue";
+import CardReceiptForm from "../../components/Cards/CardReceiptForm.vue";
 
 export default {
   components: {
-    CardQuotationForm
+    CardReceiptForm
   },
 };
 </script>
