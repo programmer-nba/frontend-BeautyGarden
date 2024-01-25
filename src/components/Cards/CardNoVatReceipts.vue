@@ -3,7 +3,6 @@
     class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded"
     :class="[color === 'light' ? 'bg-white' : 'bg-emerald-900 text-white']"
   >
-
     <div class="rounded-t mb-0 px-4 py-3 border-0">
       <div class="flex flex-wrap items-center">
         <div class="relative w-full px-4 max-w-full flex-grow flex-1">
@@ -11,29 +10,30 @@
             class="font-semibold text-lg"
             :class="[color === 'light' ? 'text-blueGray-700' : 'text-white']"
           >
-            ใบแจ้งหนี้ (INVOICE)
+            ใบเสร็จรับเงิน (RECEIPT)
+            <span @click="changeVat" class="text-xs mx-4 font-semibold inline-block py-1 px-2 rounded-full text-black bg-orange-200 uppercase last:mr-0 mr-1 cursor-pointer">
+              NO VAT
+            </span>
           </h3>
-          <small class="text-xs px-2">จำนวนใบแจ้งหนี้ทั้งหมด {{ invoices.length }} ใบ</small>
+          <small class="text-xs px-2">จำนวนใบเสร็จทั้งหมด {{ receipts.length }} ใบ</small>
         </div>
         <button class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
       </div>
     </div>
-
     <div class="block w-full overflow-x-auto">
       <!-- Projects table -->
       <table class="items-center w-full bg-transparent border-collapse">
         <thead>
           <tr>
-
             <th
-              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
-              :class="[
-                color === 'light'
-                  ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
-                  : 'bg-emerald-800 text-emerald-300 border-emerald-700',
+            class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+            :class="[
+              color === 'light'
+                ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
+                : 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              ที่
+            ที่
             </th>
 
             <th
@@ -44,9 +44,8 @@
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              เลขที่ใบแจ้งหนี้
+              เลขที่ใบเสร็จ
             </th>
-
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -57,7 +56,7 @@
             >
               ชื่อลูกค้า
             </th>
-
+            
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -66,9 +65,9 @@
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              วันกำหนดจ่าย
+              วันที่ออก
             </th>
-
+            
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -77,9 +76,8 @@
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              ราคา (บาท)
+              จำนวน (บาท)
             </th>
-
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -90,65 +88,71 @@
             >
               สถานะ
             </th>
-
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
                 color === 'light'
                   ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
-              ]">
-            </th>
-
+              ]"
+            ></th>
           </tr>
         </thead>
-
-        <tbody v-if="invoices.length < 1">
-          <tr>
-            <td></td>
-            <td></td>
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-              ไม่พบข้อมูล
-            </td>
-          </tr>
-        </tbody>
-
-        <tbody v-if="invoices.length > 0">
-          
-          <tr v-for="( invoice, index ) in invoices" :key="invoice._id">
-
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+        <!-------------------------------------------------------------------------------------------------------------->
+        <tbody>
+          <tr v-for="(receipt, index) in receipts" :key="receipt._id">
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
               {{ index+1 }}
             </td>
 
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-              {{ invoice.invoice }}
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{ receipt.receipt }}
+            </td>
+            <th
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center"
+            >
+              <!-- <img
+                :src="customer_01"
+                class="h-12 w-12 bg-white rounded-full border"
+                alt="..."
+              /> -->
+              <span
+                class="ml-3 font-bold"
+                :class="[
+                  color === 'light' ? 'text-blueGray-600' : 'text-white',
+                ]"
+              >
+                {{ receipt.customer_detail?.customer_name }} {{ receipt.customer_detail?.customer_lastname }}
+              </span>
+            </th>
+            
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{ formatDate(receipt.start_date) }}
             </td>
             
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-              {{ invoice.customer_detail?.customer_name }} {{ invoice.customer_detail?.customer_lastname }}
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+            {{ formatNumber(receipt.Shippingincluded) }}
             </td>
-
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-              {{ formatDate(invoice.end_date) }}
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              <i class="fas fa-circle text-orange-500 mr-2"></i> อยู่ในระหว่างดำเนินการ
             </td>
-
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-              {{ formatNumber(invoice.Shippingincluded) }}
-            </td>
-
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-              <i class="fas fa-circle text-orange-500 mr-2"></i> 
-              {{ invoice.status[invoice.status?.length-1]?.name ?? 'กำลังตรวจสอบ' }}
-            </td>
-
-            <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right">
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
+            >
               <table-dropdown />
             </td>
-
           </tr>
         </tbody>
-
       </table>
     </div>
   </div>
@@ -157,12 +161,13 @@
 <script setup>
 /* eslint-disable */
 import axios from 'axios'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineEmit } from 'vue'
 import TableDropdown from "@/components/Dropdowns/TableDropdown.vue"
 
 /*  variables  */
 
-const invoices = ref([])
+const receipts = ref([])
+const emit = defineEmit(["changeToVat"])
 
 /* props */
 
@@ -201,18 +206,23 @@ const formatNumber = ( inputNumber ) => {
   }
 }
 
+// emit change to no-VAT
+const changeVat = () => {
+  emit("changeToVat")
+}
+
 /*  api  */
 
 // get all invoices
-const fetchInvoices = async () => {
-  await axios.get(`${process.env.VUE_APP_API_BACKEND}/invoice/getInvoiceVatAll`, 
+const fetchReceipts = async () => {
+  await axios.get(`${process.env.VUE_APP_API_BACKEND}/receiptNoVat/getReceiptAll`, 
     {
       headers: {
         'auth-token': `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
       }
     }).then(( response ) => {
       if ( response.status ) {
-        invoices.value = response.data.data
+        receipts.value = response.data.data
       } else {
         console.log( 'Something went wrong!' )
       }
@@ -224,6 +234,6 @@ const fetchInvoices = async () => {
 
 /*  Mounted   */
 onMounted(() => {
-  fetchInvoices()
+  fetchReceipts()
 })
 </script>

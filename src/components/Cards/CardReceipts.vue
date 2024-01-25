@@ -10,9 +10,14 @@
             class="font-semibold text-lg"
             :class="[color === 'light' ? 'text-blueGray-700' : 'text-white']"
           >
-            ใบเสร็จรับเงิน
+            ใบเสร็จรับเงิน (RECEIPT)
+            <span @click="changeVat" class="text-xs mx-4 font-semibold inline-block py-1 px-2 rounded-full text-black bg-orange-200 uppercase last:mr-0 mr-1 cursor-pointer">
+              VAT
+            </span>
           </h3>
+          <small class="text-xs px-2">จำนวนใบเสร็จทั้งหมด {{ receipts.length }} ใบ</small>
         </div>
+        <button class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
       </div>
     </div>
     <div class="block w-full overflow-x-auto">
@@ -20,6 +25,17 @@
       <table class="items-center w-full bg-transparent border-collapse">
         <thead>
           <tr>
+            <th
+            class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+            :class="[
+              color === 'light'
+                ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
+                : 'bg-emerald-800 text-emerald-300 border-emerald-700',
+              ]"
+            >
+            ที่
+            </th>
+
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -51,16 +67,7 @@
             >
               วันที่ออก
             </th>
-            <th
-              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
-              :class="[
-                color === 'light'
-                  ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
-                  : 'bg-emerald-800 text-emerald-300 border-emerald-700',
-              ]"
-            >
-              วันครบกำหนดชำระ
-            </th>
+            
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -93,67 +100,51 @@
         </thead>
         <!-------------------------------------------------------------------------------------------------------------->
         <tbody>
-          <tr>
+          <tr v-for="(receipt, index) in receipts" :key="receipt._id">
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              RE2566120002
+              {{ index+1 }}
+            </td>
+
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{ receipt.receipt }}
             </td>
             <th
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center"
             >
-              <img
+              <!-- <img
                 :src="customer_01"
                 class="h-12 w-12 bg-white rounded-full border"
                 alt="..."
-              />
+              /> -->
               <span
                 class="ml-3 font-bold"
                 :class="[
                   color === 'light' ? 'text-blueGray-600' : 'text-white',
                 ]"
               >
-                สำนักงานขนส่ง เชียงใหม่
+                {{ receipt.customer_detail?.customer_name }} {{ receipt.customer_detail?.customer_lastname }}
               </span>
             </th>
             
-
-            
-
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              23 มคราคม 2567
-            </td>
-
-            <td
-              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
-            >
-              23 มคราคม 2567
+              {{ formatDate(receipt.start_date) }}
             </td>
             
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              10,000
+            {{ formatNumber(receipt.Shippingincluded) }}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
               <i class="fas fa-circle text-orange-500 mr-2"></i> อยู่ในระหว่างดำเนินการ
-              <div class="flex items-center">
-                <span class="mr-2">60%</span>
-                <div class="relative w-full">
-                  <div
-                    class="overflow-hidden h-2 text-xs flex rounded bg-yellow-200"
-                  >
-                    <div
-                      style="width: 60%;"
-                      class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-yellow-500"
-                    ></div>
-                  </div>
-                </div>
-              </div>
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
@@ -166,52 +157,83 @@
     </div>
   </div>
 </template>
-<script>
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
 
-//import bootstrap from "@/assets/img/bootstrap.jpg";
-//import angular from "@/assets/img/angular.jpg";
-//import sketch from "@/assets/img/sketch.jpg";
-//import react from "@/assets/img/react.jpg";
-//import vue from "@/assets/img/react.jpg";
+<script setup>
+/* eslint-disable */
+import axios from 'axios'
+import { ref, onMounted, defineEmit } from 'vue'
+import TableDropdown from "@/components/Dropdowns/TableDropdown.vue"
 
-import customer_01 from "@/assets/img/customer-01.png";
-import customer_02 from "@/assets/img/customer-02.jpg";
-import customer_03 from "@/assets/img/customer-03.jpg";
+/*  variables  */
 
-import team1 from "@/assets/img/team-1-800x800.jpg";
-import team2 from "@/assets/img/team-2-800x800.jpg";
-import team3 from "@/assets/img/team-3-800x800.jpg";
-import team4 from "@/assets/img/team-4-470x470.png";
+const receipts = ref([])
+const emit = defineEmit(["changeToNoVat"])
 
-export default {
-  data() {
-    return {
-      //bootstrap,
-      //angular,
-      //sketch,
-      //react,
-      //vue,
-      customer_01,
-      customer_02,
-      customer_03,
-      team1,
-      team2,
-      team3,
-      team4,
-    };
-  },
-  components: {
-    TableDropdown,
-  },
-  props: {
-    color: {
-      default: "light",
-      validator: function (value) {
-        // The value must match one of these strings
-        return ["light", "dark"].indexOf(value) !== -1;
-      },
+/* props */
+
+const props = defineProps({
+  color: {
+    type: String,
+    default: "light",
+    validator: ( value ) => {
+      return [ "light", "dark" ].indexOf( value ) !== -1
     },
   },
-};
+})
+
+/*  function  */
+
+// change date to Thai format
+const formatDate = ( inputDate ) => {
+  const parts = inputDate.split('/')
+  const formattedDate = new Intl.DateTimeFormat('th-TH', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(`${parts[2]}-${parts[1]}-${parts[0]}`))
+  return formattedDate
+}
+
+// format number to localString
+const formatNumber = ( inputNumber ) => {
+  if ( inputNumber ) {
+    const formattedNumber = inputNumber.toLocaleString('en-US', 
+      { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+    )
+    return formattedNumber
+  } else {
+    return 'NaN'
+  }
+}
+
+// emit change to no-VAT
+const changeVat = () => {
+  emit("changeToNoVat")
+}
+
+/*  api  */
+
+// get all invoices
+const fetchReceipts = async () => {
+  await axios.get(`${process.env.VUE_APP_API_BACKEND}/receiptVat/getReceiptVatAll`, 
+    {
+      headers: {
+        'auth-token': `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
+      }
+    }).then(( response ) => {
+      if ( response.status ) {
+        receipts.value = response.data.data
+      } else {
+        console.log( 'Something went wrong!' )
+      }
+    }).catch(( error ) => {
+      console.error( error.message )
+      console.log( error.response.data.message )
+    })
+}
+
+/*  Mounted   */
+onMounted(() => {
+  fetchReceipts()
+})
 </script>
