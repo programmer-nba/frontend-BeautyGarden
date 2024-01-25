@@ -21,33 +21,35 @@
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ชื่อลูกค้า Customer Name : </span>
-                <span class="pl-2 ml-2">บจก.โอเชี่ยน ฟิตเนส คลับ</span>
+                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_name }}</span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">สาขา Branch : </span>
-                <span class="pl-2 ml-2">(สำนักงานใหญ่)</span>
+                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_lastname }}</span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ที่อยู่ Address : </span>
                 <div class="pl-2 ml-2 flex flex-col">
-                  <span>146 ถนนจอมทองบูรณะ แขวงบางมด เขตบางมด</span>
-                  <span>กรุงเทพมหานคร 10150</span>
+                  <span>
+                    {{ address.houseNo }} {{ address.subdistrict }} {{ address.district }}
+                  </span>
+                  <span>{{ address.province }} {{ address.postcode }}</span>
                 </div> 
               </div>
             
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">เลขประจำตัวผู้เสียภาษีอากร TAX ID : </span>
-                <span class="pl-2 ml-2">0-7455-59007-79-3</span>
+                <span class="pl-2 ml-2">{{ formData.customer_detail.tax_id }}</span>
               </div>
 
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">โทรศัพท์ Tel : </span>
-                <span class="pl-2 ml-2">053-888333</span>
+                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_phone }}</span>
               </div>
 
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">อีเมล์ Email : </span>
-                <span class="pl-2 ml-2">accouting999@gmail.com</span>
+                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_email }}</span>
               </div>
              
             </div>
@@ -64,9 +66,9 @@
               </div>
               <div class="flex flex-col text-right">
                 <span class="pr-4 mr-4">{{ thaiDateFormatted ? thaiDateFormatted : '-' }}</span>
-                <span class="pr-4 mr-4">000-000-000</span>
-                <span class="pr-4 mr-4">QT25660001</span>
-                <span class="pr-4 mr-4">IV256611002</span>
+                <span class="pr-4 mr-4">{{ predictNextCode(receipt_lastcode) }}</span>
+                <span class="pr-4 mr-4">{{ formData.quotation ?? '-' }}</span>
+                <span class="pr-4 mr-4">{{ formData.invoice ?? '-' }}</span>
                 <span class="pr-4 mr-4">{{ thaiDateFormattedDue ? thaiDateFormattedDue : '-' }}</span>
                 <span class="pr-4 mr-4">บาท/THB</span>
               </div>
@@ -112,9 +114,9 @@
                 </label>
                 <input
                   type="text"
-                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
+                  class="px-3 py-3 border-0 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  disabled
+                  :value="predictNextCode(receipt_lastcode)"
                 />
               </div>
             </div>
@@ -206,6 +208,7 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="customerFullName"
                 />
               </div>
             </div>
@@ -222,6 +225,7 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="formData.customer_detail.tax_id"
                 />
               </div>
             </div>
@@ -238,6 +242,7 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="formData.customer_detail.customer_email"
                 />
               </div>
             </div>
@@ -254,6 +259,7 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="formData.customer_detail.customer_phone"
                 />
               </div>
             </div>
@@ -262,7 +268,7 @@
           <hr class="mt-6 border-b-1 border-blueGray-300" />
   
           <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-            ข้อมูลร้านค้า
+            ที่อยู่ลูกค้า
           </h6>
           <div class="flex flex-wrap">
             <div class="w-full lg:w-12/12 px-4">
@@ -278,6 +284,41 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="address.houseNo"
+                />
+              </div>
+            </div>
+            <div class="w-full lg:w-4/12 px-4">
+              <div class="relative w-full mb-3">
+                <label
+                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  ตำบล
+                </label>
+                <input
+                  type="text"
+                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                  :disabled="!edit"
+                  v-model="address.subdistrict"
+                />
+              </div>
+            </div>
+            <div class="w-full lg:w-4/12 px-4">
+              <div class="relative w-full mb-3">
+                <label
+                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  อำเภอ
+                </label>
+                <input
+                  type="text"
+                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
+                  :disabled="!edit"
+                  v-model="address.district"
                 />
               </div>
             </div>
@@ -294,22 +335,7 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
-                />
-              </div>
-            </div>
-            <div class="w-full lg:w-4/12 px-4">
-              <div class="relative w-full mb-3">
-                <label
-                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  ประเทศ
-                </label>
-                <input
-                  type="text"
-                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
+                  v-model="address.province"
                 />
               </div>
             </div>
@@ -326,6 +352,7 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="address.postcode"
                 />
               </div>
             </div>
@@ -334,7 +361,7 @@
           <hr class="mt-6 border-b-1 border-blueGray-300" />
   
           <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-            เกี่ยวกับฉัน
+            ข้อมูลเพิ่มเติมเกี่ยวกับลูกค้า
           </h6>
           <div class="flex flex-wrap">
             <div class="w-full lg:w-12/12 px-4">
@@ -343,7 +370,7 @@
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  อธิบายรายละเอียด
+                  รายละเอียด
                 </label>
                 <textarea
                   type="text"
@@ -351,10 +378,16 @@
                   rows="4"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="formData.note"
                 >
                 </textarea>
               </div>
             </div>
+          </div>
+          <div class="flex w-full justify-center items-center mt-4">
+            <button class="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+              สร้างเอกสาร
+            </button>
           </div>
         </form>
       </div>
@@ -364,20 +397,92 @@
   <script setup>
   /* eslint-disable */
   import { ref, computed, onMounted } from 'vue'
-  import logo from '@/assets/img/logo.png'
-
+  //import logo from '@/assets/img/logo.png'
   import axios from 'axios'
   
   const edit = ref(true)
   const thaiDate = ref('')
-  const receipts = ref([])
+  const receipt_lastcode = ref('')
   const thaiDateDue = ref('')
+
+  const address = ref({
+    houseNo: '',
+    subdistrict: '',
+    district: '',
+    province: '',
+    postcode: '',
+  })
+
+  const formData = ref({
+    invoice: null,
+    quotation: null,
+    customer_number: "CT0001",
+    customer_detail: {
+      tax_id: "0001112223333",
+      customer_name: "บริษัท ยุงกัดไม่หยุด จำกัด",
+      customer_lastname: "(สำนักงานใหญ่)",
+      customer_phone: "053-000-000",
+      customer_email: "mosquito_comp@test.com",
+      customer_address: "",
+      customer_type: "credit30"
+    },
+    product_detail: [],
+    ShippingCost: 0,
+    start_date: null,
+    end_date: null,
+    note: ""
+  })
+
+  const curProduct = ref({
+    product_name: "",
+    product_price: 0,
+    product_amount: 0,
+    product_logo: "",
+    product_total: ""
+  })
+
+  const customerFullName = computed(()=>{
+    return `${formData.value.customer_detail.customer_name} ${formData.value.customer_detail.customer_lastname}`
+  })
+
+  const customerFullAddress = computed(()=>{
+    return `${address.houseNo} ${address.subdistrict} ${address.district} ${address.province} ${address.postcode}`
+  })
 
   onMounted(()=>{
     fetchData()
   })
+
+  const predictNextCode = (curCode) => {
+    let numericPart = curCode.slice(-4)
+    let incrementedNumericPart = String(Number(numericPart) + 1).padStart(4, '0');
+    let newCode = curCode.slice(0, -4) + incrementedNumericPart;
+    return newCode
+  }
   
+  const createNewDocument = async () => {
+      formData.value.customer_detail.customer_address = customerFullAddress.value
+    try{
+      const response = await axios.post(`${process.env.VUE_APP_API_BACKEND}/receiptVat/ReceiptVat`,
+          formData.value,
+        {
+          headers: {
+            'auth-token' : `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
+          }
+        }
+      )
+      if(response.data.status){
+        console.log(response.data.data)
+        alert(response.data.message)
+      }
+    }
+    catch(err){
+      console.error(err)
+    }
+  }
+
   const fetchData = async () => {
+      formData.value.customer_detail.customer_address = customerFullAddress.value
     try{
       const response = await axios.get(`${process.env.VUE_APP_API_BACKEND}/receiptVat/getReceiptVatAll`,
         {
@@ -387,8 +492,7 @@
         }
       )
       if(response.data.status){
-        console.log(response.data.data)
-        receipts.value = response.data.data
+        receipt_lastcode.value = response.data.data[response.data.data.length - 1].receipt
       }
     }
     catch(err){

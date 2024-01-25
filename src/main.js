@@ -20,7 +20,7 @@ import Auth from "@/layouts/Auth.vue";
 import Dashboard from "@/views/admin/Dashboard.vue";
 import Settings from "@/views/admin/Settings.vue";
 import Tables from "@/views/admin/Tables.vue";
-import Account from "@/views/admin/Account.vue";
+import DocumentForm from "@/views/admin/DocumentForm.vue";
 import DocumentList from "@/views/admin/DocumentList.vue";
 //import Maps from "@/views/admin/Maps.vue";
 
@@ -56,8 +56,8 @@ const routes = [
         component: Tables,
       },
       {
-        path: "/admin/account",
-        component: Account,
+        path: "/admin/document/receipt",
+        component: DocumentForm,
       },
       {
         path: "/admin/documents",
