@@ -19,7 +19,7 @@ import Auth from "@/layouts/Auth.vue";
 
 import Dashboard from "@/views/admin/Dashboard.vue";
 import Settings from "@/views/admin/Settings.vue";
-import Tables from "@/views/admin/Tables.vue";
+import Customers from "@/views/admin/Customers.vue";
 import DocumentForm from "@/views/admin/DocumentForm.vue";
 import DocumentList from "@/views/admin/DocumentList.vue";
 //import Maps from "@/views/admin/Maps.vue";
@@ -53,7 +53,7 @@ const routes = [
       },
       {
         path: "/admin/customers",
-        component: Tables,
+        component: Customers,
       },
       {
         path: "/admin/document/receipt",
@@ -63,10 +63,10 @@ const routes = [
         path: "/admin/documents",
         component: DocumentList,
       },
-      {
+      /* {
         path: "/admin/maps",
         component: Tables,
-      },
+      }, */
     ],
   },
   {

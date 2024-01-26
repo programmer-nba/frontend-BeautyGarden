@@ -181,13 +181,17 @@ const props = defineProps({
 
 // change date to Thai format
 const formatDate = ( inputDate ) => {
-  const parts = inputDate.split('/')
-  const formattedDate = new Intl.DateTimeFormat('th-TH', {
+  if(inputDate){
+    const parts = inputDate.split('/')
+    const formattedDate = new Intl.DateTimeFormat('th-TH', {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
-  }).format(new Date(`${parts[2]}-${parts[1]}-${parts[0]}`))
-  return formattedDate
+    }).format(new Date(`${parts[2]}-${parts[1]}-${parts[0]}`))
+    return formattedDate
+  } else {
+    return '-'
+  }
 }
 
 // format number to localString

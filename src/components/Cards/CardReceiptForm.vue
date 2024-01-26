@@ -67,7 +67,7 @@
               <div class="flex flex-col text-right">
                 <span class="pr-4 mr-4">{{ thaiDateFormatted ? thaiDateFormatted : '-' }}</span>
                 <span class="pr-4 mr-4">{{ predictNextCode(receipt_lastcode) }}</span>
-                <span class="pr-4 mr-4">{{ formData.quotation ?? '-' }}</span>
+                <span class="pr-4 mr-4">{{ formData.quotation ?? refQuotation ?? '-' }}</span>
                 <span class="pr-4 mr-4">{{ formData.invoice ?? '-' }}</span>
                 <span class="pr-4 mr-4">{{ thaiDateFormattedDue ? thaiDateFormattedDue : '-' }}</span>
                 <span class="pr-4 mr-4">บาท/THB</span>
@@ -133,7 +133,9 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
                   :disabled="!edit"
+                  v-model="refQuotation"
                 />
+                <SearchQtDropdown @refQuotation="refQThandle"/>
               </div>
             </div>
             <div class="w-full lg:w-6/12 px-4">
@@ -357,7 +359,140 @@
               </div>
             </div>
           </div>
-  
+
+          <hr class="mt-6 border-b-1 border-blueGray-300" />
+          <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
+            รายละเอียดสินค้า/บริการ
+          </h6>
+          
+            <AddProductModal v-if="openAddProduct" 
+            @closeModal="openAddProduct=false" 
+            @addToProduct="addProducts"/>
+          
+          <div
+          class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded bg-white">
+            <div class="rounded-t mb-0 px-4 py-3 border-0">
+              <div class="flex flex-wrap items-center">
+                <div class="relative w-full px-4 max-w-full flex-grow flex-1 text-blueGray-500">
+                  <h3 class="font-semibold text-lg">
+                    รายละเอียดสินค้า
+                    
+                  </h3>
+                  <small class="text-xs px-2">จำนวนรายการทั้งหมด {{ formData.product_detail.length }}</small>
+                </div>
+                <button class="px-4 py-2 text-white rounded bg-orange-500" @click.prevent="openAddProduct=true">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+              </div>
+            </div>
+            <div class="block w-full overflow-x-auto">
+              <!-- Projects table -->
+              <table class="items-center w-full bg-transparent border-collapse">
+                <thead>
+                  <tr>
+                    <th
+                    class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                    >
+                    ที่
+                    </th>
+
+                    <th
+                      class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                    >
+                    รูปสินค้า
+                    </th>
+        
+                    <th
+                      class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                    >
+                    รายละเอียด
+                    </th>
+                    <th
+                      class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                    >
+                      ราคาต่อหน่วย
+                    </th>
+                    
+                    <th
+                      class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                    >
+                      จำนวน
+                    </th>
+                    
+                    <th
+                      class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                    >
+                      ราคา (บาท)
+                    </th>
+                    
+                    <th
+                      class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left bg-blueGray-50 text-blueGray-500 border-blueGray-100"
+                    ></th>
+                  </tr>
+                </thead>
+                <!-------------------------------------------------------------------------------------------------------------->
+                <tbody>
+                  <tr v-for="(product, index) in formData.product_detail" :key="index">
+                    <td
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+                    >
+                      {{ index+1 }}
+                    </td>
+        
+                    <th
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center"
+                    >
+                    <div class="flex flex-wrap justify-center" v-if="product.product_logo !=='' && product.product_logo">
+                      <div class="px-4 cursor-pointer" 
+                      style="width:150px; height:120px;" 
+                      @click="showPic(product.product_logo)">
+                        <img :src="product.product_logo" 
+                        :alt="product.product_name" 
+                        class="shadow rounded object-cover w-full h-full align-middle border-none" />
+                      </div>
+                      <PictureModal 
+                        v-if="openPicDialog" 
+                        @closePicModal="closePic" 
+                        :url="curPicUrl"/>
+                    </div>
+
+                    <input v-if="product.product_logo ==='' || !product.product_logo" type="file" @change="handleFileChange($event, index)"/>
+    
+                    </th>
+
+                    <td
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+                    >
+                      {{ product.product_name }}
+                    </td>
+
+                    <td
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+                    >
+                      {{ product.product_price.toLocaleString() }}
+                    </td>
+                    
+                    <td
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+                    >
+                      {{ product.product_amount.toLocaleString() }}
+                    </td>
+                    
+                    <td
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+                    >
+                    {{ (product.product_price * product.product_amount).toLocaleString() }}
+                    </td>
+                    
+                    <td
+                      class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
+                    >
+                      <table-dropdown />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
           <hr class="mt-6 border-b-1 border-blueGray-300" />
   
           <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
@@ -385,7 +520,11 @@
             </div>
           </div>
           <div class="flex w-full justify-center items-center mt-4">
-            <button class="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+            <button 
+            class="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" 
+            type="button"
+            @click.prevent="createNewDocument"
+            >
               สร้างเอกสาร
             </button>
           </div>
@@ -399,11 +538,53 @@
   import { ref, computed, onMounted } from 'vue'
   //import logo from '@/assets/img/logo.png'
   import axios from 'axios'
+  import AddProductModal from '@/components/Modals/AddProductModal.vue'
+  import PictureModal from '@/components/Modals/PictureModal.vue'
+  import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
+  import SearchQtDropdown from '@/components/Dropdowns/SearchQtDropdown.vue'
   
   const edit = ref(true)
   const thaiDate = ref('')
   const receipt_lastcode = ref('')
   const thaiDateDue = ref('')
+  const openPicDialog = ref(false)
+  const curPicUrl = ref(null)
+  const refQuotation = ref(null)
+
+  const img = ref('')
+
+  const refQThandle = (event) => {
+    refQuotation.value = event
+  }
+
+const handleFileChange = (event, index) => {
+const fileInput = event.target
+const file = fileInput.files[0]
+  if (file) {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        //img.value = e.target.result
+        formData.value.product_detail[index].product_logo = e.target.result
+      }
+      reader.readAsDataURL(file)
+    } else {
+      alert('Please choose an image file.')
+    }
+  }
+}
+
+  const showPic = (imgLink) => {
+    openPicDialog.value = true
+    curPicUrl.value = imgLink
+  }
+
+  const closePic = () => {
+    openPicDialog.value = false
+    curPicUrl.value = null
+  }
+
+  const openAddProduct = ref(false)
 
   const address = ref({
     houseNo: '',
@@ -433,20 +614,17 @@
     note: ""
   })
 
-  const curProduct = ref({
-    product_name: "",
-    product_price: 0,
-    product_amount: 0,
-    product_logo: "",
-    product_total: ""
-  })
+  const addProducts = (value) => {
+    formData.value.product_detail.push(value)
+    console.log(formData.value.product_detail)
+  }
 
   const customerFullName = computed(()=>{
     return `${formData.value.customer_detail.customer_name} ${formData.value.customer_detail.customer_lastname}`
   })
 
   const customerFullAddress = computed(()=>{
-    return `${address.houseNo} ${address.subdistrict} ${address.district} ${address.province} ${address.postcode}`
+    return `${address.value.houseNo} ${address.value.subdistrict} ${address.value.district} ${address.value.province} ${address.value.postcode}`
   })
 
   onMounted(()=>{
@@ -454,14 +632,25 @@
   })
 
   const predictNextCode = (curCode) => {
+    const curDate = new Date()
+    const year = curDate.getFullYear();
+    const month = String(curDate.getMonth() + 1).padStart(2, '0');
+    const day = String(curDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}${month}${day}`;
+
     let numericPart = curCode.slice(-4)
     let incrementedNumericPart = String(Number(numericPart) + 1).padStart(4, '0');
-    let newCode = curCode.slice(0, -4) + incrementedNumericPart;
+    let newCode = 
+      (curCode) ? curCode.slice(0, -4) + incrementedNumericPart 
+      : 'REP' + formattedDate + incrementedNumericPart
+
     return newCode
   }
   
   const createNewDocument = async () => {
       formData.value.customer_detail.customer_address = customerFullAddress.value
+      formData.value.start_date = thaiDateFormatted.value
+      formData.value.end_date = thaiDateFormattedDue.value
     try{
       const response = await axios.post(`${process.env.VUE_APP_API_BACKEND}/receiptVat/ReceiptVat`,
           formData.value,
@@ -482,7 +671,6 @@
   }
 
   const fetchData = async () => {
-      formData.value.customer_detail.customer_address = customerFullAddress.value
     try{
       const response = await axios.get(`${process.env.VUE_APP_API_BACKEND}/receiptVat/getReceiptVatAll`,
         {
