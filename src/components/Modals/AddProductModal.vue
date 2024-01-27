@@ -3,18 +3,15 @@
       <!-- <button class="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" v-on:click="toggleModal()">
         Open regular modal
       </button> -->
-      <div class="overflow-x-hidden top-95-px mx-4 px-12 overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
-        <div class="relative w-auto my-6 mx-auto max-w-3xl">
+      <div style="background-color:rgba(0, 0, 0, 0.459);" class="overflow-x-hidden top-95-px mx-4 px-6 overflow-y-auto fixed rounded inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
+        <div class="relative w-full my-6 mx-auto">
           <!--content-->
           <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <!--header-->
             <div class="flex items-start justify-between p-5 border-b border-solid border-blueGray-200 rounded-t">
-              <h3 class="text-3xl font-semibold">
-                เพิ่มรายละเอียดสินค้า/บริการ
-              </h3>
               <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" v-on:click="toggleClose">
                 <span class="bg-transparent text-black opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
-                  ×
+                  <span class="opacity-0">--------------------------</span>×
                 </span>
               </button>
             </div>
@@ -22,12 +19,12 @@
             <!--body-->
             <div class="relative p-6 flex-auto">
               <div class="w-full px-4">
-                <div class="relative w-full mb-3">
+                <div class="relative w-full mb-3 mt-2">
                   <label
                     class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                     htmlFor="grid-password"
                   >
-                    ชื่อสินค้า
+                    รายละเอียดสินค้า/บริการ
                   </label>
                   <input
                     type="text"
@@ -36,7 +33,7 @@
                   />
                 </div>
               </div>
-              <div class="w-full lg:w-4/12 px-4">
+              <div class="w-full px-4">
                 <div class="relative w-full mb-3">
                   <label
                     class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -51,7 +48,8 @@
                   />
                 </div>
               </div>
-              <div class="w-full lg:w-4/12 px-4">
+              
+              <div class="w-full px-4">
                 <div class="relative w-full mb-3">
                   <label
                     class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -66,7 +64,7 @@
                   />
                 </div>
               </div>
-              <div class="w-full lg:w-4/12 px-4">
+              <div class="w-full px-4">
                 <div class="relative w-full mb-3">
                   <label
                     class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -82,7 +80,7 @@
                   />
                 </div>
               </div>
-              <div class="w-full lg:w-4/12 px-4">
+              <div class="w-full px-4">
                 <div class="relative w-full mb-3">
                   <label
                     class="block uppercase text-blueGray-600 text-xs font-bold mb-2"

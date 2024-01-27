@@ -7,19 +7,19 @@
         <div class="flex flex-wrap">
           <div class="w-full lg:w-6/12 xl:w-3/12 px-4">
             <card-stats
-              statSubtitle="รายได้"
+              statSubtitle="ข้อมูล-1"
               statTitle="350,897"
               statArrow="up"
               statPercent="3.48"
               statPercentColor="text-emerald-500"
-              statDescripiron="มีนาคม 2567"
+              statDescripiron="จากเดือนที่แล้ว"
               statIconName="far fa-chart-bar"
               statIconColor="bg-emerald-500"
             />
           </div>
           <div class="w-full lg:w-6/12 xl:w-3/12 px-4">
             <card-stats
-              statSubtitle="รายจ่าย"
+              statSubtitle="ข้อมูล-2"
               statTitle="589"
               statArrow="down"
               statPercent="3.48"
@@ -31,7 +31,7 @@
           </div>
           <div class="w-full lg:w-6/12 xl:w-3/12 px-4">
             <card-stats
-              statSubtitle="ลูกค้าใหม่"
+              statSubtitle="ข้อมูล-3"
               statTitle="924"
               statArrow="down"
               statPercent="1.10"
@@ -43,7 +43,7 @@
           </div>
           <div class="w-full lg:w-6/12 xl:w-3/12 px-4">
             <card-stats
-              statSubtitle="กำไร"
+              statSubtitle="ข้อมูล-4"
               statTitle="49,650"
               statArrow="up"
               statPercent="12"

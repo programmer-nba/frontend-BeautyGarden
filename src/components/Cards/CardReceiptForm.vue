@@ -11,45 +11,45 @@
         <div class="flex gap-y-3 flex-wrap justify-between text-sm">
           <div class="flex">
             <div class="flex flex-col">
+              <SearchCustomers @refCustomer="refCThandle"/>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ผู้ติดต่อ Contact : </span>
-                <span class="pl-2 ml-2">คุณแนท</span>
+                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_contact }}</span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">โทรศัพท์ Tel : </span>
-                <span class="pl-2 ml-2">099-9999999</span>
+                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_contact_number || '-' }} </span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ชื่อลูกค้า Customer Name : </span>
-                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_name }}</span>
+                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_name }}</span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">สาขา Branch : </span>
-                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_lastname }}</span>
+                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_lastname }}</span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ที่อยู่ Address : </span>
                 <div class="pl-2 ml-2 flex flex-col">
                   <span>
-                    {{ address.houseNo }} {{ address.subdistrict }} {{ address.district }}
+                    {{ formData?.customer_detail?.customer_address }}
                   </span>
-                  <span>{{ address.province }} {{ address.postcode }}</span>
                 </div> 
               </div>
             
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">เลขประจำตัวผู้เสียภาษีอากร TAX ID : </span>
-                <span class="pl-2 ml-2">{{ formData.customer_detail.tax_id }}</span>
+                <span class="pl-2 ml-2">{{ formData?.customer_detail?.tax_id }}</span>
               </div>
 
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">โทรศัพท์ Tel : </span>
-                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_phone }}</span>
+                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_phone }}</span>
               </div>
 
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">อีเมล์ Email : </span>
-                <span class="pl-2 ml-2">{{ formData.customer_detail.customer_email }}</span>
+                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_email }}</span>
               </div>
              
             </div>
@@ -66,9 +66,9 @@
               </div>
               <div class="flex flex-col text-right">
                 <span class="pr-4 mr-4">{{ thaiDateFormatted ? thaiDateFormatted : '-' }}</span>
-                <span class="pr-4 mr-4">{{ predictNextCode(receipt_lastcode) }}</span>
-                <span class="pr-4 mr-4">{{ formData.quotation ?? refQuotation ?? '-' }}</span>
-                <span class="pr-4 mr-4">{{ formData.invoice ?? '-' }}</span>
+                <span class="pr-4 mr-4">{{ receipt_lastcode ? predictNextCode(receipt_lastcode) : '-' }}</span>
+                <span class="pr-4 mr-4">{{ formData.quotation !== undefined && formData.quotation !== null ? formData.quotation : refQuotation || '-' }}</span>
+                <span class="pr-4 mr-4">{{ formData.invoice !== undefined && formData.invoice ? formData.invoice : refInvoice || '-' }}</span>
                 <span class="pr-4 mr-4">{{ thaiDateFormattedDue ? thaiDateFormattedDue : '-' }}</span>
                 <span class="pr-4 mr-4">บาท/THB</span>
               </div>
@@ -99,8 +99,6 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   v-model="thaiDate"
                   @Input="changeToThaiDate"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                 />
               </div>
             </div>
@@ -122,36 +120,39 @@
             </div>
             <div class="w-full lg:w-6/12 px-4">
               <div class="relative w-full mb-3">
+                
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
                   ใบเสนอราคาเลขที่ Ref. Quotation No.
                 </label>
+                </div>
                 <input
-                  type="email"
+                  type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="refQuotation"
                 />
                 <SearchQtDropdown @refQuotation="refQThandle"/>
-              </div>
             </div>
             <div class="w-full lg:w-6/12 px-4">
               <div class="relative w-full mb-3">
+                
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
                 ใบแจ้งหนี้ Ref. Invoice No.
                 </label>
+                
                 <input
-                  type="text"
-                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
+                type="text"
+                class="px-3 py-3 w-full placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring ease-linear transition-all duration-150"
+                v-model="refInvoice"
                 />
+                
+                <SearchInDropdown @refInvoice="refINhandle"/>
+                
               </div>
             </div>
             <div class="w-full lg:w-6/12 px-4">
@@ -170,27 +171,10 @@
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   v-model="thaiDateDue"
                   @Input="changeToThaiDateDue"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                 />
               </div>
             </div>
-            <div class="w-full lg:w-6/12 px-4">
-              <div class="relative w-full mb-3">
-                <label
-                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                ใบแจ้งหนี้ Ref. Invoice No.
-                </label>
-                <input
-                  type="text"
-                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
-                />
-              </div>
-            </div>
+            
           </div>
           
           <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
@@ -208,8 +192,6 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="customerFullName"
                 />
               </div>
@@ -242,8 +224,6 @@
                 <input
                   type="email"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="formData.customer_detail.customer_email"
                 />
               </div>
@@ -259,8 +239,6 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="formData.customer_detail.customer_phone"
                 />
               </div>
@@ -272,7 +250,8 @@
           <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
             ที่อยู่ลูกค้า
           </h6>
-          <div class="flex flex-wrap">
+          <button class="px-4 py-2 text-white rounded bg-orange-500" @click.prevent="isNewAddress=true">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+          <div v-if="isNewAddress" class="flex flex-wrap">
             <div class="w-full lg:w-12/12 px-4">
               <div class="relative w-full mb-3">
                 <label
@@ -284,8 +263,6 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="address.houseNo"
                 />
               </div>
@@ -301,8 +278,6 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="address.subdistrict"
                 />
               </div>
@@ -318,8 +293,6 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="address.district"
                 />
               </div>
@@ -335,8 +308,6 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="address.province"
                 />
               </div>
@@ -352,8 +323,6 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                  :disabled="!edit"
                   v-model="address.postcode"
                 />
               </div>
@@ -442,12 +411,13 @@
                     >
                     <div class="flex flex-wrap justify-center" v-if="product.product_logo !=='' && product.product_logo">
                       <div class="px-4 cursor-pointer" 
-                      style="width:150px; height:120px;" 
+                      style="width:100px; height:60px;" 
                       @click="showPic(product.product_logo)">
                         <img :src="product.product_logo" 
                         :alt="product.product_name" 
                         class="shadow rounded object-cover w-full h-full align-middle border-none" />
                       </div>
+                      <span @click="product.product_logo=''" class="px-2 cursor-pointer">X</span>
                       <PictureModal 
                         v-if="openPicDialog" 
                         @closePicModal="closePic" 
@@ -485,8 +455,82 @@
                     <td
                       class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
                     >
-                      <table-dropdown />
+                      <i @click="removeProduct(index)" class="fas fa-trash-alt fa-lg cursor-pointer" style="color: #f93434;"></i>
                     </td>
+                  </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
+                  </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <span class="pr-4 font-bold">ค่าสินค้า/บริการ</span>
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
+                      <span class="pr-4 font-bold text-emerald-600">{{ (sumProductsPrice-(sumProductsPrice*0.07)).toLocaleString() }}</span> บาท
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                  </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <span class="pr-4 font-bold">ค่าส่ง</span>
+                    </td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
+                      <span class="pr-4 font-bold text-emerald-600">0.00</span> บาท
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                  </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <span class="pr-4 font-bold">VAT 7 %</span>
+                    </td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
+                      <span class="pr-4 font-bold text-emerald-600">{{ (sumProductsPrice*7/107).toLocaleString() }}</span> บาท
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                  </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <span class="pr-4 font-bold">ราคารวม VAT</span>
+                    </td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
+                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice.toLocaleString() }}</span> บาท
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                  </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <span class="pr-4 font-bold">ราคารวมสุทธิ</span>
+                    </td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
+                      <span class="pr-4 font-bold text-emerald-600">{{ (sumProductsPrice).toLocaleString() }}</span> บาท
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
                 </tbody>
               </table>
@@ -540,8 +584,10 @@
   import axios from 'axios'
   import AddProductModal from '@/components/Modals/AddProductModal.vue'
   import PictureModal from '@/components/Modals/PictureModal.vue'
-  import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
+  //import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
   import SearchQtDropdown from '@/components/Dropdowns/SearchQtDropdown.vue'
+  import SearchInDropdown from '@/components/Dropdowns/SearchInDropdown.vue'
+  import SearchCustomers from '@/components/Dropdowns/SearchCustomers.vue'
   
   const edit = ref(true)
   const thaiDate = ref('')
@@ -550,11 +596,18 @@
   const openPicDialog = ref(false)
   const curPicUrl = ref(null)
   const refQuotation = ref(null)
+  const refInvoice = ref(null)
+  //const refCustomer = ref(null)
+  const isNewAddress = ref(false)
 
   const img = ref('')
 
   const refQThandle = (event) => {
     refQuotation.value = event
+  }
+
+  const refINhandle = (event) => {
+    refInvoice.value = event
   }
 
 const handleFileChange = (event, index) => {
@@ -572,6 +625,18 @@ const file = fileInput.files[0]
       alert('Please choose an image file.')
     }
   }
+}
+
+const sumProductsPrice = computed(()=>{
+  const prices_list = formData.value.product_detail.map((product)=>{
+    return product.product_price * product.product_amount
+  })
+  const sumPrices = (prices_list.length > 0) ? prices_list.reduce((a,b)=> a + b) : '0.00'
+  return sumPrices
+})
+
+const removeProduct = (index) => {
+  formData.value.product_detail.splice(index, 1)
 }
 
   const showPic = (imgLink) => {
@@ -594,18 +659,34 @@ const file = fileInput.files[0]
     postcode: '',
   })
 
+  const refCThandle = (event) => {
+    const refCustomer = event
+    formData.value.customer_number = refCustomer.customer_number
+    formData.value.customer_detail.tax_id = refCustomer.customer_taxnumber
+    formData.value.customer_detail.customer_name = refCustomer.customer_name
+    formData.value.customer_detail.customer_lastname = refCustomer.customer_lastname
+    formData.value.customer_detail.customer_phone = refCustomer.customer_phone
+    formData.value.customer_detail.customer_email = refCustomer.customer_email
+    formData.value.customer_detail.customer_address = refCustomer.customer_position
+    formData.value.customer_detail.customer_type = refCustomer.customer_type
+    formData.value.customer_detail.customer_contact = refCustomer.customer_contact
+    formData.value.customer_detail.customer_contact_number = refCustomer.customer_contact_number
+  }
+
   const formData = ref({
     invoice: null,
     quotation: null,
-    customer_number: "CT0001",
+    customer_number: null,
     customer_detail: {
-      tax_id: "0001112223333",
-      customer_name: "บริษัท ยุงกัดไม่หยุด จำกัด",
-      customer_lastname: "(สำนักงานใหญ่)",
-      customer_phone: "053-000-000",
-      customer_email: "mosquito_comp@test.com",
-      customer_address: "",
-      customer_type: "credit30"
+      tax_id: null,
+      customer_name: null,
+      customer_lastname: null,
+      customer_phone: null,
+      customer_email: null,
+      customer_address: null,
+      customer_type: null,
+      customer_contact: null,
+      customer_contact_number: null,
     },
     product_detail: [],
     ShippingCost: 0,

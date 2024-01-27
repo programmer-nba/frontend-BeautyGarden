@@ -1,6 +1,7 @@
 <template>
   <div
     class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded"
+    style="max-height: 600px; height: auto;"
     :class="[color === 'light' ? 'bg-white' : 'bg-emerald-900 text-white']"
   >
     <div class="rounded-t mb-0 px-4 py-3 border-0">
@@ -23,7 +24,7 @@
     <div class="block w-full overflow-x-auto">
       <!-- Projects table -->
       <table class="items-center w-full bg-transparent border-collapse">
-        <thead>
+        <thead style="position: sticky; top: 0;">
           <tr>
             <th
             class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -104,7 +105,7 @@
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{ index+1 }}
+              {{ index + 1 }}
             </td>
 
             <td

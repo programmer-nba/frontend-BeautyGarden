@@ -15,7 +15,7 @@
                     </span>
                 </div>
             </a>
-            <a @click="selectQt(data)" v-for="data in quotationsCode" :key="data" class="text-sm py-2 px-4 font-normal block w-full whitespace-no-wrap bg-transparent text-white cursor-pointer">
+            <a @click="selectIn(data)" v-for="data in invoicesCode" :key="data" class="text-sm py-2 px-4 font-normal block w-full whitespace-no-wrap bg-transparent text-white cursor-pointer">
               {{ data }}
             </a>
           </div>
@@ -33,18 +33,18 @@
       return {
         dropdownPopoverShow: false,
         searchTarget: '',
-        selectedQt: '',
-        originalQuotationsCode: [],
-        quotationsCode: []
+        selectedIn: '',
+        originalInvoicesCode: [],
+        invoicesCode: []
       };
     },
 
     watch: {
-        searchTarget: 'filterQt'
+        searchTarget: 'filterIn'
     },
 
     mounted() {
-        this.fecthQuotationCodes()
+        this.fecthInvoiceCodes()
     },
 
     methods: {
@@ -59,21 +59,21 @@
         }
       },
 
-      selectQt: function (data) {
-        this.selectedQt = data
-        this.$emit('refQuotation', this.selectedQt)
+      selectIn: function (data) {
+        this.selectedIn = data
+        this.$emit('refInvoice', this.selectedIn)
         this.toggleDropdown()
         this.searchTarget = ''
       },
 
-      filterQt: function () {
+      filterIn: function () {
         const lowerSearchTarget = this.searchTarget.toLowerCase()
-        this.quotationsCode = this.originalQuotationsCode.filter(item => item.toLowerCase().includes(lowerSearchTarget));
+        this.invoicesCode = this.originalInvoicesCode.filter(item => item.toLowerCase().includes(lowerSearchTarget));
       },
 
-      fecthQuotationCodes: async function () {
+      fecthInvoiceCodes: async function () {
         try {
-            await axios.get(`${process.env.VUE_APP_API_BACKEND}/quotation/getQTAllfilter`,
+            await axios.get(`${process.env.VUE_APP_API_BACKEND}/invoice/getIVAllfilter`,
                 {
                     headers: {
                         'auth-token': `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
@@ -81,10 +81,10 @@
                 }).then((response)=>{
                     if(response.data.status){
                         console.log(response.data.message)
-                        this.originalQuotationsCode = response.data.data.map((item)=>{
-                            return item.quotation
+                        this.originalInvoicesCode = response.data.data.map((item)=>{
+                            return item.invoice
                         })
-                        this.filterQt()
+                        this.filterIn()
                     }
                 }).catch((err)=>{
                     console.log(err.response.data.message)

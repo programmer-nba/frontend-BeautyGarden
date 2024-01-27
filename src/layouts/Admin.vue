@@ -3,10 +3,10 @@
     <sidebar />
     <div class="relative md:ml-64 bg-blueGray-100">
       <admin-navbar />
-      <div v-if="['/admin/documents', '/admin/settings', '/admin/dashboard', '/admin/customers'].includes(currentPath)">
+      <div v-if="['/admin/documents', '/admin/dashboard', '/admin/customers'].includes(currentPath)">
         <header-stats />
       </div>
-      <div v-if="['/admin/document/receipt'].includes(currentPath)">
+      <div v-if="['/admin/settings', '/admin/document/receipt'].includes(currentPath)">
         <HeaderDocuments />
       </div>
       <div class="px-4 md:px-10 mx-auto w-full h-full -m-24">
