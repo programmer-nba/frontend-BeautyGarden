@@ -22,11 +22,11 @@
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ชื่อลูกค้า Customer Name : </span>
-                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_name }}</span>
+                <span class="pl-2 ml-2">{{ customerFullName }}</span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">สาขา Branch : </span>
-                <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_lastname }}</span>
+                <span class="pl-2 ml-2">(สำนักงานใหญ่)</span>
               </div>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ที่อยู่ Address : </span>
@@ -246,11 +246,14 @@
           </div>
   
           <hr class="mt-6 border-b-1 border-blueGray-300" />
-  
-          <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-            ที่อยู่ลูกค้า
-          </h6>
-          <button class="px-4 py-2 text-white rounded bg-orange-500" @click.prevent="isNewAddress=true">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+          
+          <div class="flex p-2 py-4">
+            <h6 class="text-blueGray-400 p-2 text-sm font-bold uppercase">
+              เพิ่มที่อยู่ลูกค้าใหม่
+            </h6>
+            <button class="px-4 h-fit text-white rounded bg-orange-500" @click.prevent="isNewAddress=!isNewAddress"> เพิ่ม <i class="fas fa-plus-circle"></i></button>
+          </div>
+          
           <div v-if="isNewAddress" class="flex flex-wrap">
             <div class="w-full lg:w-12/12 px-4">
               <div class="relative w-full mb-3">
@@ -579,12 +582,10 @@
   
   <script setup>
   /* eslint-disable */
-  import { ref, computed, onMounted } from 'vue'
-  //import logo from '@/assets/img/logo.png'
+  import { ref, computed, onMounted, watchEffect } from 'vue'
   import axios from 'axios'
   import AddProductModal from '@/components/Modals/AddProductModal.vue'
   import PictureModal from '@/components/Modals/PictureModal.vue'
-  //import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
   import SearchQtDropdown from '@/components/Dropdowns/SearchQtDropdown.vue'
   import SearchInDropdown from '@/components/Dropdowns/SearchInDropdown.vue'
   import SearchCustomers from '@/components/Dropdowns/SearchCustomers.vue'
@@ -597,7 +598,6 @@
   const curPicUrl = ref(null)
   const refQuotation = ref(null)
   const refInvoice = ref(null)
-  //const refCustomer = ref(null)
   const isNewAddress = ref(false)
 
   const img = ref('')
@@ -610,6 +610,18 @@
     refInvoice.value = event
   }
 
+  watchEffect(()=>{
+    changeNewAddress
+  })
+
+  const changeNewAddress = () => {
+    if(isNewAddress.value){
+      formData.value.customer_detail.customer_address = customerFullAddress.value
+    } else {
+      formData.value.customer_detail.customer_address = refCustomer.customer_position
+    }
+  }
+
 const handleFileChange = (event, index) => {
 const fileInput = event.target
 const file = fileInput.files[0]
@@ -617,7 +629,6 @@ const file = fileInput.files[0]
     if (file.type.startsWith('image/')) {
       const reader = new FileReader()
       reader.onload = (e) => {
-        //img.value = e.target.result
         formData.value.product_detail[index].product_logo = e.target.result
       }
       reader.readAsDataURL(file)
@@ -701,7 +712,9 @@ const removeProduct = (index) => {
   }
 
   const customerFullName = computed(()=>{
-    return `${formData.value.customer_detail.customer_name} ${formData.value.customer_detail.customer_lastname}`
+    const first = (formData.value.customer_detail.customer_name) ? formData.value.customer_detail.customer_name : ''
+    const last = (formData.value.customer_detail.customer_lastname) ? formData.value.customer_detail.customer_lastname : ''
+    return `${first} ${last}`
   })
 
   const customerFullAddress = computed(()=>{
@@ -729,9 +742,9 @@ const removeProduct = (index) => {
   }
   
   const createNewDocument = async () => {
-      formData.value.customer_detail.customer_address = customerFullAddress.value
-      formData.value.start_date = thaiDateFormatted.value
-      formData.value.end_date = thaiDateFormattedDue.value
+      //formData.value.customer_detail.customer_address = customerFullAddress.value
+      formData.value.start_date = thaiDate.value
+      formData.value.end_date = thaiDateDue.value
     try{
       const response = await axios.post(`${process.env.VUE_APP_API_BACKEND}/receiptVat/ReceiptVat`,
           formData.value,

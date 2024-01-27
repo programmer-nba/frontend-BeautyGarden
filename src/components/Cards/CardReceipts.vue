@@ -127,14 +127,14 @@
                   color === 'light' ? 'text-blueGray-600' : 'text-white',
                 ]"
               >
-                {{ receipt.customer_detail?.customer_name }} {{ receipt.customer_detail?.customer_lastname }}
+                {{ receipt.customer_detail?.customer_name }} (สำนักงานใหญ่)
               </span>
             </th>
             
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{ formatDate(receipt.start_date) }}
+              {{ formatDate(receipt.start_date) || receipt.start_date }}
             </td>
             
             <td
@@ -186,7 +186,7 @@ const props = defineProps({
 
 // change date to Thai format
 const formatDate = ( inputDate ) => {
-  if(inputDate){
+  if(inputDate && inputDate.includes("/")){
     const parts = inputDate.split('/')
     const formattedDate = new Intl.DateTimeFormat('th-TH', {
       day: 'numeric',
