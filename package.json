@@ -20,6 +20,7 @@
     "axios": "^1.6.5",
     "chart.js": "2.9.4",
     "core-js": "3.9.1",
+    "css-minimizer-webpack-plugin": "^6.0.0",
     "gulp": "4.0.2",
     "gulp-append-prepend": "1.0.8",
     "tailwindcss": "2.0.4",
