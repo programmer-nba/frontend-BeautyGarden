@@ -4,8 +4,8 @@
     >
       <div class="rounded-t bg-white mb-0 px-6 py-6">
         <div class="flex justify-center pb-4">
-          <span class="text-xl font-semibold inline-block py-1 px-6 rounded-full text-teal-600 bg-teal-200 uppercase last:mr-0 mr-1">
-            ใบเสร็จรับเงิน ( Receipt )
+          <span class="text-xl font-semibold inline-block py-1 px-6 rounded-full text-orange-600 bg-orange-200 uppercase last:mr-0 mr-1">
+            ใบเสนอราคา ( Quotation )
           </span>
         </div>
         <!-- <div class="flex gap-y-3 flex-wrap justify-between text-sm">
@@ -79,7 +79,7 @@
         <form>
 
           <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-            ข้อมูลใบเสร็จ
+            ข้อมูลใบเสนอราคา
           </h6>
           <div class="flex flex-wrap">
             <div class="w-full lg:w-6/12 px-4">
@@ -88,7 +88,7 @@
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  วันที่ : Date 
+                  วันที่เริ่ม : Date 
                   <span class="mx-4 text-xs font-semibold inline-block py-1 px-2 rounded text-emerald-600 bg-emerald-200 last:mr-0 mr-1 uppercase" :class="!thaiDateFormatted ? 'hidden' : ''">
                     {{ thaiDateFormatted }}
                   </span>
@@ -107,67 +107,36 @@
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
+                  วันที่สิ้นสุด : Date Due 
+                  <span class="mx-4 text-xs font-semibold inline-block py-1 px-2 rounded text-orange-600 bg-orange-200 last:mr-0 mr-1 uppercase" :class="!thaiDateDueFormatted ? 'hidden' : ''">
+                    {{ thaiDateDueFormatted }}
+                  </span>
+                </label>
+                <input
+                  type="date"
+                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  v-model="thaiDateDue"
+                  @Input="changeToThaiDateDue"
+                />
+              </div>
+            </div>
+            <div class="w-full lg:w-6/12 px-4">
+              <div class="relative w-full mb-3">
+                <label
+                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
                   เลขที่ : Document No.
                 </label>
                 <input
                   type="text"
                   class="px-3 py-3 border-0 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   disabled
-                  :value="predictNextCode(receipt_lastcode)"
+                  :value="predictNextCode(quotation_lastcode)"
                 />
               </div>
             </div>
-            <div class="w-full lg:w-6/12 px-4">
-              <div class="relative w-full mb-3">
-                <p
-                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  ใบเสนอราคาอ้างอิง (ถ้ามี)
-                </p>
-              </div>
-                <input
-                  type="text"
-                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  v-model="formData.quotation"
-                />
-                <SearchQtDropdown @refQuotation="refQThandle"/>
-            </div>
-            <div class="w-full lg:w-6/12 px-4">
-              <div class="relative w-full mb-3">
-                <p
-                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                >
-                  ใบแจ้งหนี้อ้างอิง (ถ้ามี)
-                </p>
-              </div>
-              <input
-                type="text"
-                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                v-model="formData.invoice"
-                />
-              <SearchInDropdown @refInvoice="refINhandle"/>
-            </div>
-            <!-- <div class="w-full lg:w-6/12 px-4">
-              <div class="relative w-full mb-3">
-                <label
-                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                วันครบกำหนดชำระเงิน Due Date
-                <span class="mx-4 text-xs font-semibold inline-block py-1 px-2 rounded text-red-600 bg-red-200 last:mr-0 mr-1 uppercase" :class="!thaiDateFormattedDue ? 'hidden' : ''">
-                  {{ thaiDateFormattedDue }}
-                </span>
-                </label>
-                <input
-                  type="date"
-                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  v-model="thaiDateDue"
-                  @Input="changeToThaiDateDue"
-                />
-              </div>
-            </div> -->
-            
+           
           </div>
           <hr class="mt-6 border-b-1 border-blueGray-300" />
           <div class="flex mt-3 py-2">
@@ -623,16 +592,16 @@
             >
               สร้างเอกสาร
             </button> -->
-            <DraftReceipt 
+            <DraftQuotation 
             :customer="{
               name: formData?.customer_detail?.customer_name || '-',
               address: formData?.customer_detail?.customer_address || '-',
               taxId: formData?.customer_detail?.tax_id || '-',
             }"
-            :receipt="{
-              code: predictNextCode(receipt_lastcode) || '-',
+            :quotation="{
+              code: predictNextCode(quotation_lastcode) || '-',
               start_date: thaiDate || '-',
-              refer: formData.invoice || formData.quotation,
+              end_date: thaiDateDue || '-',
             }"
             :items="formData?.product_detail || []"
             />
@@ -648,51 +617,18 @@
   import axios from 'axios'
   import AddProductModal from '@/components/Modals/AddProductModal.vue'
   import PictureModal from '@/components/Modals/PictureModal.vue'
-  import SearchQtDropdown from '@/components/Dropdowns/SearchQtDropdown.vue'
-  import SearchInDropdown from '@/components/Dropdowns/SearchInDropdown.vue'
   import SearchCustomers from '@/components/Dropdowns/SearchCustomers.vue'
-  import DraftReceipt from '@/components/Modals/DraftReceipt.vue'
+  import DraftQuotation from '@/components/Modals/DraftQuotation.vue'
   
   const edit = ref(true)
   const thaiDate = ref('')
-  const receipt_lastcode = ref('')
+  const quotation_lastcode = ref('')
   const thaiDateDue = ref('')
   const openPicDialog = ref(false)
   const curPicUrl = ref(null)
-  const refQuotation = ref(null)
-  const refInvoice = ref(null)
   const isNewAddress = ref(false)
 
   const img = ref('')
-
-  const refQThandle = (event) => {
-    refQuotation.value = event
-    formData.value.quotation = event
-  }
-
-  const refINhandle = (event) => {
-    refInvoice.value = event
-    formData.value.invoice = event
-  }
-
- /*  watchEffect(()=>{
-    changeNewAddress
-  }) */
-
- /*  const changeNewAddress = () => {
-    if(isNewCustomer.value){
-      formData.value.customer_number = null
-      formData.value.customer_detail.tax_id = null
-      formData.value.customer_detail.customer_name = null
-      formData.value.customer_detail.customer_lastname = null
-      formData.value.customer_detail.customer_phone = null
-      formData.value.customer_detail.customer_email = null
-      formData.value.customer_detail.customer_address = null
-      formData.value.customer_detail.customer_type = null
-      formData.value.customer_detail.customer_contact = null
-      formData.value.customer_detail.customer_contact_number = null
-    } 
-  } */
 
 const handleFileChange = (event, index) => {
 const fileInput = event.target
@@ -762,8 +698,6 @@ const removeProduct = (index) => {
   }
 
   const formData = ref({
-    invoice: null,
-    quotation: null,
     customer_number: null,
     customer_detail: {
       tax_id: null,
@@ -778,10 +712,54 @@ const removeProduct = (index) => {
     },
     product_detail: [],
     ShippingCost: 0,
+    discount: 0,
     start_date: null,
     end_date: null,
     note: ""
   })
+
+  /*
+  {
+    "customer_number": "CS202401251",
+    //"branchId": "65b65a614b02ad0c6c4adea5",
+    "customer_detail": {
+        "tax_id": "",
+        "customer_name": "",
+        "customer_lastname": "",
+        "customer_phone": "",
+        "customer_email": "",
+        "customer_address": " ",
+        "customer_type": ""
+    },
+    "product_detail": [
+        {
+            "product_name": "กระจก",
+            "product_price": 189.22,
+            "product_amount": 300,
+            "product_logo": "",
+            "product_total": ""
+        },
+        {
+            "product_name": "กระเบื้อง",
+            "product_price": 152.22,
+            "product_amount": 200,
+            "product_logo": "",
+            "product_total": ""
+        },
+        {
+            "product_name": "หลังคา",
+            "product_price": 143.53,
+            "product_amount": 500,
+            "product_logo": "",
+            "product_total": ""
+        }
+    ],
+    "discount": 5000,
+    "ShippingCost": "500",
+    "start_date": "15/12/2023",
+    "end_date": "20/12/2023"
+}
+  */
 
   const addProducts = (value) => {
     formData.value.product_detail.push(value)
@@ -829,7 +807,7 @@ const removeProduct = (index) => {
     let incrementedNumericPart = String(Number(numericPart) + 1).padStart(4, '0');
     let newCode = 
       (curCode) ? curCode.slice(0, -4) + incrementedNumericPart 
-      : 'REP' + formattedDate + incrementedNumericPart
+      : 'QT' + formattedDate + incrementedNumericPart
 
     return newCode
   }
@@ -842,7 +820,7 @@ const removeProduct = (index) => {
         product.product_logo = ''
       })
     try{
-      const response = await axios.post(`${process.env.VUE_APP_API_BACKEND}/receiptVat/ReceiptVat`,
+      const response = await axios.post(`${process.env.VUE_APP_API_BACKEND}/quotation/Create`,
           formData.value,
         {
           headers: {
@@ -862,7 +840,7 @@ const removeProduct = (index) => {
 
   const fetchData = async () => {
     try{
-      const response = await axios.get(`${process.env.VUE_APP_API_BACKEND}/receiptVat/getReceiptVatAll`,
+      const response = await axios.get(`${process.env.VUE_APP_API_BACKEND}/quotation/getQuotationAll`,
         {
           headers: {
             'auth-token' : `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
@@ -870,7 +848,7 @@ const removeProduct = (index) => {
         }
       )
       if(response.data.status){
-        receipt_lastcode.value = response.data.data[response.data.data.length - 1].receipt
+        quotation_lastcode.value = response.data.data[response.data.data.length - 1].quotation
       }
     }
     catch(err){
@@ -901,7 +879,7 @@ const removeProduct = (index) => {
     
   })
 
-  const thaiDateFormattedDue = computed(()=>{
+  const thaiDateDueFormatted = computed(()=>{
     const inputDate = thaiDateDue.value
     if(inputDate) {
       const monthsThai = [
@@ -960,15 +938,7 @@ const removeProduct = (index) => {
       thaiDateDue.value = formattedDate;
     }
   }
-
-  const toggleEdit = () => {
-    edit.value = !edit.value;
-  }
   
-  const saveData = () => {
-    // Add logic to save the data, e.g., send it to a server
-    toggleEdit(); // Optional: Toggle back to view mode after saving
-  }
   </script>
 
   

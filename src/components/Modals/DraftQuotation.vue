@@ -34,27 +34,28 @@
                                     เลขประจำตัวผู้เสียภาษี TAX ID : {{ customer.taxId }}<br><br>
                                   </div>
                                 <div class="from">
-                                  <span class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-emerald-600 bg-emerald-200 uppercase last:mr-0 mr-1">
-                                    ใบเสร็จรับเงิน RECEIPT
+                                  <span class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-orange-600 bg-orange-200 uppercase last:mr-0 mr-1">
+                                    ใบเสนอราคา QUOTATION
                                   </span>
                                   <br>
                                   <br>
                                   <div class="flex justify-between">
                                     <span class="font-bold pr-4">เลขที่ : </span>
-                                    {{ receipt.code }}
+                                    {{ quotation.code }}
                                   </div>
                                   <div class="flex justify-between">
-                                    <span class="font-bold pr-4">วันที่ : </span>
-                                    {{ formatDate(receipt.start_date) }}
+                                    <span class="font-bold pr-4">วันที่เริ่มต้น : </span>
+                                    {{ formatDate(quotation.start_date) || '-' }}
+                                  </div>
+                                  <div class="flex justify-between">
+                                    <span class="font-bold pr-4">วันที่สิ้นสุด : </span>
+                                    {{ formatDate(quotation.end_date) || '-' }}
                                   </div>
                                   <div class="flex justify-between">
                                     <span class="font-bold pr-4">ผู้ขาย : </span>
                                     สวนสวยการ์เด้น
                                   </div>
-                                  <div class="flex justify-between">
-                                    <span class="font-bold pr-4">อ้างอิง : </span>
-                                    {{ receipt.refer }}
-                                  </div>
+                                  
                                     <br>
                                     <hr/>
                                     <br>
@@ -88,7 +89,17 @@
                               <tbody>
                                 <tr v-for="(item, index) in items" :key="index">
                                   <td style="text-align: center;">{{ index+1 }}</td>
-                                  <td>{{ item.product_name }}</td>
+                                  <td>
+                                    <div class="flex justify-items-center items-center">
+                                      <div v-if="item.product_logo!==''" class="flex flex-wrap justify-center">
+                                          <div style="width:75px;" class="pr-4">
+                                            <img :src="item.product_logo" alt="..." class="shadow max-w-full h-auto align-middle border-none" />
+                                          </div>
+                                      </div>
+                                      {{ item.product_name }}
+                                  </div>
+                                    
+                                  </td>
                                   <td style="text-align: center;">{{ formatCurrency(item.product_amount) }}</td>
                                   <td style="text-align: right;">{{ formatCurrency(item.product_price) }}</td>
                                   <td style="text-align: right;">{{ formatCurrency(item.product_price*item.product_amount) }}</td>
@@ -130,7 +141,7 @@
     },
     props: {
       customer: Object,
-      receipt: Object,
+      quotation: Object,
       items: Array
     },
     computed: {
@@ -148,6 +159,7 @@
         return `${parseFloat(parseFloat(amount).toFixed(2)).toLocaleString()}`;
         },
         formatDate: function(date){
+          console.log(date)
           const inputDateStr = date;
           const [year, month, day] = inputDateStr.split("-");
           const outputDateStr = `${day}/${month}/${year}`;
@@ -222,7 +234,7 @@
   }
   
   th {
-    background-color: #0c9143a4;
+    background-color: #ffaa2ba2;
   }
   
   .total {

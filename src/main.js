@@ -20,7 +20,8 @@ import Auth from "@/layouts/Auth.vue";
 import Dashboard from "@/views/admin/Dashboard.vue";
 import Settings from "@/views/admin/Settings.vue";
 import Customers from "@/views/admin/Customers.vue";
-import DocumentForm from "@/views/admin/DocumentForm.vue";
+import ReceiptForm from "@/views/admin/ReceiptForm.vue";
+import QuotationForm from "@/views/admin/QuotationForm.vue";
 import DocumentList from "@/views/admin/DocumentList.vue";
 //import Maps from "@/views/admin/Maps.vue";
 
@@ -57,7 +58,11 @@ const routes = [
       },
       {
         path: "/admin/document/receipt",
-        component: DocumentForm,
+        component: ReceiptForm,
+      },
+      {
+        path: "/admin/document/quotation",
+        component: QuotationForm,
       },
       {
         path: "/admin/documents",

@@ -15,7 +15,10 @@
           </h3>
           <small class="text-xs px-2">จำนวนใบเสนอราคาทั้งหมด {{ quotations.length }} ใบ</small>
         </div>
-        <button class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+        <router-link to="/admin/document/quotation" v-slot="{navigate}">
+          <button @click="navigate" class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+        </router-link>
+        
       </div>
     </div>
     <div class="block w-full overflow-x-auto">
