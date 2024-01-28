@@ -8,10 +8,9 @@
             ใบเสร็จรับเงิน ( Receipt )
           </span>
         </div>
-        <div class="flex gap-y-3 flex-wrap justify-between text-sm">
+        <!-- <div class="flex gap-y-3 flex-wrap justify-between text-sm">
           <div class="flex">
             <div class="flex flex-col">
-              <SearchCustomers @refCustomer="refCThandle"/>
               <div class="flex flex-wrap">
                 <span class="pr-2 mr-2 font-semibold">ผู้ติดต่อ Contact : </span>
                 <span class="pl-2 ml-2">{{ formData?.customer_detail?.customer_contact }}</span>
@@ -74,7 +73,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="flex-auto px-4 lg:px-10 py-10 pt-0">
         <form>
@@ -120,14 +119,13 @@
             </div>
             <div class="w-full lg:w-6/12 px-4">
               <div class="relative w-full mb-3">
-                
-                <label
+                <p
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  ใบเสนอราคาเลขที่ Ref. Quotation No.
-                </label>
-                </div>
+                  ใบเสนอราคาอ้างอิง (ถ้ามี)
+                </p>
+              </div>
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
@@ -137,25 +135,20 @@
             </div>
             <div class="w-full lg:w-6/12 px-4">
               <div class="relative w-full mb-3">
-                
-                <label
-                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
+                <p
+                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                 >
-                ใบแจ้งหนี้ Ref. Invoice No.
-                </label>
-                
-                <input
+                  ใบแจ้งหนี้อ้างอิง (ถ้ามี)
+                </p>
+              </div>
+              <input
                 type="text"
-                class="px-3 py-3 w-full placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring ease-linear transition-all duration-150"
+                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 v-model="refInvoice"
                 />
-                
-                <SearchInDropdown @refInvoice="refINhandle"/>
-                
-              </div>
+              <SearchInDropdown @refInvoice="refINhandle"/>
             </div>
-            <div class="w-full lg:w-6/12 px-4">
+            <!-- <div class="w-full lg:w-6/12 px-4">
               <div class="relative w-full mb-3">
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -173,13 +166,17 @@
                   @Input="changeToThaiDateDue"
                 />
               </div>
-            </div>
+            </div> -->
             
           </div>
-          
-          <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-            ข้อมูลลูกค้า
-          </h6>
+          <hr class="mt-6 border-b-1 border-blueGray-300" />
+          <div class="flex mt-3 py-2">
+            <h6 class="text-blueGray-400 mr-3 mt-3 text-sm font-bold uppercase">
+              ข้อมูลลูกค้า
+            </h6>
+            <SearchCustomers @refCustomer="refCThandle"/>
+            
+          </div>
           <div class="flex flex-wrap">
             <div class="w-full lg:w-6/12 px-4">
               <div class="relative w-full mb-3">
@@ -192,7 +189,7 @@
                 <input
                   type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  v-model="customerFullName"
+                  v-model="formData.customer_detail.customer_name"
                 />
               </div>
             </div>
@@ -243,19 +240,64 @@
                 />
               </div>
             </div>
+            <div class="w-full lg:w-6/12 px-4">
+              <div class="relative w-full mb-3">
+                <label
+                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  ผู้ติดต่อ
+                </label>
+                <input
+                  type="email"
+                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  v-model="formData.customer_detail.customer_contact"
+                />
+              </div>
+            </div>
+            <div class="w-full lg:w-6/12 px-4">
+              <div class="relative w-full mb-3">
+                <label
+                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  เบอร์ผู้ติดต่อ
+                </label>
+                <input
+                  type="text"
+                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  v-model="formData.customer_detail.customer_contact_number"
+                />
+              </div>
+            </div>
           </div>
   
-          <hr class="mt-6 border-b-1 border-blueGray-300" />
-          
-          <div class="flex p-2 py-4">
-            <h6 class="text-blueGray-400 p-2 text-sm font-bold uppercase">
-              เพิ่มที่อยู่ลูกค้าใหม่
+          <div class="flex flex-wrap">
+            <div v-if="!isNewAddress" class="w-full lg:w-12/12 px-4">
+              <div class="relative w-full mb-3">
+                <label
+                  class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  ที่อยู่ลูกค้า
+                </label>
+                <input
+                  type="text"
+                  class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  v-model="formData.customer_detail.customer_address"
+                />
+              </div>
+              <button v-if="!isNewAddress" class="px-4 py-2 text-white rounded bg-orange-500" @click.prevent="isNewAddress=!isNewAddress"> ที่อยู่ใหม่ <i class="fas fa-plus-circle"></i></button>
+            </div>
+            
+            <hr class="mt-6 border-b-1 border-blueGray-300" />
+          <div v-if="isNewAddress" class="flex mt-3 py-2">
+            <h6 class="text-blueGray-400 mr-3 text-sm font-bold uppercase">
+              เพิ่มที่อยู่ใหม่
             </h6>
-            <button class="px-4 h-fit text-white rounded bg-orange-500" @click.prevent="isNewAddress=!isNewAddress"> เพิ่ม <i class="fas fa-plus-circle"></i></button>
+            
           </div>
-          
-          <div v-if="isNewAddress" class="flex flex-wrap">
-            <div class="w-full lg:w-12/12 px-4">
+            <div v-if="isNewAddress" class="w-full lg:w-12/12 px-4 mb-3">
               <div class="relative w-full mb-3">
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -269,8 +311,10 @@
                   v-model="address.houseNo"
                 />
               </div>
+              
             </div>
-            <div class="w-full lg:w-4/12 px-4">
+            
+            <div v-if="isNewAddress" class="w-full lg:w-4/12 px-4">
               <div class="relative w-full mb-3">
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -285,7 +329,7 @@
                 />
               </div>
             </div>
-            <div class="w-full lg:w-4/12 px-4">
+            <div v-if="isNewAddress" class="w-full lg:w-4/12 px-4">
               <div class="relative w-full mb-3">
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -300,7 +344,7 @@
                 />
               </div>
             </div>
-            <div class="w-full lg:w-4/12 px-4">
+            <div v-if="isNewAddress" class="w-full lg:w-4/12 px-4">
               <div class="relative w-full mb-3">
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -315,7 +359,7 @@
                 />
               </div>
             </div>
-            <div class="w-full lg:w-4/12 px-4">
+            <div v-if="isNewAddress" class="w-full lg:w-4/12 px-4">
               <div class="relative w-full mb-3">
                 <label
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
@@ -329,7 +373,12 @@
                   v-model="address.postcode"
                 />
               </div>
+              <div class="flex">
+                <button class="px-4 mr-3 py-1 text-white rounded bg-red-500" @click.prevent="cancleNewAddress"> ยกเลิก </button>
+                <button class="px-4 py-1 text-white rounded bg-emerald-500" @click.prevent="addNewAddress"> บันทึก </button>
+              </div>
             </div>
+            
           </div>
 
           <hr class="mt-6 border-b-1 border-blueGray-300" />
@@ -479,7 +528,7 @@
                       <span class="pr-4 font-bold">ค่าสินค้า/บริการ</span>
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ (sumProductsPrice-(sumProductsPrice*0.07)).toLocaleString() }}</span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice.toLocaleString() }}</span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -489,7 +538,7 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <span class="pr-4 font-bold">ค่าส่ง</span>
+                      <span class="pr-4 font-bold">ค่าส่ง/ค่าบริการ</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
                       <span class="pr-4 font-bold text-emerald-600">0.00</span> บาท
@@ -505,7 +554,7 @@
                       <span class="pr-4 font-bold">VAT 7 %</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ (sumProductsPrice*7/107).toLocaleString() }}</span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">{{ vat!==0 ? vat.toLocaleString() : '0.00' }} </span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -518,7 +567,7 @@
                       <span class="pr-4 font-bold">ราคารวม VAT</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice.toLocaleString() }}</span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice+vat).toLocaleString() : '0.00' }}</span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -531,7 +580,7 @@
                       <span class="pr-4 font-bold">ราคารวมสุทธิ</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ (sumProductsPrice).toLocaleString() }}</span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice+vat).toLocaleString() : '0.00' }}</span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -567,13 +616,14 @@
             </div>
           </div>
           <div class="flex w-full justify-center items-center mt-4">
-            <button 
+            <!-- <button 
             class="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded-full shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" 
             type="button"
             @click.prevent="createNewDocument"
             >
               สร้างเอกสาร
-            </button>
+            </button> -->
+            <DraftReceipt />
           </div>
         </form>
       </div>
@@ -589,6 +639,7 @@
   import SearchQtDropdown from '@/components/Dropdowns/SearchQtDropdown.vue'
   import SearchInDropdown from '@/components/Dropdowns/SearchInDropdown.vue'
   import SearchCustomers from '@/components/Dropdowns/SearchCustomers.vue'
+  import DraftReceipt from '@/components/Modals/DraftReceipt.vue'
   
   const edit = ref(true)
   const thaiDate = ref('')
@@ -599,6 +650,7 @@
   const refQuotation = ref(null)
   const refInvoice = ref(null)
   const isNewAddress = ref(false)
+  const openDraft = ref(false)
 
   const img = ref('')
 
@@ -610,17 +662,24 @@
     refInvoice.value = event
   }
 
-  watchEffect(()=>{
+ /*  watchEffect(()=>{
     changeNewAddress
-  })
+  }) */
 
-  const changeNewAddress = () => {
-    if(isNewAddress.value){
-      formData.value.customer_detail.customer_address = customerFullAddress.value
-    } else {
-      formData.value.customer_detail.customer_address = refCustomer.customer_position
-    }
-  }
+ /*  const changeNewAddress = () => {
+    if(isNewCustomer.value){
+      formData.value.customer_number = null
+      formData.value.customer_detail.tax_id = null
+      formData.value.customer_detail.customer_name = null
+      formData.value.customer_detail.customer_lastname = null
+      formData.value.customer_detail.customer_phone = null
+      formData.value.customer_detail.customer_email = null
+      formData.value.customer_detail.customer_address = null
+      formData.value.customer_detail.customer_type = null
+      formData.value.customer_detail.customer_contact = null
+      formData.value.customer_detail.customer_contact_number = null
+    } 
+  } */
 
 const handleFileChange = (event, index) => {
 const fileInput = event.target
@@ -644,6 +703,11 @@ const sumProductsPrice = computed(()=>{
   })
   const sumPrices = (prices_list.length > 0) ? prices_list.reduce((a,b)=> a + b) : '0.00'
   return sumPrices
+})
+
+const vat = computed(()=>{
+  const vat7 = (sumProductsPrice.value !== '0.00') ? sumProductsPrice.value*7/100 : 0
+  return vat7
 })
 
 const removeProduct = (index) => {
@@ -717,9 +781,25 @@ const removeProduct = (index) => {
     return `${first} ${last}`
   })
 
-  const customerFullAddress = computed(()=>{
-    return `${address.value.houseNo} ${address.value.subdistrict} ${address.value.district} ${address.value.province} ${address.value.postcode}`
-  })
+  const addNewAddress = () => {
+    formData.value.customer_detail.customer_address = 
+    `${address.value.houseNo} ${address.value.subdistrict} ${address.value.district} ${address.value.province} ${address.value.postcode}`
+    address.value.houseNo = ''
+    address.value.subdistrict = ''
+    address.value.district = ''
+    address.value.province = ''
+    address.value.postcode = ''
+    isNewAddress.value = false
+  }
+
+  const cancleNewAddress = () => {
+    address.value.houseNo = ''
+    address.value.subdistrict = ''
+    address.value.district = ''
+    address.value.province = ''
+    address.value.postcode = ''
+    isNewAddress.value = false
+  }
 
   onMounted(()=>{
     fetchData()
@@ -745,6 +825,9 @@ const removeProduct = (index) => {
       //formData.value.customer_detail.customer_address = customerFullAddress.value
       formData.value.start_date = thaiDate.value
       formData.value.end_date = thaiDateDue.value
+      formData.value.product_detail.forEach((product)=>{
+        product.product_logo = ''
+      })
     try{
       const response = await axios.post(`${process.env.VUE_APP_API_BACKEND}/receiptVat/ReceiptVat`,
           formData.value,

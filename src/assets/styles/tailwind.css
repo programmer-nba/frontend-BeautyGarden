@@ -2193,6 +2193,10 @@ select {
   height: 600px;
 }
 
+.text-end {
+  text-align: right;
+}
+
 .text-55 {
   font-size: 55rem;
 }
