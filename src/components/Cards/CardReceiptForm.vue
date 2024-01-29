@@ -510,6 +510,7 @@
                       <i @click="removeProduct(index)" class="fas fa-trash-alt fa-lg cursor-pointer" style="color: #f93434;"></i>
                     </td>
                   </tr>
+                  
                   <tr>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
@@ -519,6 +520,7 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs p-4 whitespace-nowrap bg-blueGray-50 text-blueGray-500 border-blueGray-100"></td>
                   </tr>
+                  
                   <tr>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
@@ -528,7 +530,7 @@
                       <span class="pr-4 font-bold">ค่าสินค้า/บริการ</span>
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice.toLocaleString() }}</span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">{{ sumVat ? sumProductsPrice.toLocaleString() : (sumProductsPrice-vat).toLocaleString() }}</span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -538,10 +540,17 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <span class="pr-4 font-bold">ค่าส่ง/ค่าบริการ</span>
+                      <span class="pr-4 font-bold">ส่วนลด
+                        <input
+                        type="number"
+                        style="width:5rem; height:fit; margin:0;"
+                        class="px-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-xs focus:outline-none focus:ring ease-linear transition-all duration-150"
+                        v-model="formData.discount"
+                      />
+                      </span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">0.00</span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">{{ formData.discount>0 ? formData.discount : '0.00' }} </span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -551,7 +560,22 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <span class="pr-4 font-bold">VAT 7 %</span>
+                      <span class="pr-4 font-bold">ราคาหลังหักส่วนลด</span>
+                    </td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
+                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ formData.discount>0 ? (sumProductsPrice-formData.discount).toLocaleString() : sumProductsPrice.toLocaleString() }}</span> 
+                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ formData.discount>0 ? (sumProductsPrice-vat-formData.discount).toLocaleString() : (sumProductsPrice-vat).toLocaleString() }}</span>
+                      บาท
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                  </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <span class="pr-4 font-bold">VAT 7 % <span @click="changeVat" class="ml-3 border px-2 bg-yellow-500 cursor-pointer"> ► </span></span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
                       <span class="pr-4 font-bold text-emerald-600">{{ vat!==0 ? vat.toLocaleString() : '0.00' }} </span> บาท
@@ -567,7 +591,9 @@
                       <span class="pr-4 font-bold">ราคารวม VAT</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice+vat).toLocaleString() : '0.00' }}</span> บาท
+                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? ((sumProductsPrice-formData.discount)+vat).toLocaleString() : '0.00' }}</span> 
+                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice-formData.discount).toLocaleString() : '0.00' }}</span>
+                      บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -577,13 +603,30 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <span class="pr-4 font-bold">ราคารวมสุทธิ</span>
+                      <span class="pr-4 font-bold">หัก ณ ที่จ่าย {{ `${paidVatpercent}%` }}<span @click="changepaidVatpercent" class="ml-3 border px-2 bg-yellow-500 cursor-pointer"> ► </span></span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice+vat).toLocaleString() : '0.00' }}</span> บาท
+                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? ((sumProductsPrice-formData.discount)+vat).toLocaleString() : '0.00' }}</span> 
+                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice-formData.discount).toLocaleString() : '0.00' }}</span>
+                      บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
+                  <tr>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <span class="pr-4 font-bold">ยอดชำระทั้งสิ้น</span>
+                    </td>
+                    <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
+                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice+vat-formData.discount).toLocaleString() : '0.00' }}</span> 
+                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice-formData.discount).toLocaleString() : '0.00' }}</span> บาท
+                    </td>
+                    <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
+                  </tr>
+                  
                 </tbody>
               </table>
             </div>
@@ -663,6 +706,8 @@
   const refQuotation = ref(null)
   const refInvoice = ref(null)
   const isNewAddress = ref(false)
+  const sumVat = ref(true)
+  const paidVatpercent = ref(3)
 
   const img = ref('')
 
@@ -673,6 +718,21 @@
       getRefQuotionData()
     }
   }
+
+  const changeVat = () => {
+    if(sumVat.value){
+      sumVat.value = false
+    } else {
+      sumVat.value = true
+    }
+  }
+
+  const changepaidVatpercent = () => {
+    paidVatpercent.value = 
+      paidVatpercent.value===3 ? 4
+      : paidVatpercent.value===4 ? 5
+      : 3
+  } 
 
   const getRefQuotionData = async () => {
     const id = formData.value.quotation || refQuotation.value
@@ -730,7 +790,14 @@ const sumProductsPrice = computed(()=>{
 })
 
 const vat = computed(()=>{
-  const vat7 = (sumProductsPrice.value !== '0.00') ? sumProductsPrice.value*7/100 : 0
+  let vat7 = null
+
+  if(sumVat.value){
+    vat7 = (sumProductsPrice.value !== '0.00') ? (sumProductsPrice.value-formData.value.discount)*0.07 : 0
+  } else {
+    vat7 = (sumProductsPrice.value !== '0.00') ? (sumProductsPrice.value-formData.value.discount)*7/107 : 0
+  }
+  
   return vat7
 })
 
@@ -791,7 +858,8 @@ const removeProduct = (index) => {
     ShippingCost: 0,
     start_date: null,
     end_date: null,
-    note: ""
+    note: "",
+    discount: 0
   })
 
   const addProducts = (value) => {
