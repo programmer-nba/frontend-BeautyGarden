@@ -16,6 +16,7 @@
         <card-social-traffic />
       </div>
     </div> -->
+    <h1 style="margin-top:15rem; margin-bottom:10rem; margin-left:15rem; font-size:100px;" class="relative bottom-0 font-bold h-full">COMINGSOON......</h1>
   </div>
 </template>
 <script>

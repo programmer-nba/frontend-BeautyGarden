@@ -9,7 +9,7 @@
           <div ref="popoverDropdownRef" class="bg-emerald-500 text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1 min-w-48" v-bind:class="{hidden: !dropdownPopoverShow,block: dropdownPopoverShow,}">
             <a class="text-sm py-2 px-4 font-normal block w-full whitespace-no-wrap bg-transparent text-white">
                 <div class="relative flex w-full flex-wrap items-stretch mb-3">
-                    <input v-model="searchTarget" type="text" placeholder="" class="px-2 py-1 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pr-10"/>
+                    <input v-model="searchTarget" type="text" placeholder="QT2024MMDD" class="px-2 py-1 placeholder-blueGray-300 text-blueGray-600 relative bg-white rounded text-sm shadow outline-none focus:outline-none focus:shadow-outline w-full pr-10"/>
                     <span class="z-10 h-full leading-snug font-normal text-center text-blueGray-300 absolute bg-transparent rounded text-base items-center justify-center w-8 right-0 pr-2 py-1">
                       <i class="fas fa-user"></i>
                     </span>
@@ -81,7 +81,7 @@
                 }).then((response)=>{
                     if(response.data.status){
                         console.log(response.data.message)
-                        this.originalQuotationsCode = response.data.data.map((item)=>{
+                        this.originalQuotationsCode = response.data.data.reverse().map((item)=>{
                             return item.quotation
                         })
                         this.filterQt()

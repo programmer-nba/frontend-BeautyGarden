@@ -249,7 +249,7 @@
                   ผู้ติดต่อ
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   v-model="formData.customer_detail.customer_contact"
                 />
@@ -635,6 +635,7 @@
               refer: formData.invoice || formData.quotation,
             }"
             :items="formData?.product_detail || []"
+            @createDoc="createNewDocument"
             />
           </div>
         </form>
@@ -668,31 +669,41 @@
   const refQThandle = (event) => {
     refQuotation.value = event
     formData.value.quotation = event
+    if(formData.value.quotation) {
+      getRefQuotionData()
+    }
+  }
+
+  const getRefQuotionData = async () => {
+    const id = formData.value.quotation || refQuotation.value
+    await axios.get(`${process.env.VUE_APP_API_BACKEND}/quotation/getQuotationByQT/${id}`,
+      {
+        headers: {
+          'auth-token': `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
+        }
+      }
+    ).then((response)=>{
+      formData.value.product_detail = response.data.data.product_detail
+      formData.value.customer_detail.tax_id = response.data.data.customer_detail.tax_id
+      formData.value.customer_detail.customer_name = response.data.data.customer_detail.customer_name
+      formData.value.customer_detail.customer_lastname = response.data.data.customer_detail.customer_lastname
+      formData.value.customer_detail.customer_phone = response.data.data.customer_detail.customer_phone
+      formData.value.customer_detail.customer_email = response.data.data.customer_detail.customer_email
+      formData.value.customer_detail.customer_address = response.data.data.customer_detail.customer_address
+      formData.value.customer_detail.customer_type = response.data.data.customer_detail.customer_type
+      formData.value.customer_detail.customer_contact = response.data.data.customer_detail.customer_contact
+      formData.value.customer_detail.customer_contact_number = response.data.data.customer_detail.customer_contact_number
+      formData.value.ShippingCost = response.data.data.ShippingCost
+    }).catch((error)=>{
+      console.log(error.response.data.message)
+      console.log(error)
+    })
   }
 
   const refINhandle = (event) => {
     refInvoice.value = event
     formData.value.invoice = event
   }
-
- /*  watchEffect(()=>{
-    changeNewAddress
-  }) */
-
- /*  const changeNewAddress = () => {
-    if(isNewCustomer.value){
-      formData.value.customer_number = null
-      formData.value.customer_detail.tax_id = null
-      formData.value.customer_detail.customer_name = null
-      formData.value.customer_detail.customer_lastname = null
-      formData.value.customer_detail.customer_phone = null
-      formData.value.customer_detail.customer_email = null
-      formData.value.customer_detail.customer_address = null
-      formData.value.customer_detail.customer_type = null
-      formData.value.customer_detail.customer_contact = null
-      formData.value.customer_detail.customer_contact_number = null
-    } 
-  } */
 
 const handleFileChange = (event, index) => {
 const fileInput = event.target

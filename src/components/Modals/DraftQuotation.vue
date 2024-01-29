@@ -116,7 +116,7 @@
                     </div>
                 </div>  
                 <div class="flex justify-center px-2 py-2">
-                    <button @click="showModal=!showModal" class="bg-emerald-500 px-2 py-2 text-white">สร้างเอกสาร</button>
+                    <button @click="createDocument" class="bg-emerald-500 px-2 py-2 text-white">สร้างเอกสาร</button>
                 </div>
             </div>
         </div>
@@ -164,6 +164,9 @@
           const [year, month, day] = inputDateStr.split("-");
           const outputDateStr = `${day}/${month}/${year}`;
           return (date!=='-') ? outputDateStr : '-'
+        },
+        createDocument: function() {
+          this.$emit('createDoc')
         }
     }
   }

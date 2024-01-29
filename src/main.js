@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createApp } from "vue";
 import { createWebHistory, createRouter } from "vue-router";
 
@@ -99,7 +100,38 @@ const routes = [
   },
   {
     path: "/",
-    component: Index,
+    component: Admin,
+    redirect: "/admin/documents",
+    children: [
+      {
+        path: "/admin/dashboard",
+        component: Dashboard,
+      },
+      {
+        path: "/admin/settings",
+        component: Settings,
+      },
+      {
+        path: "/admin/customers",
+        component: Customers,
+      },
+      {
+        path: "/admin/document/receipt",
+        component: ReceiptForm,
+      },
+      {
+        path: "/admin/document/quotation",
+        component: QuotationForm,
+      },
+      {
+        path: "/admin/documents",
+        component: DocumentList,
+      },
+      /* {
+        path: "/admin/maps",
+        component: Tables,
+      }, */
+    ],
   },
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];

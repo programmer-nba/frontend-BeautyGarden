@@ -218,7 +218,7 @@
                   ผู้ติดต่อ
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   v-model="formData.customer_detail.customer_contact"
                 />
@@ -604,6 +604,7 @@
               end_date: thaiDateDue || '-',
             }"
             :items="formData?.product_detail || []"
+            @createDoc="createNewDocument"
             />
           </div>
         </form>
