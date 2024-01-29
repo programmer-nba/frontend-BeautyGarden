@@ -46,7 +46,7 @@
         <h3
           class="text-xl font-semibold leading-normal text-blueGray-700 mb-2"
         >
-          บ้านสวนสวยการ์เด้นคอร์เปอเรชั่น
+          สวนสวยการ์เด้นคอร์เปอเรชั่น
         </h3>
         <div
           class="text-sm leading-normal mt-0 mb-2 text-blueGray-400 font-bold uppercase pb-16 px-4 pt-2"
