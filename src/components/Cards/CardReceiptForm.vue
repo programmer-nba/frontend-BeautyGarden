@@ -527,10 +527,12 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <span class="pr-4 font-bold">ค่าสินค้า/บริการ</span>
+                      <span class="pr-4 font-bold">{{sumVat ? 'ค่าสินค้า/บริการ' : 'ค่าสินค้า/บริการ'}}</span>
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ sumVat ? sumProductsPrice.toLocaleString() : (sumProductsPrice-vat).toLocaleString() }}</span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">
+                        {{ sumVat ? formattNumber(sumProductsPrice) : formattNumber(sumProductsPrice-vat) }}
+                      </span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -543,6 +545,7 @@
                       <span class="pr-4 font-bold">ส่วนลด
                         <input
                         type="number"
+                        step="0.01"
                         style="width:5rem; height:fit; margin:0;"
                         class="px-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-xs focus:outline-none focus:ring ease-linear transition-all duration-150"
                         v-model="formData.discount"
@@ -550,7 +553,9 @@
                       </span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ formData.discount>0 ? formData.discount : '0.00' }} </span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">
+                        {{ formData.discount }}
+                      </span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -563,8 +568,8 @@
                       <span class="pr-4 font-bold">ราคาหลังหักส่วนลด</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ formData.discount>0 ? (sumProductsPrice-formData.discount).toLocaleString() : sumProductsPrice.toLocaleString() }}</span> 
-                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ formData.discount>0 ? (sumProductsPrice-vat-formData.discount).toLocaleString() : (sumProductsPrice-vat).toLocaleString() }}</span>
+                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ formattNumber(discountedPrice) }}</span> 
+                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ formattNumber(sumProductsPrice-vat-formData.discount) }}</span>
                       บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
@@ -575,10 +580,14 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <span class="pr-4 font-bold">VAT 7 % <span @click="changeVat" class="ml-3 border px-2 bg-yellow-500 cursor-pointer"> ► </span></span>
+                      <span class="pr-4 font-bold">{{ !sumVat ? 'VAT 7 % (แยก)' : 'VAT 7%'}}
+                        <span @click="changeVat" class="ml-3 border px-2 bg-yellow-500 cursor-pointer"> ► </span>
+                      </span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span class="pr-4 font-bold text-emerald-600">{{ vat!==0 ? vat.toLocaleString() : '0.00' }} </span> บาท
+                      <span class="pr-4 font-bold text-emerald-600">
+                        {{ formattNumber(vat) }} 
+                      </span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -588,11 +597,12 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <span class="pr-4 font-bold">ราคารวม VAT</span>
+                      <span v-if="sumVat" class="pr-4 font-bold">ราคารวม VAT</span>
+                      <span v-if="!sumVat" class="pr-4 font-bold">ราคารวม VAT</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? ((sumProductsPrice-formData.discount)+vat).toLocaleString() : '0.00' }}</span> 
-                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice-formData.discount).toLocaleString() : '0.00' }}</span>
+                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!==0 ? formattNumber(discountedPrice+vat) : formattNumber(0) }}</span> 
+                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!==0 ? formattNumber(discountedPrice) : formattNumber(0) }}</span>
                       บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
@@ -603,12 +613,15 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
+                      <button class="mr-3 px-2 bg-emerald-500" @click.prevent="isDeducate=!isDeducate">•</button>
                       <span class="pr-4 font-bold">หัก ณ ที่จ่าย {{ `${paidVatpercent}%` }}<span @click="changepaidVatpercent" class="ml-3 border px-2 bg-yellow-500 cursor-pointer"> ► </span></span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? ((sumProductsPrice-formData.discount)+vat).toLocaleString() : '0.00' }}</span> 
-                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice-formData.discount).toLocaleString() : '0.00' }}</span>
-                      บาท
+                      <span v-if="sumVat&&isDeducate" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!==0 ? formattNumber(paidVat) : formattNumber(0) }}</span> 
+                      <span v-if="!sumVat&&isDeducate" class="pr-4 font-bold text-emerald-600">
+                        {{ sumProductsPrice!==0 ? formattNumber(((sumProductsPrice-vat-formData.discount) * paidVatpercent/100)) : formattNumber(0) }}
+                      </span>
+                      {{ !isDeducate ? '- ' : 'บาท' }}
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -621,8 +634,17 @@
                       <span class="pr-4 font-bold">ยอดชำระทั้งสิ้น</span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
-                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice+vat-formData.discount).toLocaleString() : '0.00' }}</span> 
-                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ sumProductsPrice!=='0.00' ? (sumProductsPrice-formData.discount).toLocaleString() : '0.00' }}</span> บาท
+                      <span v-if="sumVat" class="pr-4 font-bold text-emerald-600">{{ 
+                        (sumProductsPrice!==0 && isDeducate) ? formattNumber(discountedPrice+vat-paidVat) 
+                        : (sumProductsPrice!==0 && !isDeducate) ? formattNumber(discountedPrice+vat) 
+                        : formattNumber(0) 
+                        }}
+                      </span> 
+                      <span v-if="!sumVat" class="pr-4 font-bold text-emerald-600">{{ 
+                        (sumProductsPrice!==0 && isDeducate) ? formattNumber(discountedPrice-((sumProductsPrice-vat-formData.discount) * paidVatpercent/100)) 
+                        : (sumProductsPrice!==0 && !isDeducate) ? formattNumber(discountedPrice) 
+                        : formattNumber(0) }}
+                      </span> บาท
                     </td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                   </tr>
@@ -644,7 +666,7 @@
                   class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  รายละเอียด
+                  หมายเหตุ
                 </label>
                 <textarea
                   type="text"
@@ -678,6 +700,22 @@
               refer: formData.invoice || formData.quotation,
             }"
             :items="formData?.product_detail || []"
+            :totalProductPrice="sumVat ? formattNumber(sumProductsPrice) : formattNumber(sumProductsPrice-vat)"
+            :discount="formattNumber(formData.discount)"
+            :discountedPrice="sumVat ? formattNumber(discountedPrice) :formattNumber(sumProductsPrice-vat-formData.discount)"
+            :vat="formattNumber(vat)"
+            :vatIncludedPrice="
+              (sumVat) ? formattNumber(discountedPrice+vat) : formattNumber(discountedPrice)"
+            :deducatePercent="isDeducate ? paidVatpercent : null"
+            :deducatedPrice="(sumVat&&isDeducate) ? formattNumber(paidVat) : (!sumVat&&isDeducate) ? formattNumber(((sumProductsPrice-vat-formData.discount) * paidVatpercent/100)) : null"
+            :net="
+              (sumVat && isDeducate) ? formattNumber(discountedPrice+vat-paidVat) 
+              : (sumVat && !isDeducate) ? formattNumber(discountedPrice+vat) 
+              : (!sumVat && isDeducate) ? formattNumber(discountedPrice-((sumProductsPrice-vat-formData.discount) * paidVatpercent/100))
+              : formattNumber(discountedPrice)"
+            :sumVat="sumVat"
+            :remark="formData.note"
+            :headData="headData"
             @createDoc="createNewDocument"
             />
           </div>
@@ -708,12 +746,33 @@
   const isNewAddress = ref(false)
   const sumVat = ref(true)
   const paidVatpercent = ref(3)
+  const isDeducate = ref(false)
+  const isVat = ref(false)
 
   const img = ref('')
 
-  const paidVat = computed(()=>{
-    
+  const headData = ref()
+
+  const discountedPrice = computed(()=>{
+    const discounted = 
+    (sumVat) ? sumProductsPrice.value - formData.value.discount
+    : sumProductsPrice.value - formData.value.discount - vat.value
+    return discounted
   })
+
+  const paidVat = computed(()=>{
+    const paidVatresult = 
+      (sumVat) ? discountedPrice.value * paidVatpercent.value/100 
+      : (productVatExac.value-vat.value) * paidVatpercent.value/100
+    return paidVatresult
+  })
+
+  const formattNumber = (number) => {
+    if (isNaN(number)) {
+        return "Invalid number";
+    }
+    return number.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
 
   const refQThandle = (event) => {
     refQuotation.value = event
@@ -758,6 +817,9 @@
       formData.value.customer_detail.customer_contact = response.data.data.customer_detail.customer_contact
       formData.value.customer_detail.customer_contact_number = response.data.data.customer_detail.customer_contact_number
       formData.value.ShippingCost = response.data.data.ShippingCost
+      formData.value.isVat = response.data.data.isVat
+      formData.value.sumVat = response.data.data.sumVat
+      formData.value.withholding = response.data.data.withholding
     }).catch((error)=>{
       console.log(error.response.data.message)
       console.log(error)
@@ -789,21 +851,48 @@ const sumProductsPrice = computed(()=>{
   const prices_list = formData.value.product_detail.map((product)=>{
     return product.product_price * product.product_amount
   })
-  const sumPrices = (prices_list.length > 0) ? prices_list.reduce((a,b)=> a + b) : '0.00'
+  const sumPrices = (prices_list.length > 0) ? prices_list.reduce((a,b)=> a + b) : 0
   return sumPrices
 })
 
 const vat = computed(()=>{
   let vat7 = null
-
   if(sumVat.value){
-    vat7 = (sumProductsPrice.value !== '0.00') ? (sumProductsPrice.value-formData.value.discount)*0.07 : 0
+    vat7 = (sumProductsPrice.value !== 0) ? (discountedPrice.value)*0.07 : 0
   } else {
-    vat7 = (sumProductsPrice.value !== '0.00') ? (sumProductsPrice.value-formData.value.discount)*7/107 : 0
+    vat7 = (sumProductsPrice.value !== 0) ? (sumProductsPrice.value)*7/107 : 0
   }
-  
   return vat7
 })
+
+const productVatExac = computed(()=>{
+  if(!sumVat.value){
+    return (sumProductsPrice.value !== 0) ? (sumProductsPrice.value-vat.value-formData.discount) : 0
+  } else {
+    return 0
+  }
+})
+
+const getHeader = async () => {
+  const id = localStorage.getItem('headerId')
+  await axios.get(`${process.env.VUE_APP_API_BACKEND}/Company/getCompanyBy/${id}`,
+    {
+      headers: {
+        'auth-token': process.env.VUE_APP_AUTH_TOKEN_ADMIN
+      }
+    }
+  ).then((response) => {
+    if(response.data.status){
+      console.log(response.data)
+      headData.value = response.data.data
+      console.log(headData.value)
+      localStorage.setItem('headerId', response.data.data._id)
+    }
+  }).catch((error) => {
+    console.error(error)
+    console.log(error.response.data.message)
+  })
+}
 
 const removeProduct = (index) => {
   formData.value.product_detail.splice(index, 1)
@@ -844,6 +933,11 @@ const removeProduct = (index) => {
   }
 
   const formData = ref({
+    customer_branch: {
+      Branch_company_name: "สวนสวยการ์เด้นคอร์เปอเรชั่น",
+      Branch_company_number: "0-1055-66228-53-5",
+      Branch_company_address: "146 ถนนจอมทองบูรณะ แขวงบางมด เขตบางมด กรุงเทพมหานคร 10150"
+    },
     invoice: null,
     quotation: null,
     customer_number: null,
@@ -863,7 +957,13 @@ const removeProduct = (index) => {
     start_date: null,
     end_date: null,
     note: "",
-    discount: 0
+    discount: 0,
+    percen_deducted: null,
+    percen_payment: null,
+    signatureID: null,
+    isVat: true,
+    sumVat: true,
+    withholding: false,
   })
 
   const addProducts = (value) => {
@@ -898,6 +998,7 @@ const removeProduct = (index) => {
   }
 
   onMounted(()=>{
+    getHeader()
     fetchData()
   })
 
@@ -921,6 +1022,12 @@ const removeProduct = (index) => {
       //formData.value.customer_detail.customer_address = customerFullAddress.value
       formData.value.start_date = thaiDate.value
       formData.value.end_date = thaiDateDue.value
+      formData.value.discount = parseFloat(formData.value.discount)
+      formData.value.percen_deducted = paidVatpercent.value
+      formData.value.percen_payment = paidVatpercent.value
+      formData.value.sumVat = sumVat.value
+      formData.value.withholding = isDeducate.value
+      formData.value.isVat = headData.value.isVat
       formData.value.product_detail.forEach((product)=>{
         product.product_logo = ''
       })

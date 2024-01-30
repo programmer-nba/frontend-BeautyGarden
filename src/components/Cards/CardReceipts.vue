@@ -127,7 +127,7 @@
                   color === 'light' ? 'text-blueGray-600' : 'text-white',
                 ]"
               >
-                {{ receipt.customer_detail?.customer_name }} (สำนักงานใหญ่)
+                {{ receipt.customer_detail?.customer_name }} {{ receipt.customer_detail?.customer_name ? '(สำนักงานใหญ่)' : '' }}
               </span>
             </th>
             
@@ -140,12 +140,17 @@
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-            {{ formatNumber(receipt.Shippingincluded) }}
+            {{ formatNumber(receipt.total) }}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              <i class="fas fa-circle text-orange-500 mr-2"></i> อยู่ในระหว่างดำเนินการ
+              <span v-if="receipt.isVat" class="text-xs font-semibold inline-block py-1 px-2 rounded text-orange-600 bg-orange-200 uppercase last:mr-0 mr-1">
+                VAT
+              </span>
+              <span v-if="receipt.withholding" class="text-xs font-semibold inline-block py-1 px-2 rounded text-red-600 bg-orange-200 uppercase last:mr-0 mr-1">
+                หัก ณ ที่จ่าย
+              </span>
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
