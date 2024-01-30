@@ -711,6 +711,10 @@
 
   const img = ref('')
 
+  const paidVat = computed(()=>{
+    
+  })
+
   const refQThandle = (event) => {
     refQuotation.value = event
     formData.value.quotation = event
