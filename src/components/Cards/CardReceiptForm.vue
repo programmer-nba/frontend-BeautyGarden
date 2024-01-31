@@ -613,7 +613,7 @@
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap"></td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap py-2">
-                      <button class="mr-3 px-2 bg-emerald-500" @click.prevent="isDeducate=!isDeducate">•</button>
+                      <button :class="[{'bg-emerald-500': isDeducate}, {'bg-white': !isDeducate}]" class="mr-3 px-2 border" @click.prevent="isDeducate=!isDeducate">{{ isDeducate ? 'yes' : 'no' }}</button>
                       <span class="pr-4 font-bold">หัก ณ ที่จ่าย {{ `${paidVatpercent}%` }}<span @click="changepaidVatpercent" class="ml-3 border px-2 bg-yellow-500 cursor-pointer"> ► </span></span>
                     </td>
                     <td class="border-t px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap">
@@ -726,7 +726,7 @@
   
   <script setup>
   /* eslint-disable */
-  import { ref, computed, onMounted } from 'vue'
+  import { ref, computed, onMounted, watch } from 'vue'
   import axios from 'axios'
   import AddProductModal from '@/components/Modals/AddProductModal.vue'
   import PictureModal from '@/components/Modals/PictureModal.vue'
@@ -750,6 +750,17 @@
   const isVat = ref(false)
 
   const img = ref('')
+
+  const curHeadId = ref(localStorage.getItem('headerId'))
+
+  watch(curHeadId,()=>{
+    getHeader()
+  })
+
+  const pullingHeaderId = () => {
+    curHeadId.value = localStorage.getItem('headerId')
+  }
+  setInterval(pullingHeaderId, 2000)
 
   const headData = ref()
 
@@ -858,15 +869,15 @@ const sumProductsPrice = computed(()=>{
 const vat = computed(()=>{
   let vat7 = null
   if(sumVat.value){
-    vat7 = (sumProductsPrice.value !== 0) ? (discountedPrice.value)*0.07 : 0
+    vat7 = (sumProductsPrice.value !== 0 && isVat.value) ? (discountedPrice.value)*0.07 : 0
   } else {
-    vat7 = (sumProductsPrice.value !== 0) ? (sumProductsPrice.value)*7/107 : 0
+    vat7 = (sumProductsPrice.value !== 0 && isVat.value) ? (sumProductsPrice.value)*7/107 : 0
   }
   return vat7
 })
 
 const productVatExac = computed(()=>{
-  if(!sumVat.value){
+  if(!sumVat.value && isVat.value){
     return (sumProductsPrice.value !== 0) ? (sumProductsPrice.value-vat.value-formData.discount) : 0
   } else {
     return 0
@@ -886,6 +897,7 @@ const getHeader = async () => {
       console.log(response.data)
       headData.value = response.data.data
       console.log(headData.value)
+      isVat.value = response.data.data.isVat
       localStorage.setItem('headerId', response.data.data._id)
     }
   }).catch((error) => {
@@ -1000,6 +1012,7 @@ const removeProduct = (index) => {
   onMounted(()=>{
     getHeader()
     fetchData()
+    pullingHeaderId()
   })
 
   const predictNextCode = (curCode) => {

@@ -13,7 +13,7 @@
             ลูกค้าทั้งหมด
           </h3>
         </div>
-        <button class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+        <AddCustomerForm @refreshData="fetchCustomers"/>
       </div>
     </div>
     <div class="block w-full overflow-x-auto">
@@ -83,7 +83,7 @@
             >
               ประเภท
             </th>
-            <th
+            <!-- <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
                 color === 'light'
@@ -92,7 +92,7 @@
               ]"
             >
             สถานะ
-            </th>
+            </th> -->
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -145,16 +145,16 @@
                 {{ customer.customer_type }}
               </span>
             </td>
-            <td
+            <!-- <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+              :class="[{'bg-yellow-500': customer.isVat}, {'bg-gray-300': !customer.isVat}]"
             >
-              <i class="fas fa-circle text-orange-500 mr-2"></i> 
-              {{ (customer.status && customer.status?.length > 0) ? customer.status : 'รอตรวจสอบ' }}
-            </td>
+              {{ customer.isVat ? 'VAT' : 'NO VAT' }}
+            </td> -->
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-              <table-dropdown />
+              <CustomerTableDropdown :customer="customer" @deleted="fetchCustomers"/>
             </td>
           </tr>
           
@@ -170,7 +170,8 @@
 /* MODULES ------------------------------------------------------------- */
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
+import CustomerTableDropdown from "@/components/Dropdowns/CustomerTableDropdown.vue";
+import AddCustomerForm from "../Modals/AddCustomerForm.vue"
 
 /* PROPS --------------------------------------------------------------- */
 const props = defineProps({
@@ -202,7 +203,7 @@ const fetchCustomers = async () => {
     ).then(( response ) => {
       if( response.status ) {
         console.log( response.data )
-        customers.value = response.data.data
+        customers.value = response.data.data.reverse()
       }
     }).catch(( error ) => {
       console.log( error.message )

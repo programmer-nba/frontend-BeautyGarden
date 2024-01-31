@@ -12,7 +12,7 @@
                 </span>
               </p>
               <p class="px-4 text-sm">{{ curhead?.Branch_company_address ? curhead?.Branch_company_address : '146 ถนนจอมทองบูรณะ แขวงบางมด เขตบางมด กรุงเทพมหานคร 10150' }}</p>
-              <p class="px-4 text-sm">โทร: {{ curhead?.Branch_iden_number }} เลขประจำตัวผู้เสียภาษี: {{ curhead?.taxnumber ? curhead?.taxnumber : '0-1055-66228-53-5' }} อีเมล์: {{ curhead?.company_email }}</p>
+              <p class="px-4 text-sm">โทร: {{ curhead?.Branch_company_number }} เลขประจำตัวผู้เสียภาษี: {{ curhead?.taxnumber ? curhead?.taxnumber : '0-1055-66228-53-5' }} อีเมล์: {{ curhead?.company_email }}</p>
             </div>
             <button class="text-lg mx-4 px-2 border rounded" @click.prevent="switchHeader">►</button>
           </div>
@@ -24,10 +24,12 @@
 <script setup>
 /* eslint-disable */
 import axios from "axios"
-import { ref, onMounted } from "vue"
+import { ref, onMounted, watch } from "vue"
+//import { EventBus } from '@/../EventBus.js';
 
 const headDatas = ref([])
 const curhead = ref()
+const curHeadIsValid = ref()
 
 const switchHeader = () => {
   const curIndex = headDatas.value.findIndex(item=>item._id===curhead.value._id)
@@ -41,6 +43,29 @@ const switchHeader = () => {
   localStorage.removeItem('headerId')
   localStorage.setItem('headerId', id)
   curhead.value = headDatas.value[nextIndex]
+  getHeaders()
+}
+
+watch(headDatas,()=>{
+  getCurHeadData()
+})
+
+const getCurHeadData = async () => {
+  const id = localStorage.getItem('headerId')
+  await axios.get(`${process.env.VUE_APP_API_BACKEND}/Company/getCompanyBy/${id}`,
+    {
+      headers : {
+        'auth-token' : process.env.VUE_APP_AUTH_TOKEN_ADMIN
+      }
+    }
+  ).then((response)=>{
+    curHeadIsValid.value = true
+    console.log(response.data.message)
+  }).catch((err)=>{
+    curHeadIsValid.value = false
+    alert(err.response.data.message)
+    console.log(err)
+  })
 }
 
 const getHeaders = async () => {
@@ -50,7 +75,7 @@ const getHeaders = async () => {
         'auth-token': process.env.VUE_APP_AUTH_TOKEN_ADMIN
       }
     }
-  ).then((response) => {
+  ).then(async (response) => {
     if(response.data.status){
       console.log(response.data)
       headDatas.value = response.data.data
@@ -58,13 +83,23 @@ const getHeaders = async () => {
         localStorage.setItem('headerId', response.data.data[response.data.data.length-1]._id)
         curhead.value = headDatas.value.find(item=>item._id===localStorage.getItem('headerId'))
       } else {
-        curhead.value = headDatas.value.find(item=>item._id===localStorage.getItem('headerId'))
+        await getCurHeadData()
+        if(curHeadIsValid.value){
+          curhead.value = headDatas.value.find(item=>item._id===localStorage.getItem('headerId'))
+        } else {
+          localStorage.removeItem('headerId')
+          reGetHeaders()
+        }
       }
     }
   }).catch((error) => {
     console.error(error)
     console.log(error.response.data.message)
   })
+}
+
+const reGetHeaders = () => {
+  getHeaders()
 }
 
 onMounted(()=>{
