@@ -240,7 +240,6 @@
           </div>
         </div>
         
-
         <hr class="mt-6 border-b-1 border-blueGray-300" />
 
         <!-- <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">

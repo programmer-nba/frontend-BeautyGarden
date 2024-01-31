@@ -1,5 +1,5 @@
 <template>
-    <div v-if="alertOpen" class="text-white px-6 py-4 border-0 rounded relative mb-4 bg-teal-500">
+    <div v-if="alertOpen" class="text-white w-6/12 px-6 py-2 border-0 rounded absolute mb-4 bg-teal-500" style="right:20px; top:20px;">
       <span class="text-xl inline-block mr-5 align-middle">
         <i class="fas fa-bell"></i>
       </span>
@@ -30,7 +30,7 @@
     },
     mounted() {
         this.alertOpen = true
-        setTimeout(this.closeAlert,5000)
+        console.log('alert!')
     }
   }
   </script>

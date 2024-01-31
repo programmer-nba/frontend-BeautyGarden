@@ -171,6 +171,7 @@
         },
         createDocument: function() {
           this.$emit('createDoc')
+          this.showModal = false
         }
     }
   }

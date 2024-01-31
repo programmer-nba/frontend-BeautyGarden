@@ -87,8 +87,9 @@
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              สถานะ
+              ประเภท
             </th>
+            
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -96,7 +97,8 @@
                   ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
-            ></th>
+            >
+            </th>
           </tr>
         </thead>
         <!-------------------------------------------------------------------------------------------------------------->
@@ -145,22 +147,24 @@
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              <span v-if="receipt.isVat" class="text-xs font-semibold inline-block py-1 px-2 rounded text-orange-600 bg-orange-200 uppercase last:mr-0 mr-1">
+              <span v-if="receipt.isVat" class="text-xs font-semibold inline-block py-1 px-2 rounded text-black bg-orange-200 uppercase last:mr-0 mr-1">
                 VAT
               </span>
-              <span v-if="receipt.withholding" class="text-xs font-semibold inline-block py-1 px-2 rounded text-red-600 bg-orange-200 uppercase last:mr-0 mr-1">
+              <span v-if="receipt.withholding" class="text-xs font-semibold inline-block py-1 px-2 rounded text-black bg-orange-200 uppercase last:mr-0 mr-1">
                 หัก ณ ที่จ่าย
               </span>
             </td>
+            
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-              <table-dropdown />
+              <receipt-table-dropdown @deleted="deletedhandle" :receipt="receipt" />
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <TealAlert v-if="isAlert" :detail="detail"/>
   </div>
 </template>
 
@@ -168,12 +172,18 @@
 /* eslint-disable */
 import axios from 'axios'
 import { ref, onMounted, defineEmit } from 'vue'
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue"
+import ReceiptTableDropdown from "@/components/Dropdowns/ReceiptTableDropdown.vue"
+import TealAlert from "@/components/Alerts/TealAlert.vue"
 
 /*  variables  */
-
 const receipts = ref([])
 const emit = defineEmit(["changeToNoVat"])
+
+const isAlert= ref(false)
+const detail= {
+  text: 'ลบใบเสร็จเรียบร้อยแล้ว',
+  title: 'ลบใบเสร็จ'
+}
 
 /* props */
 
@@ -188,6 +198,16 @@ const props = defineProps({
 })
 
 /*  function  */
+
+const closeAlert = () => {
+  isAlert.value = false
+}
+
+const deletedhandle = async () => {
+  await fetchReceipts()
+  isAlert.value = true
+}
+
 
 // change date to Thai format
 const formatDate = ( inputDate ) => {
@@ -232,7 +252,10 @@ const fetchReceipts = async () => {
       }
     }).then(( response ) => {
       if ( response.status ) {
-        receipts.value = response.data.data
+        receipts.value = response.data.data.reverse()
+        if(isAlert.value){
+          setTimeout(closeAlert, 5000)
+        }
       } else {
         console.log( 'Something went wrong!' )
       }
