@@ -118,9 +118,9 @@
                 </div>  
                 <div class="flex justify-center px-2 py-2">
                     <button @click.prevent="createDocument" class="bg-emerald-500 mx-4 px-2 py-2 text-white">สร้างเอกสาร</button>
-                    <button @click.prevent="exportToPDF" class="bg-emerald-500 mx-4 px-2 py-2 text-white">
+                    <!-- <button @click.prevent="exportToPDF" class="bg-emerald-500 mx-4 px-2 py-2 text-white">
                       Export to PDF
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>

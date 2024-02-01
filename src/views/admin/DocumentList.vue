@@ -9,9 +9,9 @@
       <div class="w-full mb-12 px-4">
         <card-quotations color="light" />
       </div>
-      <div class="w-full mb-12 px-4">
+      <!-- <div class="w-full mb-12 px-4">
         <card-invoices color="light" />
-      </div>
+      </div> -->
     </div>
   </template>
   <script>

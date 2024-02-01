@@ -66,7 +66,18 @@
                   : 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              วันที่ออก
+              วันที่เริ่มต้น
+            </th>
+
+            <th
+              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+              :class="[
+                color === 'light'
+                  ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
+                  : 'bg-emerald-800 text-emerald-300 border-emerald-700',
+              ]"
+            >
+              วันที่สิ้นสุด
             </th>
             
             <th
@@ -127,7 +138,7 @@
                   color === 'light' ? 'text-blueGray-600' : 'text-white',
                 ]"
               >
-                {{ quotation.customer_detail?.customer_name }} {{ quotation.customer_detail?.customer_lastname }}
+                {{ quotation.customer_detail?.customer_name }} {{ quotation.customer_detail?.customer_lastname ? `(${quotation.customer_detail?.customer_lastname})` : '' }}
               </span>
             </th>
             
@@ -136,11 +147,17 @@
             >
               {{ formatDate(quotation.start_date) }}
             </td>
+
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{ formatDate(quotation.end_date) }}
+            </td>
             
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-            {{ formatNumber(quotation.Shippingincluded) }}
+            {{ formatNumber(quotation.total) }}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
@@ -150,12 +167,13 @@
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-              <table-dropdown />
+              <QuotationTableDropdown @deleted="deletedhandle" :quotation="quotation" />
             </td>
           </tr>
         </tbody>
       </table>
     </div>
+    <TealAlert v-if="isAlert" :detail="detail"/>
   </div>
 </template>
 
@@ -163,11 +181,17 @@
 /* eslint-disable */
 import axios from 'axios'
 import { ref, onMounted } from 'vue'
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue"
+import TealAlert from "@/components/Alerts/TealAlert.vue"
+import QuotationTableDropdown from "@/components/Dropdowns/QuotationTableDropdown.vue"
 
 /*  variables  */
 
 const quotations = ref([])
+const isAlert= ref(false)
+const detail= {
+  text: 'ลบใบเสร็จเรียบร้อยแล้ว',
+  title: 'ลบใบเสร็จ'
+}
 
 /* props */
 
@@ -183,15 +207,26 @@ const props = defineProps({
 
 /*  function  */
 
+// deleted handle
+const deletedhandle = async () => {
+  await fetchQuotations()
+  isAlert.value = true
+}
+
+// close Alert handle
+const closeAlert = () => {
+  isAlert.value = false
+}
+
 // change date to Thai format
 const formatDate = ( inputDate ) => {
   if(inputDate){
-    const parts = inputDate.split('/')
+    const parts = inputDate.split('-')
     const formattedDate = new Intl.DateTimeFormat('th-TH', {
-    day: 'numeric',
     month: 'long',
+    day: 'numeric',
     year: 'numeric',
-    }).format(new Date(`${parts[2]}-${parts[1]}-${parts[0]}`))
+    }).format(new Date(`${parts[1]}-${parts[2]}-${parts[0]-543}`))
     return formattedDate
   } else {
     return '-'
@@ -222,6 +257,9 @@ const fetchQuotations = async () => {
     }).then(( response ) => {
       if ( response.status ) {
         quotations.value = response.data.data.reverse()
+        if(isAlert.value){
+          setTimeout(closeAlert, 5000)
+        }
       } else {
         console.log( 'Something went wrong!' )
       }
