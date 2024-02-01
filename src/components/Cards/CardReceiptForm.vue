@@ -1009,19 +1009,29 @@ const removeProduct = (index) => {
   })
 
   const predictNextCode = (curCode) => {
-    const curDate = new Date()
-    const year = curDate.getFullYear();
-    const month = String(curDate.getMonth() + 1).padStart(2, '0');
-    const day = String(curDate.getDate()).padStart(2, '0');
-    const formattedDate = `${year}${month}${day}`;
+    if(curCode){
+      const curDate = new Date()
+      const year = curDate.getFullYear();
+      const month = String(curDate.getMonth() + 1).padStart(2, '0');
+      const day = String(curDate.getDate()).padStart(2, '0');
+      const formattedDate = `${year}${month}${day}`;
 
-    let numericPart = curCode.slice(-4)
-    let incrementedNumericPart = String(Number(numericPart) + 1).padStart(4, '0');
-    let newCode = 
-      (curCode) ? curCode.slice(0, -4) + incrementedNumericPart 
-      : 'REP' + formattedDate + incrementedNumericPart
+      let numericPart = curCode.slice(-4)
+      let incrementedNumericPart = String(Number(numericPart) + 1).padStart(4, '0');
+      let newCode = 
+        (curCode) ? curCode.slice(0, -4) + incrementedNumericPart 
+        : 'REP' + formattedDate + incrementedNumericPart
 
-    return newCode
+      return newCode
+    } else {
+      const curDate = new Date()
+      const year = curDate.getFullYear();
+      const month = String(curDate.getMonth() + 1).padStart(2, '0');
+      const day = String(curDate.getDate()).padStart(2, '0');
+      const formattedDate = `${year}${month}${day}`;
+      return 'REP' + formattedDate + '0001'
+    }
+    
   }
   
   const createNewDocument = async () => {
@@ -1066,10 +1076,13 @@ const removeProduct = (index) => {
         }
       )
       if(response.data.status){
-        receipt_lastcode.value = response.data.data[response.data.data.length - 1].receipt
+        receipt_lastcode.value = response.data.data[response.data.data.length - 1]?.receipt
+      } else {
+        receipt_lastcode.value = null
       }
     }
     catch(err){
+      receipt_lastcode.value = null
       console.error(err)
     }
   }

@@ -701,8 +701,6 @@ const quotation_lastcode = ref('')
 const thaiDateDue = ref('')
 const openPicDialog = ref(false)
 const curPicUrl = ref(null)
-const refQuotation = ref(null)
-const refInvoice = ref(null)
 const isNewAddress = ref(false)
 const sumVat = ref(true)
 const paidVatpercent = ref(3)
@@ -745,14 +743,6 @@ const formattNumber = (number) => {
   return number.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 
-const refQThandle = (event) => {
-  refQuotation.value = event
-  formData.value.quotation = event
-  if(formData.value.quotation) {
-    getRefQuotionData()
-  }
-}
-
 const changeVat = () => {
   if(sumVat.value){
     sumVat.value = false
@@ -767,40 +757,6 @@ const changepaidVatpercent = () => {
     : paidVatpercent.value===4 ? 5
     : 3
 } 
-
-const getRefQuotionData = async () => {
-  const id = formData.value.quotation || refQuotation.value
-  await axios.get(`${process.env.VUE_APP_API_BACKEND}/quotation/getQuotationByQT/${id}`,
-    {
-      headers: {
-        'auth-token': `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
-      }
-    }
-  ).then((response)=>{
-    formData.value.product_detail = response.data.data.product_detail
-    formData.value.customer_detail.tax_id = response.data.data.customer_detail.tax_id
-    formData.value.customer_detail.customer_name = response.data.data.customer_detail.customer_name
-    formData.value.customer_detail.customer_lastname = response.data.data.customer_detail.customer_lastname
-    formData.value.customer_detail.customer_phone = response.data.data.customer_detail.customer_phone
-    formData.value.customer_detail.customer_email = response.data.data.customer_detail.customer_email
-    formData.value.customer_detail.customer_address = response.data.data.customer_detail.customer_address
-    formData.value.customer_detail.customer_type = response.data.data.customer_detail.customer_type
-    formData.value.customer_detail.customer_contact = response.data.data.customer_detail.customer_contact
-    formData.value.customer_detail.customer_contact_number = response.data.data.customer_detail.customer_contact_number
-    formData.value.ShippingCost = response.data.data.ShippingCost
-    formData.value.isVat = response.data.data.isVat
-    formData.value.sumVat = response.data.data.sumVat
-    formData.value.withholding = response.data.data.withholding
-  }).catch((error)=>{
-    console.log(error.response.data.message)
-    console.log(error)
-  })
-}
-
-const refINhandle = (event) => {
-  refInvoice.value = event
-  formData.value.invoice = event
-}
 
 const handleFileChange = (event, index) => {
 const fileInput = event.target
@@ -943,12 +899,6 @@ const addProducts = (value) => {
   console.log(formData.value.product_detail)
 }
 
-const customerFullName = computed(()=>{
-  const first = (formData.value.customer_detail.customer_name) ? formData.value.customer_detail.customer_name : ''
-  const last = (formData.value.customer_detail.customer_lastname) ? formData.value.customer_detail.customer_lastname : ''
-  return `${first} ${last}`
-})
-
 const addNewAddress = () => {
   formData.value.customer_detail.customer_address = 
   `${address.value.houseNo} ${address.value.subdistrict} ${address.value.district} ${address.value.province} ${address.value.postcode}`
@@ -976,19 +926,29 @@ onMounted(()=>{
 })
 
 const predictNextCode = (curCode) => {
-  const curDate = new Date()
-  const year = curDate.getFullYear();
-  const month = String(curDate.getMonth() + 1).padStart(2, '0');
-  const day = String(curDate.getDate()).padStart(2, '0');
-  const formattedDate = `${year}${month}${day}`;
+  if(curCode){
+    const curDate = new Date()
+    const year = curDate.getFullYear();
+    const month = String(curDate.getMonth() + 1).padStart(2, '0');
+    const day = String(curDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}${month}${day}`;
 
-  let numericPart = curCode.slice(-4)
-  let incrementedNumericPart = String(Number(numericPart) + 1).padStart(4, '0');
-  let newCode = 
-    (curCode) ? curCode.slice(0, -4) + incrementedNumericPart 
-    : 'REP' + formattedDate + incrementedNumericPart
+    let numericPart = curCode.slice(-4)
+    let incrementedNumericPart = String(Number(numericPart) + 1).padStart(4, '0');
+    let newCode = 
+      (curCode) ? curCode.slice(0, -4) + incrementedNumericPart 
+      : 'QT' + formattedDate + incrementedNumericPart
 
-  return newCode
+    return newCode
+  } else {
+    const curDate = new Date()
+    const year = curDate.getFullYear();
+    const month = String(curDate.getMonth() + 1).padStart(2, '0');
+    const day = String(curDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}${month}${day}`;
+    return 'QT' + formattedDate + '0001'
+  }
+  
 }
 
 const createNewDocument = async () => {
@@ -1033,10 +993,13 @@ const fetchData = async () => {
       }
     )
     if(response.data.status){
-      quotation_lastcode.value = response.data.data[response.data.data.length - 1].quotation
+      quotation_lastcode.value = response.data.data[response.data.data.length - 1]?.quotation
+    } else {
+      quotation_lastcode.value = null
     }
   }
   catch(err){
+    quotation_lastcode.value = null
     console.error(err)
   }
 }
@@ -1126,11 +1089,6 @@ const changeToThaiDateDue = () => {
 
 const toggleEdit = () => {
   edit.value = !edit.value;
-}
-
-const saveData = () => {
-  // Add logic to save the data, e.g., send it to a server
-  toggleEdit(); // Optional: Toggle back to view mode after saving
 }
 </script>
 

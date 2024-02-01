@@ -39,6 +39,13 @@
             id="customerLastName"
           />
 
+          <label for="customerPosition">ที่อยู่ Address :</label>
+          <input
+            v-model="formData.customerPosition"
+            type="text"
+            id="customerPosition"
+          />
+
           <label for="customerPhone">โทร Tel :</label>
           <input
             v-model="formData.customerPhone"

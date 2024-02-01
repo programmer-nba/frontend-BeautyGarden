@@ -125,13 +125,13 @@
                   color === 'light' ? 'text-blueGray-600' : 'text-white',
                 ]"
               >
-                {{ customer.customer_name }} {{ customer.customer_lastname }}
-              </span>
+                {{ customer.customer_name }} {{ customer.customer_lastname!=='null' ? customer.customer_lastname : '' }}
+               </span>
             </th>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{ customer.customer_taxnumber }}
+              {{ customer.customer_taxnumber!=='null' ? customer.customer_taxnumber : '-' }}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"

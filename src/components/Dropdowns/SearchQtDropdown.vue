@@ -85,8 +85,13 @@
                             return item.quotation
                         })
                         this.filterQt()
+                    } else {
+                      console.log(response.data.message)
+                      this.originalQuotationsCode = []
+                      this.filterQt()
                     }
                 }).catch((err)=>{
+                  this.originalQuotationsCode = []
                     console.log(err.response.data.message)
                 })
             }
