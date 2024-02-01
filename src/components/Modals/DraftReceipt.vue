@@ -117,17 +117,23 @@
                     </div>
                 </div>  
                 <div class="flex justify-center px-2 py-2">
-                    <button @click.prevent="createDocument" class="bg-emerald-500 px-2 py-2 text-white">สร้างเอกสาร</button>
+                    <button @click.prevent="createDocument" class="bg-emerald-500 mx-4 px-2 py-2 text-white">สร้างเอกสาร</button>
+                    <button @click.prevent="exportToPDF" class="bg-emerald-500 mx-4 px-2 py-2 text-white">
+                      Export to PDF
+                    </button>
                 </div>
             </div>
         </div>
         <button class="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" @click="toggleModal()">
-            ดูตัวอย่าง
+          ดูตัวอย่าง
         </button>
     </div>
 </template>
   
   <script>
+  /* eslint-disable */
+  import html2pdf from 'html2pdf.js'
+
   export default {
     name: "large-modal",
     data() {
@@ -155,6 +161,36 @@
     
     },
     methods: {
+ // Your existing methods here
+
+ exportToPDF: function() {
+      // Specify the div or element to export
+      const contentToExport = document.querySelector('.modal-content');
+
+      // Configure PDF export options
+      const pdfOptions = {
+        margin: 10,
+        filename: 'exported-document.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      };
+
+      // Use html2pdf library to export the content to PDF
+      html2pdf().from(contentToExport).set(pdfOptions).outputPdf(pdf => {
+        // Save the PDF file
+        const pdfBlob = new Blob([pdf], { type: 'application/pdf' });
+        const pdfUrl = URL.createObjectURL(pdfBlob);
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = pdfOptions.filename;
+        link.click();
+        URL.revokeObjectURL(pdfUrl);
+      });
+    },
+      
+
+
       toggleModal: function(){
         this.showModal = !this.showModal;
       },

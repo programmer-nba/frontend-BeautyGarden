@@ -1,20 +1,21 @@
 <template>
     <div class="flex flex-wrap mt-4">
+      <div v-if="isVat" class="w-full mb-12 px-4">
+        <card-receipts color="dark" @changeToNoVat="isVat = !isVat"/>
+      </div>
+      <!-- <div v-if="!isVat" class="w-full mb-12 px-4">
+        <CardNoVatReceipts color="dark" @changeToVat="isVat = !isVat"/>
+      </div> -->
       <div class="w-full mb-12 px-4">
-        <card-quotations color="dark" />
+        <card-quotations color="light" />
       </div>
       <div class="w-full mb-12 px-4">
         <card-invoices color="light" />
       </div>
-      <div v-if="isVat" class="w-full mb-12 px-4">
-        <card-receipts color="dark" @changeToNoVat="isVat = !isVat"/>
-      </div>
-      <div v-if="!isVat" class="w-full mb-12 px-4">
-        <CardNoVatReceipts color="dark" @changeToVat="isVat = !isVat"/>
-      </div>
     </div>
   </template>
   <script>
+  /* eslint-disable */
   import CardReceipts from "@/components/Cards/CardReceipts.vue";
   import CardNoVatReceipts from "@/components/Cards/CardNoVatReceipts.vue";
   import CardInvoices from "@/components/Cards/CardInvoices.vue";

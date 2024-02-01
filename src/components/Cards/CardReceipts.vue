@@ -12,13 +12,15 @@
             :class="[color === 'light' ? 'text-blueGray-700' : 'text-white']"
           >
             ใบเสร็จรับเงิน (RECEIPT)
-            <span @click="changeVat" class="text-xs mx-4 font-semibold inline-block py-1 px-2 rounded-full text-black bg-orange-200 uppercase last:mr-0 mr-1 cursor-pointer">
+            <span class="text-xs mx-4 font-semibold inline-block py-1 px-2 rounded-full text-black bg-orange-200 uppercase last:mr-0 mr-1 cursor-pointer">
               VAT
             </span>
           </h3>
           <small class="text-xs px-2">จำนวนใบเสร็จทั้งหมด {{ receipts.length }} ใบ</small>
         </div>
-        <button class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+        <router-link to="/admin/document/receipt" v-slot="{navigate}">
+          <button @click="navigate" class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
+        </router-link>
       </div>
     </div>
     <div class="block w-full overflow-x-auto">
@@ -136,7 +138,7 @@
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{ formatDate(receipt.start_date) || receipt.start_date }}
+              {{ formatDate(receipt.start_date) }}
             </td>
             
             <td
@@ -174,6 +176,7 @@ import axios from 'axios'
 import { ref, onMounted, defineEmit } from 'vue'
 import ReceiptTableDropdown from "@/components/Dropdowns/ReceiptTableDropdown.vue"
 import TealAlert from "@/components/Alerts/TealAlert.vue"
+import { RouterLink } from 'vue-router'
 
 /*  variables  */
 const receipts = ref([])
@@ -211,13 +214,13 @@ const deletedhandle = async () => {
 
 // change date to Thai format
 const formatDate = ( inputDate ) => {
-  if(inputDate && inputDate.includes("/")){
-    const parts = inputDate.split('/')
+  if(inputDate){
+    const parts = inputDate.split('-')
     const formattedDate = new Intl.DateTimeFormat('th-TH', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(new Date(`${parts[2]}-${parts[1]}-${parts[0]}`))
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    }).format(new Date(`${parts[1]}-${parts[2]}-${parts[0]-543}`))
     return formattedDate
   } else {
     return '-'
