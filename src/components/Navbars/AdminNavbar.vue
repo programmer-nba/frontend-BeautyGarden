@@ -32,7 +32,7 @@
       </form>
       <!-- User -->
       <ul class="flex-col md:flex-row list-none items-center hidden md:flex">
-        <span class="px-12 text-white">บ้านสวนสวยการ์เด้นคอร์เปอเรชั่น (สำนักงานใหญ่)</span>
+        <span class="px-12 text-white">สวนสวยการ์เด้นคอร์เปอเรชั่น (สำนักงานใหญ่)</span>
         <user-dropdown />
       </ul>
     </div>

@@ -1,5 +1,6 @@
 <template>
     <div class="flex flex-wrap mt-4">
+      <button class="px-2 bg-black text-white" @click.prevent="showTable">switch</button>
       <div v-if="isVat" class="w-full mb-12 px-4">
         <card-receipts color="dark" @changeToNoVat="isVat = !isVat"/>
       </div>

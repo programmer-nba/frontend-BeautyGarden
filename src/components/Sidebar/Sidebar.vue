@@ -2,8 +2,11 @@
   <nav
     class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6"
   >
-    <div
+    <!-- <div
       class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto"
+    > -->
+    <div
+    class="md:flex-col md:min-h-full px-0 flex flex-wrap items-center justify-between w-full mx-auto"
     >
       <!-- Toggler -->
       <button
@@ -18,7 +21,7 @@
         class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
         to="/"
       >
-        บ้านสวนสวยการ์เด้นคอร์เปอเรชั่น
+        สวนสวยการ์เด้นคอร์เปอเรชั่น
       </router-link>
       <!-- User -->
       <ul class="md:hidden items-center flex flex-wrap list-none">
@@ -44,7 +47,7 @@
                 class="md:block text-left md:pb-2 text-blueGray-600 mr-0 inline-block whitespace-nowrap text-sm uppercase font-bold p-4 px-0"
                 to="/"
               >
-                บ้านสวนสวยการ์เด้นคอร์เปอเรชั่น
+                สวนสวยการ์เด้นคอร์เปอเรชั่น
               </router-link>
             </div>
             <div class="w-6/12 flex justify-end">

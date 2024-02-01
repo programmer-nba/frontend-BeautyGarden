@@ -254,7 +254,7 @@ const fetchReceipts = async () => {
         'auth-token': `${process.env.VUE_APP_AUTH_TOKEN_ADMIN}`
       }
     }).then(( response ) => {
-      if ( response.status ) {
+      if ( response.data.status ) {
         receipts.value = response.data.data.reverse()
         if(isAlert.value){
           setTimeout(closeAlert, 5000)
