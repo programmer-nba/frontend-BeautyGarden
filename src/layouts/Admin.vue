@@ -6,7 +6,7 @@
       <!-- <div v-if="['/admin/documents', '/admin/dashboard', '/admin/customers'].includes(currentPath)">
         <header-stats />
       </div> -->
-      <div v-if="['/admin/settings', '/admin/document/receipt', '/admin/document/quotation', '/', '/admin/documents','/admin/dashboard','/admin/customers'].includes(currentPath)">
+      <div v-if="['/admin/settings', '/admin/document/receipt', '/admin/document/quotation', '/','/admin/documents','/admin/dashboard','/admin/customers'].includes(currentPath)">
         <HeaderDocuments />
       </div>
       <div class="px-4 md:px-10 mx-auto w-full h-full -m-24">
