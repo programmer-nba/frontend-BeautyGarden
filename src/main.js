@@ -22,11 +22,9 @@ import Dashboard from "@/views/admin/Dashboard.vue";
 import Settings from "@/views/admin/Settings.vue";
 import Customers from "@/views/admin/Customers.vue";
 import ReceiptForm from "@/views/admin/ReceiptForm.vue";
+import InvoiceForm from "@/views/admin/InvoiceForm.vue";
 import QuotationForm from "@/views/admin/QuotationForm.vue";
 import DocumentList from "@/views/admin/DocumentList.vue";
-//import Maps from "@/views/admin/Maps.vue";
-
-// views for Auth layout
 
 import Login from "@/views/auth/Login.vue";
 import Register from "@/views/auth/Register.vue";
@@ -35,7 +33,7 @@ import Register from "@/views/auth/Register.vue";
 
 import Landing from "@/views/Landing.vue";
 import Profile from "@/views/Profile.vue";
-import Index from "@/views/Index.vue";
+//import Index from "@/views/Index.vue";
 
 // routes
 
@@ -62,6 +60,10 @@ const routes = [
         component: ReceiptForm,
       },
       {
+        path: "/admin/document/invoice",
+        component: InvoiceForm,
+      },
+      {
         path: "/admin/document/quotation",
         component: QuotationForm,
       },
@@ -69,10 +71,6 @@ const routes = [
         path: "/admin/documents",
         component: DocumentList,
       },
-      /* {
-        path: "/admin/maps",
-        component: Tables,
-      }, */
     ],
   },
   {
@@ -127,10 +125,6 @@ const routes = [
         path: "/admin/documents",
         component: DocumentList,
       },
-      /* {
-        path: "/admin/maps",
-        component: Tables,
-      }, */
     ],
   },
   { path: "/:pathMatch(.*)*", redirect: "/" },

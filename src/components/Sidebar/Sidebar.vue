@@ -1,10 +1,7 @@
 <template>
   <nav
-    class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-row md:flex-nowrap md:overflow-hidden shadow-xl bg-white flex flex-wrap items-center justify-between relative md:w-64 z-10 py-4 px-6"
+    class="md:left-0 md:block md:fixed md:top-0 md:bottom-0 md:overflow-y-auto md:flex-nowrap md:overflow-hidden shadow-xl bg-white items-center relative z-10 py-4 px-6"
   >
-    <!-- <div
-      class="md:flex-col md:items-stretch md:min-h-full md:flex-nowrap px-0 flex flex-wrap items-center justify-between w-full mx-auto"
-    > -->
     <div
     class="md:flex-col md:min-h-full px-0 flex flex-wrap items-center justify-between w-full mx-auto"
     >
@@ -61,19 +58,9 @@
             </div>
           </div>
         </div>
-        <!-- Form -->
-        <form class="mt-6 mb-4 md:hidden">
-          <div class="mb-3 pt-0">
-            <input
-              type="text"
-              placeholder="Search"
-              class="border-0 px-3 py-2 h-12 border border-solid border-blueGray-500 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base leading-snug shadow-none outline-none focus:outline-none w-full font-normal"
-            />
-          </div>
-        </form>
-
+        
         <!-- Divider -->
-        <hr class="my-4 md:min-w-full" />
+        <hr class="my-4 w-full" />
         <!-- Heading -->
         <h6
           class="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline"
@@ -181,30 +168,6 @@
 
           <li class="items-center">
             <router-link
-              to="/admin/document/receipt"
-              v-slot="{ href, navigate, isActive }"
-            >
-              <a
-                :href="href"
-                @click="navigate"
-                class="text-xs uppercase py-3 font-bold block"
-                :class="[
-                  isActive
-                    ? 'text-emerald-500 hover:text-emerald-600'
-                    : 'text-blueGray-700 hover:text-blueGray-500',
-                ]"
-              >
-                <i
-                  class="fas fa-table mr-2 text-sm"
-                  :class="[isActive ? 'opacity-75' : 'text-blueGray-300']"
-                ></i>
-                ฟอร์มใบเสร็จรับเงิน
-              </a>
-            </router-link>
-          </li>
-
-          <li class="items-center">
-            <router-link
               to="/admin/document/quotation"
               v-slot="{ href, navigate, isActive }"
             >
@@ -227,8 +190,11 @@
             </router-link>
           </li>
 
-          <!-- <li class="items-center">
-            <router-link to="/admin/maps" v-slot="{ href, navigate, isActive }">
+          <li class="items-center">
+            <router-link
+              to="/admin/document/invoice"
+              v-slot="{ href, navigate, isActive }"
+            >
               <a
                 :href="href"
                 @click="navigate"
@@ -240,13 +206,37 @@
                 ]"
               >
                 <i
-                  class="fas fa-map-marked mr-2 text-sm"
+                  class="fas fa-table mr-2 text-sm"
                   :class="[isActive ? 'opacity-75' : 'text-blueGray-300']"
                 ></i>
-                Maps
+                ฟอร์มใบแจ้งหนี้
               </a>
             </router-link>
-          </li> -->
+          </li>
+
+          <li class="items-center">
+            <router-link
+              to="/admin/document/receipt"
+              v-slot="{ href, navigate, isActive }"
+            >
+              <a
+                :href="href"
+                @click="navigate"
+                class="text-xs uppercase py-3 font-bold block"
+                :class="[
+                  isActive
+                    ? 'text-emerald-500 hover:text-emerald-600'
+                    : 'text-blueGray-700 hover:text-blueGray-500',
+                ]"
+              >
+                <i
+                  class="fas fa-table mr-2 text-sm"
+                  :class="[isActive ? 'opacity-75' : 'text-blueGray-300']"
+                ></i>
+                ฟอร์มใบเสร็จรับเงิน
+              </a>
+            </router-link>
+          </li>
         </ul>
 
         <!-- Divider -->

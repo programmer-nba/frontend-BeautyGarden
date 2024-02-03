@@ -83,16 +83,7 @@
             >
               ประเภท
             </th>
-            <!-- <th
-              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
-              :class="[
-                color === 'light'
-                  ? 'bg-blueGray-50 text-blueGray-500 border-blueGray-100'
-                  : 'bg-emerald-800 text-emerald-300 border-emerald-700',
-              ]"
-            >
-            สถานะ
-            </th> -->
+           
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
               :class="[
@@ -145,12 +136,7 @@
                 {{ customer.customer_type }}
               </span>
             </td>
-            <!-- <td
-              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
-              :class="[{'bg-yellow-500': customer.isVat}, {'bg-gray-300': !customer.isVat}]"
-            >
-              {{ customer.isVat ? 'VAT' : 'NO VAT' }}
-            </td> -->
+        
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >

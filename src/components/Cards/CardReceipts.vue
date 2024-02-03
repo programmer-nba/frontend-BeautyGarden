@@ -16,7 +16,11 @@
               VAT
             </span>
           </h3>
-          <small class="text-xs px-2">จำนวนใบเสร็จทั้งหมด {{ receipts.length }} ใบ</small>
+          <small class="text-xs px-2">จำนวนใบเสร็จทั้งหมด {{ receiptsOriginal.length }} ใบ</small>
+          <button @click="filterVat" class="px-4 py-2 my-4 rounded text-sm" 
+          :class="isvat ? 'bg-pink-500 text-white' : 'bg-white text-black'">
+          ดูใบเสร็จที่มี VAT</button>
+          <button @click="filterWithholding" class="px-4 py-2 mx-4 my-4 rounded text-sm" :class="iswith ? 'bg-pink-500 text-white' : 'bg-white text-black'">ดูใบเสร็จที่มี หัก ณ ที่จ่าย</button>
         </div>
         <router-link to="/admin/document/receipt" v-slot="{navigate}">
           <button @click="navigate" class="px-4 py-2 text-white rounded bg-orange-500">เพิ่ม <i class="fas fa-plus-circle"></i></button>
@@ -120,11 +124,6 @@
             <th
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left flex items-center"
             >
-              <!-- <img
-                :src="customer_01"
-                class="h-12 w-12 bg-white rounded-full border"
-                alt="..."
-              /> -->
               <span
                 class="ml-3 font-bold"
                 :class="[
@@ -173,14 +172,34 @@
 <script setup>
 /* eslint-disable */
 import axios from 'axios'
-import { ref, onMounted, defineEmit } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import ReceiptTableDropdown from "@/components/Dropdowns/ReceiptTableDropdown.vue"
 import TealAlert from "@/components/Alerts/TealAlert.vue"
 import { RouterLink } from 'vue-router'
 
 /*  variables  */
+const receiptsOriginal = ref([])
 const receipts = ref([])
-const emit = defineEmit(["changeToNoVat"])
+const iswith = ref(false)
+const isvat = ref(false)
+
+const filterVat = () => {
+  isvat.value = !isvat.value
+  if(isvat.value){
+  receipts.value = receiptsOriginal.value.filter(item=>item.isVat)
+  } else {
+    receipts.value = receiptsOriginal.value
+  }
+}
+
+const filterWithholding = () => {
+  iswith.value = !iswith.value
+  if(iswith.value){
+  receipts.value = receiptsOriginal.value.filter(item=>item.withholding)
+  } else {
+    receipts.value = receiptsOriginal.value
+  }
+}
 
 const isAlert= ref(false)
 const detail= {
@@ -215,7 +234,7 @@ const deletedhandle = async () => {
 // change date to Thai format
 const formatDate = ( inputDate ) => {
   if(inputDate){
-    const parts = inputDate.split('-')
+    const parts = inputDate.split('/')
     const formattedDate = new Intl.DateTimeFormat('th-TH', {
     month: 'long',
     day: 'numeric',
@@ -239,11 +258,6 @@ const formatNumber = ( inputNumber ) => {
   }
 }
 
-// emit change to no-VAT
-const changeVat = () => {
-  emit("changeToNoVat")
-}
-
 /*  api  */
 
 // get all invoices
@@ -255,7 +269,8 @@ const fetchReceipts = async () => {
       }
     }).then(( response ) => {
       if ( response.data.status ) {
-        receipts.value = response.data.data.reverse()
+        receiptsOriginal.value = response.data.data.reverse()
+        receipts.value = receiptsOriginal.value
         if(isAlert.value){
           setTimeout(closeAlert, 5000)
         }

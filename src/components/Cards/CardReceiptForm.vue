@@ -976,12 +976,6 @@ const removeProduct = (index) => {
     console.log(formData.value.product_detail)
   }
 
-  const customerFullName = computed(()=>{
-    const first = (formData.value.customer_detail.customer_name) ? formData.value.customer_detail.customer_name : ''
-    const last = (formData.value.customer_detail.customer_lastname) ? formData.value.customer_detail.customer_lastname : ''
-    return `${first} ${last}`
-  })
-
   const addNewAddress = () => {
     formData.value.customer_detail.customer_address = 
     `${address.value.houseNo} ${address.value.subdistrict} ${address.value.district} ${address.value.province} ${address.value.postcode}`
@@ -1035,6 +1029,7 @@ const removeProduct = (index) => {
   }
   
   const createNewDocument = async () => {
+    await createCustomer()
       //formData.value.customer_detail.customer_address = customerFullAddress.value
       formData.value.start_date = thaiDate.value
       formData.value.end_date = thaiDateDue.value
@@ -1086,6 +1081,32 @@ const removeProduct = (index) => {
       console.error(err)
     }
   }
+
+  const createCustomer = async () => {
+    const formDatas = new FormData()
+    formDatas.append('imgCollection', newCustomer.value.customerImg)
+    formDatas.append('customer_name', newCustomer.value.customerName)
+    formDatas.append('customer_lastname', newCustomer.value.customerLastName)
+    formDatas.append('customer_phone', newCustomer.value.customerPhone)
+    formDatas.append('customer_position', newCustomer.value.customerPosition)
+    formDatas.append('customer_taxnumber', newCustomer.value.customerTaxNumber)
+    formDatas.append('customer_email', newCustomer.value.customerEmail)
+    formDatas.append('customer_contact', newCustomer.value.customerContactName)
+    formDatas.append('customer_contact_number', newCustomer.value.customerContactPhone)
+    formDatas.append('customer_type', newCustomer.value.customerType)
+    console.log([...formDatas])
+    await axios.post(`${process.env.VUE_APP_API_BACKEND}/customer/create`, formDatas,
+    {
+        headers: {
+            'auth-token' : process.env.VUE_APP_AUTH_TOKEN_ADMIN,
+            'Content-Type': 'multipart/form-data',
+        }
+    }).then((response)=>{
+        console.log(response.data)
+    }).catch((err)=>{
+        console.log(err)
+    })
+};
 
   const thaiDateFormatted = computed(()=>{
     const inputDate = thaiDate.value
