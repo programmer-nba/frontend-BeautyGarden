@@ -38,7 +38,7 @@ import Profile from "@/views/Profile.vue";
 // routes
 
 const routes = [
-  {
+  /* {
     path: "/admin",
     redirect: "/admin/dashboard",
     component: Admin,
@@ -72,7 +72,7 @@ const routes = [
         component: DocumentList,
       },
     ],
-  },
+  }, */
   {
     path: "/auth",
     redirect: "/auth/login",
