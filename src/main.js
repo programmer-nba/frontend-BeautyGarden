@@ -99,7 +99,7 @@ const routes = [
   {
     path: "/",
     component: Admin,
-    redirect: "/",
+    redirect: "/admin/documents",
     children: [
       {
         path: "/admin/dashboard",
