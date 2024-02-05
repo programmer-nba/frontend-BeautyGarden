@@ -145,13 +145,13 @@
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{ formatDate(quotation.start_date) }}
+              {{ quotation.start_date }}
             </td>
 
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{ formatDate(quotation.end_date) }}
+              {{ quotation.end_date }}
             </td>
             
             <td

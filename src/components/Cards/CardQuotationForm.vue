@@ -79,7 +79,7 @@
       <form>
 
         <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-          ข้อมูลใบเสร็จ
+          ข้อมูลใบเสนอราคา
         </h6>
         <div class="flex flex-wrap">
           <div class="w-full lg:w-6/12 px-4">
