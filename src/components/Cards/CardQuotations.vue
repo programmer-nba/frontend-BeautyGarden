@@ -138,7 +138,7 @@
                   color === 'light' ? 'text-blueGray-600' : 'text-white',
                 ]"
               >
-                {{ quotation.customer_detail?.customer_name }} {{ quotation.customer_detail?.customer_lastname ? `(${quotation.customer_detail?.customer_lastname})` : '' }}
+                {{ quotation.customer_detail?.customer_name }} {{ quotation.customer_detail?.customer_lastname !== 'null' ? `(${quotation.customer_detail?.customer_lastname})` : '' }}
               </span>
             </th>
             
@@ -167,11 +167,44 @@
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-              <QuotationTableDropdown @deleted="deletedhandle" :quotation="quotation" />
+              <QuotationTableDropdown @deleted="deletedhandle" :quotation="quotation" @seeDoc="seeDocHandle"/>
             </td>
           </tr>
         </tbody>
       </table>
+
+      <div class="flex w-full justify-center items-center mt-4">
+        <DraftQuotation 
+        :customer="{
+          name: quotation?.customer_detail?.customer_name || '-',
+          address: quotation?.customer_detail?.customer_address || '-',
+          taxId: quotation?.customer_detail?.tax_id || '-',
+        }"
+        :quotation="{
+          code: quotation.quotation || '-',
+          start_date: quotation.start_date || '-',
+          end_date: quotation.end_date || '-',
+        }"
+        :items="quotation?.product_detail || []"
+        :totalProductPrice="sumVat ? formattNumber(sumProductsPrice) : formattNumber(sumProductsPrice-vat)"
+        :discount="formattNumber(formData.discount)"
+        :discountedPrice="sumVat ? formattNumber(discountedPrice) :formattNumber(sumProductsPrice-vat-formData.discount)"
+        :vat="formattNumber(vat)"
+        :vatIncludedPrice="
+          (sumVat) ? formattNumber(discountedPrice+vat) : formattNumber(discountedPrice)"
+        :deducatePercent="isDeducate ? paidVatpercent : null"
+        :deducatedPrice="(sumVat&&isDeducate) ? formattNumber(paidVat) : (!sumVat&&isDeducate) ? formattNumber(((sumProductsPrice-vat-formData.discount) * paidVatpercent/100)) : null"
+        :net="
+          (sumVat && isDeducate) ? formattNumber(discountedPrice+vat-paidVat) 
+          : (sumVat && !isDeducate) ? formattNumber(discountedPrice+vat) 
+          : (!sumVat && isDeducate) ? formattNumber(discountedPrice-((sumProductsPrice-vat-formData.discount) * paidVatpercent/100))
+          : formattNumber(discountedPrice)"
+        :sumVat="sumVat"
+        :remark="formData.note"
+        :headData="headData"
+        @createDoc="createNewDocument"
+        />
+      </div>
     </div>
     <TealAlert v-if="isAlert" :detail="detail"/>
   </div>
@@ -187,6 +220,7 @@ import QuotationTableDropdown from "@/components/Dropdowns/QuotationTableDropdow
 /*  variables  */
 
 const quotations = ref([])
+const quotation = ref({})
 const isAlert= ref(false)
 const detail= {
   text: 'ลบใบเสร็จเรียบร้อยแล้ว',
@@ -267,6 +301,11 @@ const fetchQuotations = async () => {
       console.error( error.message )
       console.log( error.response.data.message )
     })
+}
+
+const seeDocHandle = (data) => {
+  quotaion.value = data
+  openDialog.value = true
 }
 
 /*  Mounted   */

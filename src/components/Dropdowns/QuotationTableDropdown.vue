@@ -79,6 +79,22 @@ export default {
         }).catch((err)=>{
           console.log(err)
         })
+    },
+
+    getQuotation: async function () {
+      this.dropdownPopoverShow = false;
+      const id = this.quotation._id
+      await axios.get(`${process.env.VUE_APP_API_BACKEND}/quotation/getQuotationBy/${id}`,
+        {
+          headers: {
+            'auth-token': process.env.VUE_APP_AUTH_TOKEN_ADMIN
+          }
+        }).then((response)=>{
+          console.log(response.data.message)
+          this.$emit('seeDoc', response.data.data)
+        }).catch((err)=>{
+          console.log(err)
+        })
     }
   },
 };

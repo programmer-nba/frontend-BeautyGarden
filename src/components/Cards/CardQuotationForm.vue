@@ -450,9 +450,11 @@
                   </th>
 
                   <td
-                    class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+                    class="border-t-0 px-6 border-l-0 border-r-0 text-xs"
                   >
+                  <pre style="text-align: left;">
                     {{ product.product_name }}
+                  </pre>
                   </td>
 
                   <td
@@ -1091,5 +1093,11 @@ const toggleEdit = () => {
   edit.value = !edit.value;
 }
 </script>
+
+<style scoped>
+#multilineInput {
+  text-align: left;
+}
+</style>
 
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-      <div v-if="showModal" class="modal-container">
+      <div v-if="showModal" class="modal-container" id="exportContent">
           <!-- Your modal content goes here -->
           <div class="modal">
               <div class="flex justify-end px-6 py-2">
@@ -84,7 +84,19 @@
                             <tbody>
                               <tr v-for="(item, index) in items" :key="index">
                                 <td style="text-align: center;">{{ index+1 }}</td>
-                                <td>{{ item.product_name }}</td>
+                                <td>
+                                  <div class="flex">
+                                    <div class="mr-3" v-if="item.product_logo" style="width: 80px;">
+                                      <img :src="item.product_logo" 
+                                      :alt="item.product_name" 
+                                      class="shadow rounded object-cover w-full h-full align-middle border-none" 
+                                    />
+                                    </div>
+                                    <pre style="text-align: left;" class="text-left">
+                                      {{ item.product_name }}
+                                    </pre>
+                                  </div>
+                                </td>
                                 <td style="text-align: center;">{{ formatCurrency(item.product_amount) }}</td>
                                 <td style="text-align: right;">{{ formatCurrency(item.product_price) }}</td>
                                 <td style="text-align: right;">{{ formatCurrency(item.product_price*item.product_amount) }}</td>
@@ -92,11 +104,13 @@
                             </tbody>
                           </table>
                           <div class="flex justify-between total">
-                            <div>
+                            <article class="text-wrap">
                               <strong class="text-black">หมายเหตุ : 
-                                <span class="font-normal">{{ remark }}</span>
+                                <span class="font-normal"><p>
+                                  {{ remark }}
+                                </p></span>
                               </strong>
-                            </div>
+                            </article>
                           
                             <div class="total">
                               <strong class="text-black">ราคาสินค้า/บริการ <span class="px-4 ml-3 font-normal text-black">{{ totalProductPrice }}</span><span class="font-normal text-black">บาท</span></strong><br>
@@ -114,9 +128,9 @@
               </div>  
               <div class="flex justify-center px-2 py-2">
                   <button @click.prevent="createDocument" class="bg-emerald-500 mx-4 px-2 py-2 text-white">สร้างเอกสาร</button>
-                  <!-- <button @click.prevent="exportToPDF" class="bg-emerald-500 mx-4 px-2 py-2 text-white">
+                  <button @click.prevent="exportToPDF" class="bg-emerald-500 mx-4 px-2 py-2 text-white">
                     Export to PDF
-                  </button> -->
+                  </button>
               </div>
           </div>
       </div>
@@ -128,7 +142,7 @@
 
 <script>
 /* eslint-disable */
-import html2pdf from 'html2pdf.js'
+import html2pdf from 'html2pdf.js';
 
 export default {
   name: "large-modal",
@@ -159,9 +173,14 @@ export default {
   methods: {
 // Your existing methods here
 
+/* exportToPDF: function () {
+  const element = document.getElementById('to-print');
+  html2pdf(element);
+}, */
+
 exportToPDF: function() {
     // Specify the div or element to export
-    const contentToExport = document.querySelector('.modal-content');
+    const contentToExport = document.getElementById('to-print');
 
     // Configure PDF export options
     const pdfOptions = {
@@ -209,7 +228,30 @@ exportToPDF: function() {
 }
 </script>
 
+<script setup>
+const exportToPDF = () => {
+  const contentToPrint = document.getElementById('exportContent');
+  const printWindow = window.open('', '_blank');
+  
+  if (printWindow) {
+    printWindow.document.write('<html><head><title>Export to PDF</title></head><body>');
+    printWindow.document.write(contentToPrint.innerHTML);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+  } else {
+    console.error('Error opening print window');
+  }
+};
+
+const createDocument = () => {
+  // Your logic for creating a document goes here
+  console.log('Creating document...');
+};
+</script>
+
 <style scoped>
+
 .modal-container {
 display: flex;
 justify-content: center;
@@ -225,9 +267,12 @@ z-index: 1000;
 
 .modal {
 background-color: #fff; /* Modal background color */
-padding: 20px;
-border-radius: 8px;
-box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Optional: Box shadow for styling */
+padding: 0px;
+border-radius: 0px;
+box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2); /* Optional: Box shadow for styling */
+max-width: 297mm;
+  max-height: 210mm;
+  overflow: auto; 
 }
 
 .modal-content {
@@ -281,4 +326,5 @@ th {
   margin-top: 20px;
   text-align: right;
 }
+
 </style>
