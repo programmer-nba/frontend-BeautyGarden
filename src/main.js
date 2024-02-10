@@ -1,138 +1,98 @@
-/* eslint-disable */
-import { createApp } from "vue";
-import { createWebHistory, createRouter } from "vue-router";
+import './assets/main.css'
+import 'primeicons/primeicons.css'
 
-// styles
+import { createApp } from 'vue'
+import { createPinia } from 'pinia'
+import PrimeVue from 'primevue/config'
+import 'primevue/resources/themes/aura-light-green/theme.css'
 
-import "@fortawesome/fontawesome-free/css/all.min.css";
-import "@/assets/styles/tailwind.css";
+import Button from "primevue/button"
+import InputText from 'primevue/inputtext';
+import Menubar from 'primevue/menubar';
+import Badge from 'primevue/badge';
+import BadgeDirective from 'primevue/badgedirective';
+import Avatar from 'primevue/avatar';
+import AvatarGroup from 'primevue/avatargroup';
+import Ripple from 'primevue/ripple';
+import Card from 'primevue/card';
+import FileUpload from 'primevue/fileupload';
+import Toolbar from 'primevue/toolbar';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import ColumnGroup from 'primevue/columngroup';   
+import Row from 'primevue/row';     
+import Rating from 'primevue/rating';  
+import Dialog from 'primevue/dialog';   
+import Textarea from 'primevue/textarea';   
+import Dropdown from 'primevue/dropdown';   
+import RadioButton from 'primevue/radiobutton';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
+import Tag from 'primevue/tag';
+import InputNumber from 'primevue/inputnumber';
+import Fieldset from 'primevue/fieldset';
+import Chip from 'primevue/chip';
+import DataView from 'primevue/dataview';
+import Image from 'primevue/image';
+import Calendar from 'primevue/calendar';
+import Checkbox from 'primevue/checkbox';
+import Sidebar from 'primevue/sidebar';
+import ColorPicker from 'primevue/colorpicker';
+import InputSwitch from 'primevue/inputswitch';
+import ConfirmPopup from 'primevue/confirmpopup';
+import ConfirmationService from 'primevue/confirmationservice';
 
-// mouting point for the whole app
+import App from './App.vue'
+import router from './router'
 
-import App from "@/App.vue";
+const app = createApp(App)
 
-// layouts
+app.use(createPinia())
+app.use(router)
+app.use(ToastService);
+app.use(ConfirmationService);
+app.use(PrimeVue, { 
+    ripple: true, 
+    zIndex: {
+    modal: 1100,        
+    overlay: 1000,      
+    menu: 1000,         
+    tooltip: 1100       
+} })
 
-import Admin from "@/layouts/Admin.vue";
-import Auth from "@/layouts/Auth.vue";
+app.directive('badge', BadgeDirective);
+app.directive('ripple', Ripple);
 
-// views for Admin layout
+app.component('Button', Button)
+app.component('InputText', InputText);
+app.component('Menubar', Menubar);
+app.component('Badge', Badge);
+app.component('Avatar', Avatar);
+app.component('AvatarGroup', AvatarGroup);
+app.component('Card', Card);
+app.component('FileUpload', FileUpload);
+app.component('Toolbar', Toolbar);
+app.component('DataTable', DataTable);
+app.component('Column', Column);
+app.component('ColumnGroup', ColumnGroup);
+app.component('Row', Row);
+app.component('Rating', Rating);
+app.component('Dialog', Dialog);
+app.component('Textarea', Textarea);
+app.component('Dropdown', Dropdown);
+app.component('RadioButton', RadioButton);
+app.component('Toast', Toast);
+app.component('Tag', Tag);
+app.component('InputNumber', InputNumber);
+app.component('Fieldset', Fieldset);
+app.component('Chip', Chip);
+app.component('DataView', DataView);
+app.component('Image', Image);
+app.component('Calendar', Calendar);
+app.component('Checkbox', Checkbox);
+app.component('Sidebar', Sidebar);
+app.component('ColorPicker', ColorPicker);
+app.component('InputSwitch', InputSwitch)
+app.component('ConfirmPopup', ConfirmPopup)
 
-import Dashboard from "@/views/admin/Dashboard.vue";
-import Settings from "@/views/admin/Settings.vue";
-import Customers from "@/views/admin/Customers.vue";
-import ReceiptForm from "@/views/admin/ReceiptForm.vue";
-import InvoiceForm from "@/views/admin/InvoiceForm.vue";
-import QuotationForm from "@/views/admin/QuotationForm.vue";
-import DocumentList from "@/views/admin/DocumentList.vue";
-
-import Login from "@/views/auth/Login.vue";
-import Register from "@/views/auth/Register.vue";
-
-// views without layouts
-
-import Landing from "@/views/Landing.vue";
-import Profile from "@/views/Profile.vue";
-//import Index from "@/views/Index.vue";
-
-// routes
-
-const routes = [
-  /* {
-    path: "/admin",
-    redirect: "/admin/dashboard",
-    component: Admin,
-    children: [
-      {
-        path: "/admin/dashboard",
-        component: Dashboard,
-      },
-      {
-        path: "/admin/settings",
-        component: Settings,
-      },
-      {
-        path: "/admin/customers",
-        component: Customers,
-      },
-      {
-        path: "/admin/document/receipt",
-        component: ReceiptForm,
-      },
-      {
-        path: "/admin/document/invoice",
-        component: InvoiceForm,
-      },
-      {
-        path: "/admin/document/quotation",
-        component: QuotationForm,
-      },
-      {
-        path: "/admin/documents",
-        component: DocumentList,
-      },
-    ],
-  }, */
-  {
-    path: "/auth",
-    redirect: "/auth/login",
-    component: Auth,
-    children: [
-      {
-        path: "/auth/login",
-        component: Login,
-      },
-      {
-        path: "/auth/register",
-        component: Register,
-      },
-    ],
-  },
-  {
-    path: "/landing",
-    component: Landing,
-  },
-  {
-    path: "/profile",
-    component: Profile,
-  },
-  {
-    path: "/",
-    component: Admin,
-    redirect: "/admin/documents",
-    children: [
-      {
-        path: "/admin/dashboard",
-        component: Dashboard,
-      },
-      {
-        path: "/admin/settings",
-        component: Settings,
-      },
-      {
-        path: "/admin/customers",
-        component: Customers,
-      },
-      {
-        path: "/admin/document/receipt",
-        component: ReceiptForm,
-      },
-      {
-        path: "/admin/document/quotation",
-        component: QuotationForm,
-      },
-      {
-        path: "/admin/documents",
-        component: DocumentList,
-      },
-    ],
-  },
-  { path: "/:pathMatch(.*)*", redirect: "/" },
-];
-
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-});
-
-createApp(App).use(router).mount("#app");
+app.mount('#app')
