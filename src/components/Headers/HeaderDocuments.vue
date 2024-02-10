@@ -98,6 +98,37 @@ const getHeaders = async () => {
   })
 }
 
+const getSignatures = async () => {
+  await axios.get(`${process.env.VUE_APP_API_BACKEND}/Company/getCompannyAll`,
+    {
+      headers: {
+        'auth-token': process.env.VUE_APP_AUTH_TOKEN_ADMIN
+      }
+    }
+  ).then(async (response) => {
+    if(response.data.status){
+      console.log(response.data)
+      headDatas.value = response.data.data
+      if(!localStorage.getItem('headerId')){
+        localStorage.setItem('headerId', response.data.data[response.data.data.length-1]._id)
+        curhead.value = headDatas.value.find(item=>item._id===localStorage.getItem('headerId'))
+      } else {
+        await getCurHeadData()
+        if(curHeadIsValid.value){
+          curhead.value = headDatas.value.find(item=>item._id===localStorage.getItem('headerId'))
+        } else {
+          localStorage.removeItem('headerId')
+          reGetHeaders()
+        }
+      }
+    }
+  }).catch((error) => {
+    console.error(error)
+    console.log(error.response.data.message)
+  })
+}
+
+
 const reGetHeaders = () => {
   getHeaders()
 }

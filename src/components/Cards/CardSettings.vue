@@ -125,12 +125,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <hr class="mt-6 border-b-1 border-blueGray-300" /> -->
-
-        <!-- <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-          ข้อมูลร้านค้า
-        </h6> -->
         <div class="flex flex-wrap">
           <div class="w-full lg:w-12/12 px-4">
             <div class="relative w-full mb-3">
@@ -149,57 +143,7 @@
               />
             </div>
           </div>
-          <!-- <div class="w-full lg:w-4/12 px-4">
-            <div class="relative w-full mb-3">
-              <label
-                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                htmlFor="grid-password"
-              >
-                จังหวัด
-              </label>
-              <input
-                type="email"
-                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="กรุงเทพมหานคร"
-                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                :disabled="!edit"
-              />
-            </div>
-          </div>
-          <div class="w-full lg:w-4/12 px-4">
-            <div class="relative w-full mb-3">
-              <label
-                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                htmlFor="grid-password"
-              >
-                ประเทศ
-              </label>
-              <input
-                type="text"
-                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="ประเทศไทย"
-                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                :disabled="!edit"
-              />
-            </div>
-          </div>
-          <div class="w-full lg:w-4/12 px-4">
-            <div class="relative w-full mb-3">
-              <label
-                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                htmlFor="grid-password"
-              >
-                รหัสไปรษณีย์
-              </label>
-              <input
-                type="text"
-                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                value="10150"
-                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                :disabled="!edit"
-              />
-            </div>
-          </div> -->
+          
         </div>
         
         <div class=flex>
@@ -242,30 +186,6 @@
         
         <hr class="mt-6 border-b-1 border-blueGray-300" />
 
-        <!-- <h6 class="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-          เกี่ยวกับฉัน
-        </h6>
-        <div class="flex flex-wrap">
-          <div class="w-full lg:w-12/12 px-4">
-            <div class="relative w-full mb-3">
-              <label
-                class="block uppercase text-blueGray-600 text-xs font-bold mb-2"
-                htmlFor="grid-password"
-              >
-                อธิบายรายละเอียด
-              </label>
-              <textarea
-                type="text"
-                class="px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                rows="4"
-                :class="{ 'border-0': !edit, 'bg-white border-1': edit }"
-                :disabled="!edit"
-                v-model="headData.detail"
-              >
-              </textarea>
-            </div>
-          </div>
-        </div> -->
       </form>
     </div>
   </div>
