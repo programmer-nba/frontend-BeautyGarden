@@ -1,13 +1,11 @@
 <template>
-  <div>
+  <div class="h-full">
     <Toast />
     <Dialog
       dismissableMask
       :closable="false"
-      class="shadow-none cursor-pointer absolute top-0 bg-white w-full h-full"
+      class="shadow-none rounded-none max-h-full p-0 cursor-pointer absolute top-0 bg-white w-full h-full"
       v-model:visible="openQuotation"
-      :style="{ height: 'auto' }"
-      :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     >
       <DocQuotation
         :color="color"

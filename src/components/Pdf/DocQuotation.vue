@@ -1,6 +1,6 @@
 <template>
-  <div class="w-screen left-0 h-screen absolute top-0 bg-white" @click="close">
-    <div class="modal-container h-full" id="exportContent">
+  <div class="w-full left-0 h-full bg-white overflow-y-hidden" @click="close">
+    <div class="modal-container w-full mt-8 h-full overflow-y-hidden" id="exportContent">
       <!-- Your modal content goes here -->
       <div class="modal">
         <!-- Modal content -->
@@ -9,16 +9,16 @@
             <div class="invoice text-xs">
               <div class="flex justify-between">
                 <div class="from">
-                  <div class="flex justify-items-center items-center">
-                    <div class="flex flex-wrap justify-center">
-                      <!-- <div style="width: 75px" class="pr-4">
-                        <img
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.}`"
-                          alt="..."
-                          class="shadow rounded-full max-w-full h-auto align-middle border-none"
-                        />
-                      </div> -->
+                  <div class="flex flex-wrap justify-center">
+                    <div style="width: 75px" class="pr-4">
+                      <img
+                        :src="`https://drive.google.com/thumbnail?id=${data.data.logo}`"
+                        alt="..."
+                        class="shadow rounded-full max-w-full h-auto align-middle border-none"
+                      />
                     </div>
+                  </div>
+                  <div class="flex justify-items-center items-center">
                     <strong>{{ data.data.customer_branch?.Branch_company_name }}</strong>
                   </div>
                   <br />
@@ -72,7 +72,7 @@
                 </div>
               </div>
 
-              <table class="border-b">
+              <table class="border-b min-h-[100px] h-full">
                 <thead>
                   <tr>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th rounded-tl-xl pb-0 pt-2" style="text-align: center">
@@ -126,6 +126,12 @@
               </table>
               <div class="flex w-full justify-between total mt-5">
                 <div class="flex flex-col gap-y-3">
+                  <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-orange-200 text-cente flex justify-center items-center"
+                  :style="{ backgroundColor: `#${data.color}` }">
+                    <p class="font-bold">
+                      ( ห้าหมื่นสองพันสี่ร้อยสามสิบบาทถ้วน )
+                    </p>
+                  </div>
                   <article class="text-wrap w-[450px] text-start pr-5">
                     <strong>หมายเหตุ :</strong>
 <pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
@@ -155,6 +161,10 @@
                       <tr class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5">ราคาหลังหักส่วนลด</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.net) }}</span>บาท</td>
+                      </tr>
+                      <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
+                        <td style="text-align: left"><span class="pl-5">VAT 7%</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.vat.amount_vat) }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5">ราคารวม VAT 7%</span></td>
@@ -212,11 +222,26 @@
                     </td>
                     <td class="border h-[50px]" style="text-align: bottom; padding:0;">
                       <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                        <p>____________________</p>
-                        <p>
-                          {{`(.................................)`}}
-                        </p>
-                        <p>{{`วันที่...../....../.......`}}</p>
+                        <img class="w-[50px] border-b pb-1 mb-1" 
+                            v-if="data.data.signature?.image_signature 
+                            && data.data.signature?.image_signature.trim()!==''
+                            && data.data.signature?.image_signature.trim()!=='-'
+                            " 
+                            :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
+                            <p 
+                            v-if="!data.data.signature?.image_signature 
+                            || data.data.signature?.image_signature.trim()===''
+                            || data.data.signature?.image_signature.trim()==='-'
+                            ">____________________</p>
+                        <p v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''
+                            ">
+                              ( {{ data.data.customer_detail.customer_name }} )
+                            </p>
+                            <p v-if="!data.data.customer_detail.customer_name || data.data.customer_detail.customer_name.trim() ===''">
+                              {{`(.................................)`}}
+                            </p>
+                        
+                          <p>{{`วันที่...../....../.......`}}</p>
                     </div>
                     </td>
                   </tr>
@@ -307,11 +332,11 @@ const formatDate = (date) => {
 }
 
 .invoice {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
   background-color: #fff;
   padding: 5px;
-  border-radius: 8px;
+  border-radius: 0px;
   box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
 }
 
