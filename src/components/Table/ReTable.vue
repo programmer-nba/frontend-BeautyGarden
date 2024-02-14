@@ -1846,6 +1846,11 @@ const createNewReceipt = async () => {
       life: 3000,
     });
   }
+  finally {
+    refresh()
+    loading.value = false;
+    receiptDialog.value = false;
+  }
   receiptDialog.value = false;
   loading.value = false;
   toast.add({

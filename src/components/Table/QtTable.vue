@@ -213,11 +213,11 @@
       <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
-          <Calendar class="border" v-model="start_date" showButtonBar />
+          <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div class="card flex flex-col mt-2 mb-5 gap-y-2 justify-center items-center">
           <p>วันที่สิ้นสุด</p>
-          <Calendar class="border" v-model="end_date" showButtonBar />
+          <Calendar class="border" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
