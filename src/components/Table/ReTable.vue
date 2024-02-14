@@ -1445,7 +1445,7 @@ const refresh = () => {
 
 const referQuotation = () => {
     if(refQuotation.value){
-      console.log('rfQT', refQuotation.value)
+      console.log('rfQT', refQuotation.value)   
       customer.value.customer_taxnumber = refQuotation.value.customer_detail.tax_id
       customer.value.customer_name = refQuotation.value.customer_detail.customer_name
       customer.value.customer_lastname = refQuotation.value.customer_detail.customer_lastname
@@ -1454,12 +1454,14 @@ const referQuotation = () => {
       customer.value.customer_position = ''
       customer.value.customer_type = refQuotation.value.customer_detail.customer_type
       selectedCustomer.value = customer.value
-      selectedCompany.value = refQuotation.value.customer_branch
-      refCompany()
-      start_date.value = formatDate(refQuotation.value.start_date)
+      selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
+      company.value = selectedCompany.value
       products.value = refQuotation.value.product_detail
       discount.value = refQuotation.value.discount
       selectedSignature.value = refQuotation.value.signature
+      bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
+      console.log('bank', bank.value)
+      console.log('company', company.value)
     }
 }
 
@@ -1673,7 +1675,7 @@ const confirmDeleteReceipt = (prod) => {
   deleteReceiptDialog.value = true;
 };
 const deleteReceipt = async () => {
-  const receipts_to_delete = quotation.value;
+  const receipts_to_delete = receipt.value;
   if (receipts_to_delete) {
     console.log(receipts_to_delete._id);
     await Documents.deleteReceipt(receipts_to_delete._id);
@@ -1739,10 +1741,19 @@ const createNewReceipt = async () => {
   });
 
   const data = {
-    quotation: quotation.quotation,
+    quotation: refQuotation.value.quotation,
     //invoice: invoice.invoice,
     customer_number: customer.value.customer_number,
-    branchId: selectedCompany.value._id,
+    customer_branch: {
+        Branch_company_name: selectedCompany.value.Branch_company_name,
+        Branch_company_number: selectedCompany.value.Branch_company_number,
+        Branch_company_address: selectedCompany.value.Branch_company_address,
+        contact_number: selectedCompany.value.contact_number,
+        contact_name: selectedCompany.value.contact_name,
+        Branch_iden: selectedCompany.value.Branch_iden,
+        Branch_iden_number: selectedCompany.value.Branch_iden_number,
+        taxnumber: selectedCompany.value.taxnumber
+    },
     signatureID: selectedSignature.value ? selectedSignature.value._id : null,
     customer_detail: {
       tax_id: customer.value.customer_taxnumber,
