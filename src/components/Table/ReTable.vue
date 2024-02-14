@@ -594,7 +594,7 @@
 
       <div class="flex flex-col gap-y-2">
         <span class="my-2" v-if="selectedCompany?.isVat">
-          <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat นอก' : 'Vat ใน' }}</span>
+          <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
         </span>
         
         <span v-if="sumVat"
