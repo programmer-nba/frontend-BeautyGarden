@@ -252,6 +252,10 @@
                             <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
                               {{`(.................................)`}}
                             </p>
+                            <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
+                            ">
+                              {{ data.data.signature.position }}
+                            </p>
                             <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
                             <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
                         </div>
