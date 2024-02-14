@@ -1435,5 +1435,112 @@ export const Documents = {
             return err
         }
     },
+
+    async getReceipts() {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/receiptVat/getReceiptVatAll`,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
+    async deleteReceipt(id) {
+        try {
+            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/receiptVat/deleteReceiptVat/${id}`,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
+    async deleteReceipts() {
+        try {
+            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/receiptVat/deleteAllReceiptVat`,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
+    async uploadFileReceipt(id, receiptId, formData) {
+        try {
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/receipt/ImportImgProduct/${id}/${receiptId}`,
+                    formData,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN,
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
+    async createNewReceipt(formData) {
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/receiptVat/ReceiptVat`,
+                formData,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
+    async editInvoice(id, formData) {
+        try {
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/receiptVat/EditReceiptVat/${id}`,
+                formData,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
 };
 

@@ -780,7 +780,7 @@
       <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
-          <Calendar class="border" v-model="start_date" showButtonBar />
+          <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -1421,7 +1421,6 @@ const uploadfiles = ref([]);
 const receiptEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
-const banks = ref();
 const refQuotation = ref();
 
 const filters = ref({
@@ -1472,6 +1471,9 @@ const seeReceipt = (data) => {
 };
 
 const formatDateRef = (isoDateString) => {
+  if(!isoDateString || isoDateString.trim()===''){
+    return null
+  }
   const isoDate = new Date(isoDateString);
   
   // Convert to Buddhist Era (BE) by adding 543 years
@@ -1617,26 +1619,6 @@ const formatCurrency = (value) => {
   return;
 };
 
-const formatDate = (date) => {
-  if (date) {
-    const inputDate = date;
-    const dateObj = new Date(inputDate);
-
-    const day = dateObj.getUTCDate().toString().padStart(2, "0");
-    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, "0");
-    const year = (dateObj.getUTCFullYear() + 543).toString(); // Convert to Thai Buddhist Era
-
-    if (day !== NaN && month !== NaN && year !== NaN) {
-      const formattedDate = `${day}/${month}/${year}`;
-      return formattedDate; // Output: 09/02/2567
-    } else {
-      return "-";
-    }
-  } else {
-    return "-";
-  }
-};
-
 const openNew = () => {
   receipt.value = {};
   submitted.value = false;
@@ -1654,9 +1636,7 @@ const hideDialog = () => {
 
 const editReceipt = (prod) => {
   receipt.value = { ...prod };
-  console.log("qt", receipt.value);
-
-  start_date.value = formatDateRef(prod.start_date);
+  console.log("re", receipt.value);
 
   const company = cpStore.myCompanies.find(
     (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
@@ -1674,8 +1654,10 @@ const editReceipt = (prod) => {
   discount.value = prod.discount;
   products.value = prod.product_detail;
   remark.value = prod.remark;
+  start_date.value = formatDateRef(prod.start_date)
   bank.value = company.bank.find((item) => item.number === prod.bank.status);
-  selectedSignature.value = prod.signature;
+  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
+
   receiptEditDialog.value = true;
 };
 
@@ -1750,7 +1732,7 @@ const createNewReceipt = async () => {
   });
 
   const data = {
-    quotation: refQuotation.value.quotation,
+    quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: invoice.invoice,
     customer_number: customer.value.customer_number,
     customer_branch: {
@@ -1896,17 +1878,25 @@ const editingReceipt = async () => {
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
     percen_payment: isWithholding.value ? withholdingPercent.value : null,
     start_date: start_date.value,
-    end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value.isVat,
-    bank: {
+    bank: bank.value ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
+    } : {
+      name: '',
+      remark_2: '',
+      status: '',
     },
   };
 
-  const response = await Documents.editReceipt(receipt.value._id, data);
+  console.log('re',receipt.value)
+  console.log('data',data)
+  console.log('bank', bank.value)
+  console.log('date', start_date.value)
+  try{
+    const response = await Documents.editReceipt(receipt.value._id, data);
   if (response.data) {
     img = response.data.product_detail;
     qtId = response.data._id;
@@ -1932,24 +1922,38 @@ const editingReceipt = async () => {
       });
     } else {
       reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
-      receiptDialog.value = false;
+      receiptEditDialog.value = false;
       toast.add({
         severity: "success",
         summary: "Successful",
-        detail: "สร้างใบเสร็จรับเงินแล้ว",
+        detail: "แก้ไขใบเสร็จรับเงินแล้ว",
         life: 3000,
       });
       loading.value = false;
     }
   } else {
-    receiptDialog.value = false;
+    receiptEditDialog.value = false;
     toast.add({
-      severity: "danger",
+      severity: "error",
       summary: "มีบางอย่างผิดพลาด",
-      detail: "สร้างใบเสร็จรับเงินล้มเหลว",
+      detail: "แก้ไขใบเสร็จรับเงินล้มเหลว",
       life: 3000,
     });
     loading.value = false;
+  }
+  }
+  catch(err){
+    toast.add({
+      severity: "error",
+      summary: "มีบางอย่างผิดพลาด",
+      detail: "แก้ไขใบเสร็จรับเงินล้มเหลว",
+      life: 3000,
+    });
+    console.log(err)
+  }
+  finally {
+    receiptEditDialog.value = false
+    loading.value = false
   }
 };
 

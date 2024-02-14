@@ -1844,10 +1844,14 @@ const editingQuotation = async () => {
     end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value.isVat,
-    bank: {
+    bank: bank.value ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
+    } : {
+      name:'',
+      remark_2: '',
+      status: '',
     },
   };
   console.log(quotation.value._id)
