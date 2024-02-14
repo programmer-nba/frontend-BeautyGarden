@@ -204,20 +204,6 @@
         @change="referQuotation"
       />
     </div>
-    <div>
-      <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
-      <div class="card flex justify-content-center">
-        <Dropdown
-          @change="refCompany"
-          v-model="selectedCompany"
-          editable
-          :options="cpStore.myCompanies"
-          optionLabel="Branch_company_name"
-          placeholder="เลือกหัวเอกสาร"
-          class="w-full md:w-14rem p-2"
-        />
-      </div>
-    </div>
       <div
         v-if="loading"
         class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
@@ -1459,20 +1445,21 @@ const refresh = () => {
 
 const referQuotation = () => {
     if(refQuotation.value){
-        console.log('rfQT', refQuotation.value)
-        customer.value.customer_taxnumber = refQuotation.value.customer_detail.tax_id
-        customer.value.customer_name = refQuotation.value.customer_detail.customer_name
-        customer.value.customer_lastname = refQuotation.value.customer_detail.customer_lastname
-        customer.value.customer_phone = refQuotation.value.customer_detail.customer_phone
-        customer.value.customer_email = refQuotation.value.customer_detail.customer_email
-        customer.value.customer_position = ''
-        customer.value.customer_type = refQuotation.value.customer_detail.customer_type
-        selectedCustomer.value = customer.value
-        selectedCompany.value = refQuotation.value.customer_branch
-        start_date.value = refQuotation.value.start_date
-        products.value = refQuotation.value.product_detail
-        discount.value = refQuotation.value.discount
-        selectedSignature.value = refQuotation.value.signature
+      console.log('rfQT', refQuotation.value)
+      customer.value.customer_taxnumber = refQuotation.value.customer_detail.tax_id
+      customer.value.customer_name = refQuotation.value.customer_detail.customer_name
+      customer.value.customer_lastname = refQuotation.value.customer_detail.customer_lastname
+      customer.value.customer_phone = refQuotation.value.customer_detail.customer_phone
+      customer.value.customer_email = refQuotation.value.customer_detail.customer_email
+      customer.value.customer_position = ''
+      customer.value.customer_type = refQuotation.value.customer_detail.customer_type
+      selectedCustomer.value = customer.value
+      selectedCompany.value = refQuotation.value.customer_branch
+      refCompany()
+      start_date.value = formatDate(refQuotation.value.start_date)
+      products.value = refQuotation.value.product_detail
+      discount.value = refQuotation.value.discount
+      selectedSignature.value = refQuotation.value.signature
     }
 }
 
