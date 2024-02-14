@@ -141,7 +141,563 @@
     </div>
 
     <Dialog
-      v-model:visible="receiptDialog"
+    v-model:visible="receiptDialog"
+    :style="{ width: '450px' }"
+    header="ใบเสร็จรับเงิน RECEIPT"
+    :modal="true"
+    class="p-fluid"
+  >
+  <div class="card flex flex-col gap-y-2 justify-content-center">
+    <Dropdown
+      v-model="refQuotation"
+      editable
+      :options="quotations"
+      optionLabel="quotation"
+      placeholder="เลือกใบเสนอราคา"
+      class="w-full md:w-14rem"
+      @change="referQuotation"
+    />
+  </div>
+    <div
+      v-if="loading"
+      class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
+    >
+      <img src="@/assets/spinner.svg" alt="Spinner" />
+    </div>
+    <div class="card">
+      <div class="card flex flex-col gap-y-2 justify-center items-center">
+        <p>วันที่</p>
+        <Calendar class="border" v-model="start_date" showButtonBar />
+      </div>
+      <div>
+        <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
+        <div class="card flex justify-content-center">
+          <Dropdown
+            @change="refCompany"
+            v-model="selectedCompany"
+            editable
+            :options="cpStore.myCompanies"
+            optionLabel="Branch_company_name"
+            placeholder="เลือกหัวเอกสาร"
+            class="w-full md:w-14rem p-2"
+          />
+        </div>
+      </div>
+      <br />
+      <Fieldset>
+        <template #legend>
+          <div
+            v-if="selectedCompany"
+            class="flex w-full py-2 justify-center items-center pl-2 bg-emerald-600 rounded-lg text-white"
+          >
+            <Avatar
+              class="w-[75px]"
+              image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png"
+              shape="circle"
+            />
+            <span class="font-bold"
+              >{{ selectedCompany?.Branch_company_name }}
+              {{
+                selectedCompany?.Branch_iden ? `(${selectedCompany?.Branch_iden})` : ""
+              }}
+              <Chip
+                class="px-2 text-xs ml-3"
+                :class="selectedCompany?.isVat ? 'bg-yellow-300' : 'hidden'"
+                :label="selectedCompany?.isVat ? 'VAT' : null"
+              />
+            </span>
+          </div>
+        </template>
+        <br />
+        <div v-if="selectedCompany">
+          <p class="m-0">
+            {{ selectedCompany?.Branch_company_address }}
+          </p>
+          <p class="m-0">เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}</p>
+          <p class="m-0">โทร : {{ selectedCompany?.Branch_company_number }}</p>
+          <p class="m-0">อีเมล์ : {{ selectedCompany?.company_email }}</p>
+          <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
+          <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
+          <br />
+          <div>
+            <h1>เลือกลายเซ็น</h1>
+            <div class="card flex justify-content-center">
+              <Dropdown
+                v-model="selectedSignature"
+                :options="cpStore.mySignatures"
+                optionLabel="name"
+                placeholder="เลือกลายเซ็น"
+                class="w-full md:w-14rem"
+              >
+                <template #value="slotProps">
+                  <div v-if="slotProps.value" class="flex items-center w-[50px]">
+                    <img
+                      :alt="slotProps.value"
+                      :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
+                      :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
+                    />
+                    <div>{{ slotProps.value?.name }}</div>
+                  </div>
+                  <span v-else>
+                    {{ slotProps.placeholder }}
+                  </span>
+                </template>
+                <template #option="slotProps">
+                  <div class="flex items-center w-[50px]">
+                    <img
+                      :alt="slotProps.option"
+                      :src="`https://drive.google.com/thumbnail?id=${slotProps.option?.image_signature}`"
+                      :class="`object-contain mr-4 flag flag-${slotProps.option?.name.toLowerCase()}`"
+                    />
+                    <div>{{ slotProps.option?.name }}</div>
+                  </div>
+                </template>
+              </Dropdown>
+            </div>
+          </div>
+          <div>
+            <h1>เลือกบัญชีธนาคาร</h1>
+            <div class="card flex justify-content-center">
+              <Dropdown
+                v-model="bank"
+                :options="selectedCompany.bank"
+                optionLabel="name"
+                placeholder="เลือกบัญชีธนาคาร"
+                class="w-full md:w-14rem"
+              >
+              </Dropdown>
+            </div>
+          </div>
+        </div>
+      </Fieldset>
+    </div>
+
+    <br />
+    <hr />
+    <br />
+
+    <div class="card">
+      <div class="mb-5">
+        <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
+        <div class="card flex justify-content-center">
+          <Dropdown
+            @change="refCustomer"
+            v-model="selectedCustomer"
+            editable
+            :options="customers"
+            optionLabel="customer_name"
+            placeholder="เลือกลูกค้า"
+            class="w-full md:w-14rem p-2"
+          />
+        </div>
+        <br />
+        <div
+          v-if="customer"
+          class="flex w-full py-2 justify-center items-center px-2 bg-gray-200 rounded-lg text-slate-700"
+        >
+          <div v-if="customer.profile_image" class="mr-4">
+            <Avatar
+              class="object-contain w-[50px] h-[50px]"
+              :image="`https://drive.google.com/thumbnail?id=${customer.profile_image}`"
+              shape="circle"
+            />
+          </div>
+          <span class="font-bold"
+            >{{ customer.customer_name }}
+            {{ customer.customer_lastname ? `(${customer.customer_lastname})` : "" }}
+          </span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="customer_name">ชื่อลูกค้า</label>
+        <InputText
+          class="p-2"
+          id="customer_name"
+          v-model="customer.customer_name"
+          required="true"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_name }"
+        />
+        <small class="p-error" v-if="submitted && !customer.customer_name"
+          >กรุณาเพิ่มชื่อลูกค้า</small
+        >
+      </div>
+
+      <div class="field">
+        <label for="customer_number">รหัสลูกค้า</label>
+        <InputText
+          class="p-2"
+          id="customer_number"
+          v-model.trim="customer.customer_number"
+          required="true"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_number }"
+        />
+        <small class="p-error" v-if="submitted && !customer.customer_number"
+          >กรุณาเพิ่มรหัสลูกค้า</small
+        >
+      </div>
+
+      <div class="field">
+        <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+        <InputText
+          class="p-2"
+          id="customer_taxnumber"
+          v-model.trim="customer.customer_taxnumber"
+          required="true"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_taxnumber }"
+        />
+        <small class="p-error" v-if="submitted && !customer.customer_taxnumber"
+          >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
+        >
+      </div>
+      <div class="field">
+        <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
+        <InputText
+          class="p-2"
+          id="customer_phone"
+          v-model.trim="customer.customer_phone"
+          required="false"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_phone }"
+        />
+        <small class="p-error" v-if="submitted && !customer.customer_phone"
+          >เบอร์ติดต่อลูกค้า</small
+        >
+      </div>
+      <div class="field">
+        <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
+        <InputText
+          class="p-2"
+          id="customer_lastname"
+          v-model.trim="customer.customer_lastname"
+          required="true"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
+        />
+      </div>
+      <div class="field">
+        <label for="customer_position">ที่อยู่ลูกค้า</label>
+        <InputText
+          class="p-2"
+          id="customer_position"
+          v-model.trim="customer.customer_position"
+          required="true"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_position }"
+        />
+      </div>
+      <div class="field">
+        <label for="customer_email">อีเมล์ลูกค้า</label>
+        <InputText
+          class="p-2"
+          id="customer_email"
+          v-model.trim="customer.customer_email"
+          required="false"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_email }"
+        />
+      </div>
+      <div class="field">
+        <div>
+          <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
+          <Dropdown
+            id="inventoryStatus"
+            v-model.trim="customer.customer_type"
+            :options="statuses"
+            placeholder="เลือกประเภทลูกค้า"
+          >
+            <template #value="slotProps">
+              <div v-if="slotProps.value && slotProps.value.value">
+                <Tag
+                  :value="slotProps.value.value"
+                  :severity="getStatusLabel(slotProps.value.label)"
+                />
+              </div>
+              <div v-else-if="slotProps.value && !slotProps.value.value">
+                <Tag
+                  :value="slotProps.value"
+                  :severity="getStatusLabel(slotProps.value)"
+                />
+              </div>
+              <span v-else>
+                {{ slotProps.placeholder }}
+              </span>
+            </template>
+          </Dropdown>
+        </div>
+
+        <div class="flex py-2 align-items-center">
+          <Checkbox
+            v-model="isWithholding"
+            inputId="ingredient1"
+            name="pizza"
+            :binary="true"
+          />
+          <label for="ingredient1" class="ml-2"> หัก ณ ที่จ่าย </label>
+        </div>
+        <div v-if="isWithholding" class="card py-2 flex justify-content-center">
+          <Dropdown
+            v-model="withholdingPercent"
+            :options="percents"
+            placeholder="เลือกเปอร์เซ็น"
+            class="w-full md:w-14rem"
+          />
+        </div>
+      </div>
+      <div class="field">
+        <label for="customer_contact">ผู้ติดต่อ</label>
+        <InputText
+          class="p-2"
+          id="customer_contact"
+          v-model.trim="customer.customer_contact"
+          required="false"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_contact }"
+        />
+      </div>
+      <div class="field">
+        <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
+        <InputText
+          class="p-2"
+          id="customer_contact_number"
+          v-model.trim="customer.customer_contact_number"
+          required="false"
+          autofocus
+          :class="{ 'p-invalid': submitted && !customer.customer_contact_number }"
+        />
+      </div>
+    </div>
+    <br />
+
+    <div class="card">
+      <DataView :value="products">
+        <template #list="slotProps">
+          <div class="grid grid-nogutter">
+            <div v-for="(item, index) in slotProps.items" :key="index">
+              <div
+                class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
+                :class="{ 'surface-border': index !== 0 }"
+              >
+                <div class="w-[75px] relative">
+                  <img
+                    v-if="item.product_logo64"
+                    class="object-contain block xl:block mx-auto border-round w-full"
+                    :src="item.product_logo64"
+                    :alt="index"
+                  />
+                </div>
+                <div
+                  class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
+                >
+                  <div>
+                    <div>
+                      <p class="text-clip font-semibold overflow-hidden w-[100px]">
+                        {{ item.product_name }}
+                      </p>
+                      <div class="w-[100px] overflow-y-hidden">
+                        <p
+                          v-for="(proText, textIndex) in item.product_text"
+                          class="text-clip overflow-hidden w-[100px]"
+                          :key="textIndex"
+                        >
+                          {{ proText }}
+                        </p>
+                      </div>
+                      <p
+                        class="font-normal text-xs text-clip overflow-hidden w-[100px]"
+                      >
+                        {{ formatCurrency(item.product_price) }} x
+                        {{ item.product_amount }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="flex flex-column md:align-items-end gap-5">
+                    <span class="text-xl font-semibold text-900"
+                      >{{
+                        formatCurrency(item.product_price * item.product_amount)
+                      }}.-</span
+                    >
+                    <div class="flex flex-row-reverse md:flex-row gap-2">
+                      <Button
+                        icon="pi pi-trash"
+                        outlined
+                        @click="removeProduct(index)"
+                      ></Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </DataView>
+    </div>
+    <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
+      <p>ส่วนลด</p>
+      <InputNumber
+        v-model="discount"
+        inputId="minmaxfraction"
+        :minFractionDigits="2"
+        :maxFractionDigits="5"
+      />
+    </div>
+
+    <div class="flex flex-col gap-y-2">
+      <span
+        >ราคาสินค้า
+        <span class="border-b px-2">{{
+          formatCurrency(sumProductsPrice) || 0
+        }}</span></span
+      >
+      <span
+        >ส่วนลด
+        <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
+      >
+      <span
+        >ราคาหลังหักส่วนลด
+        <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
+      >
+      <span v-if="selectedCompany?.isVat"
+        >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
+      >
+      <span v-if="selectedCompany?.isVat"
+        >ราคารวม VAT
+        <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
+      >
+      <span v-if="isWithholding"
+        >หัก ณ ที่จ่าย {{ withholdingPercent }}%
+        <span class="border-b px-2">{{
+          formatCurrency(withholdingPrice) || 0
+        }}</span></span
+      >
+      <span class="font-bold py-3"
+        >ราคาสุทธิ
+        <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
+      >
+    </div>
+    <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
+      <Button
+        icon="pi pi-plus-circle"
+        class="px-2 py-2 w-fit text-lg font-bold text-white"
+        label="เพิ่มสินค้า/บริการ"
+        @click="openProductForm = true"
+      />
+    </div>
+
+    <div
+      v-if="openProductForm"
+      class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
+    >
+      <div v-if="product?.product_logo64" class="card flex justify-content-center">
+        <Image :src="product?.product_logo64" alt="Image" width="250" preview />
+      </div>
+      <div class="card flex justify-center">
+        <FileUpload
+          class="p-fileupload-file-remove"
+          mode="basic"
+          name="demo[]"
+          :auto="true"
+          accept="image/*"
+          customUpload
+          @uploader="customBase64Uploader"
+        />
+      </div>
+      <div class="field">
+        <label>หัวข้อ</label>
+        <div class="card flex justify-content-center">
+          <InputText v-model="product.product_name" />
+        </div>
+        <label>รายละเอียด</label>
+        <div
+          v-for="(text, textInputIndex) in product.product_text"
+          class="card flex justify-content-center"
+        >
+          <Textarea
+            v-model="product.product_text[textInputIndex]"
+            autoResize
+            rows="5"
+            cols="50"
+          />
+        </div>
+        <Button
+          label="add"
+          class="bg-orange-300 px-2"
+          @click="product.product_text.push('')"
+        />
+      </div>
+      <div class="field grid w-full px-5">
+        <div class="field grid">
+          <label for="price">ราคา/หน่วย</label>
+          <InputNumber
+            class="p-2"
+            id="price"
+            v-model="product.product_price"
+            mode="currency"
+            currency="THB"
+          />
+        </div>
+        <div class="field grid">
+          <label for="quantity">จำนวน</label>
+          <InputNumber
+            class="p-2"
+            id="quantity"
+            v-model="product.product_amount"
+            integeronly
+          />
+        </div>
+        <div class="field grid">
+          <label for="quantity">รวม</label>
+          <p class="font-semibold px-2">
+            {{ formatCurrency(product.product_amount * product.product_price) }} บาท
+          </p>
+        </div>
+      </div>
+
+      <div class="card flex gap-3 justify-center items-center py-2">
+        <Button
+          class="py-2 text-center pl-3 pr-5 rounded bg-red-600 text-white"
+          label="ยกเลิก "
+          icon="pi pi-times"
+          @click="cancleProduct"
+        />
+        <Button
+          class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
+          label="เพิ่ม"
+          icon="pi pi-check"
+          @click="addProduct"
+        />
+      </div>
+    </div>
+
+    <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
+      <p>หมายเหตุ</p>
+      <Textarea
+        v-for="(mark, mIndex) in remark"
+        v-model="remark[mIndex]"
+        autoResize
+        rows="5"
+        cols="30"
+      />
+      <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
+    </div>
+
+    <template #footer>
+      <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+      <Button
+        label="Save"
+        icon="pi pi-check"
+        :loading="loading"
+        text
+        @click="createNewReceipt"
+      />
+    </template>
+  </Dialog>
+
+    <Dialog
+      v-model:visible="receiptDialogx"
       :style="{ width: '450px' }"
       header="Receipt Details"
       :modal="true"
@@ -673,6 +1229,8 @@ const loading = ref(false);
 const openProductForm = ref(false);
 const start_date = ref();
 const remark = ref();
+const bank = ref({})
+const banks = ref()
 const withholdingPercent = ref(3);
 const isWithholding = ref(false);
 const sumVat = ref(true);
@@ -850,24 +1408,7 @@ const deleteReceipt = async () => {
     life: 3000,
   });
 };
-const findIndexById = (id) => {
-  let index = -1;
-  for (let i = 0; i < receipts.value.length; i++) {
-    if (receipts.value[i].id === id) {
-      index = i;
-      break;
-    }
-  }
-  return index;
-};
-const createId = () => {
-  let id = "";
-  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (var i = 0; i < 5; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return id;
-};
+
 const exportCSV = () => {
   dt.value.exportCSV();
 };
@@ -931,6 +1472,13 @@ const createNewReceipt = async () => {
     percen_payment: isWithholding ? withholdingPercent.value : 0,
     start_date: start_date.value,
     remark: remark.value,
+    bank: {
+      name: bank.value.name,
+      remark_2: bank.value.remark,
+      status: bank.value.number
+    },
+    isVat: selectedCompany.value.isVat,
+    sumVat: sumVat.value
   };
   console.log(data);
   const response = await Documents.createNewReceipt(data);

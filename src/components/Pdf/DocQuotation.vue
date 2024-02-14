@@ -1,27 +1,27 @@
 <template>
   <div class="w-full left-0 h-full bg-white overflow-y-hidden" @click="close">
-    <div class="modal-container w-full mt-8 h-full overflow-y-hidden" id="exportContent">
+    <div class="modal-container w-full mt-2 h-full overflow-y-hidden" id="exportContent">
       <!-- Your modal content goes here -->
       <div class="modal">
         <!-- Modal content -->
         <div class="modal-content">
           <div>
             <div class="invoice text-xs">
+              <div class="flex flex-wrap justify-start items-center">
+                <div>
+                  <img
+                    v-if="data.data.customer_branch?.Branch_iden_number!=='-'"
+                    :src="`https://drive.google.com/thumbnail?id=${data.data.customer_branch?.Branch_iden_number}`"
+                    alt="..."
+                    class="rounded-full w-[100px] h-[100px] align-middle border-none"
+                  />
+                </div>
+                <div class="flex justify-items-center items-center">
+                  <strong>{{ data.data.customer_branch?.Branch_company_name }}</strong>
+                </div>
+              </div>
               <div class="flex justify-between">
                 <div class="from">
-                  <div class="flex flex-wrap justify-center">
-                    <div style="width: 75px" class="pr-4">
-                      <img
-                        :src="`https://drive.google.com/thumbnail?id=${data.data.logo}`"
-                        alt="..."
-                        class="shadow rounded-full max-w-full h-auto align-middle border-none"
-                      />
-                    </div>
-                  </div>
-                  <div class="flex justify-items-center items-center">
-                    <strong>{{ data.data.customer_branch?.Branch_company_name }}</strong>
-                  </div>
-                  <br />
                   <article class="text-wrap w-[250px]">
                     <p>{{ data.data.customer_branch?.Branch_company_address }}</p>
                   </article>
@@ -129,7 +129,7 @@
                   <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-orange-200 text-cente flex justify-center items-center"
                   :style="{ backgroundColor: `#${data.color}` }">
                     <p class="font-bold">
-                      ( ห้าหมื่นสองพันสี่ร้อยสามสิบบาทถ้วน )
+                     {{ formatNumberToText(data.data.vat.totalVat_deducted) + 'ถ้วน' }}
                     </p>
                   </div>
                   <article class="text-wrap w-[450px] text-start pr-5">
@@ -148,7 +148,7 @@
                     </span>
                   </div>
                 </div>
-                <table>
+                <table v-if="data.data.sumVat">
                     <tbody>
                       <tr class="flex justify-between w-full">
                         <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5">ราคาสินค้า/บริการ</span></td>
@@ -184,6 +184,42 @@
                       </tr>
                     </tbody>
                 </table>
+                <table v-if="!data.data.sumVat">
+                  <tbody>
+                    <tr class="flex justify-between w-full">
+                      <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5">ราคาสินค้า/บริการ</span></td>
+                      <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.total_products.total_product) }}</span>บาท</td>
+                    </tr>
+                    <tr class="flex justify-between w-full">
+                      <td style="text-align: left"><span class="pl-5">ส่วนลด</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount) || 0 }}</span>บาท</td>
+                    </tr>
+                    <tr class="flex justify-between w-full">
+                      <td style="text-align: left"><span class="pl-5">ราคาหลังหักส่วนลด</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.total_products.total_discount) }}</span>บาท</td>
+                    </tr>
+                    <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
+                      <td style="text-align: left"><span class="pl-5">VAT 7%</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.total_products.amount_vat) }}</span>บาท</td>
+                    </tr>
+                    <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
+                      <td style="text-align: left"><span class="pl-5">ราคารวม VAT 7%</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.total_products.amount_vat + data.data.total_products.total_discount) }}</span>บาท</td>
+                    </tr>
+                    <tr class="flex justify-between w-full" v-if="data.data.vat.percen_deducted">
+                      <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย {{ data.data.total_products.percen_payment }}%</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.total_products.after_discoun_payment) }}</span>บาท</td>
+                    </tr>
+                    <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
+                      <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
+                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.total_products.total_all_end) }}</strong>บาท</td>
+                    </tr>
+                    <tr v-if="!data.data.customer_branch?.isVat" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
+                      <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
+                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.total_products.total_all_end) }}</strong>บาท</td>
+                    </tr>
+                  </tbody>
+              </table>
               </div>
             </div>
           </div>
@@ -222,17 +258,8 @@
                     </td>
                     <td class="border h-[50px]" style="text-align: bottom; padding:0;">
                       <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                        <img class="w-[50px] border-b pb-1 mb-1" 
-                            v-if="data.data.signature?.image_signature 
-                            && data.data.signature?.image_signature.trim()!==''
-                            && data.data.signature?.image_signature.trim()!=='-'
-                            " 
-                            :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                            <p 
-                            v-if="!data.data.signature?.image_signature 
-                            || data.data.signature?.image_signature.trim()===''
-                            || data.data.signature?.image_signature.trim()==='-'
-                            ">____________________</p>
+                          <p 
+                          >____________________</p>
                         <p v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''
                             ">
                               ( {{ data.data.customer_detail.customer_name }} )
@@ -242,7 +269,7 @@
                             </p>
                         
                           <p>{{`วันที่...../....../.......`}}</p>
-                    </div>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
@@ -270,6 +297,58 @@ const close = () => {
 const print = () => {
   window.print()
 }
+
+const formatNumberToText = (number) => {
+    const thaiNumerals = [
+      "ศูนย์",
+      "หนึ่ง",
+      "สอง",
+      "สาม",
+      "สี่",
+      "ห้า",
+      "หก",
+      "เจ็ด",
+      "แปด",
+      "เก้า",
+    ];
+    const thaiPlaces = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+
+    const numArray = number.toString().split(".");
+    const integerPart = numArray[0];
+    const decimalPart = numArray[1] || "0";
+
+    function convertIntegerToThaiText(num) {
+      let result = "";
+      for (let i = 0; i < num.length; i++) {
+        const digit = parseInt(num[i]);
+        if (digit !== 0) {
+          result += thaiNumerals[digit] + thaiPlaces[num.length - i - 1];
+        }
+      }
+      return result;
+    }
+
+    function convertDecimalToThaiText(num) {
+      let result = "";
+      for (let i = 0; i < num.length; i++) {
+        const digit = parseInt(num[i]);
+        if (digit !== 0) {
+          result += thaiNumerals[digit] + "สิบ";
+        }
+      }
+      return result;
+    }
+
+    const thaiIntegerText = convertIntegerToThaiText(integerPart);
+    const thaiDecimalText = convertDecimalToThaiText(decimalPart);
+
+    const thaiText =
+      thaiIntegerText +
+      (thaiIntegerText !== "" ? "บาท" : "") +
+      thaiDecimalText +
+      (thaiDecimalText !== "" ? "สตางค์" : "");
+    return thaiText || "ศูนย์บาท";
+  };
 
 const data = defineProps(['data', 'color'])
 

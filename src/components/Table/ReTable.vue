@@ -5,16 +5,16 @@
       dismissableMask
       :closable="false"
       class="shadow-none rounded-none max-h-full p-0 cursor-pointer absolute top-0 bg-white w-full h-full"
-      v-model:visible="openQuotation"
+      v-model:visible="openReceipt"
     >
-      <DocQuotation
+      <DocReceipt
         :color="color"
-        :data="selectedQuotation"
-        @close="openQuotation = false"
+        :data="selectedReceipt"
+        @close="openReceipt = false"
       />
     </Dialog>
 
-    <div v-if="!openQuotation" class="card">
+    <div v-if="!openReceipt" class="card">
       <Toolbar class="mb-4">
         <template #start>
           <Button
@@ -29,7 +29,7 @@
             icon="pi pi-trash"
             severity="danger"
             @click="confirmDeleteSelected"
-            :disabled="!selectedQuotations || !selectedQuotations.length"
+            :disabled="!selectedReceipts || !selectedReceipts.length"
           />
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
@@ -59,8 +59,8 @@
 
       <DataTable
         ref="dt"
-        :value="quotations"
-        v-model:selection="selectedQuotations"
+        :value="receipts"
+        v-model:selection="selectedReceipts"
         dataKey="_id"
         :paginator="true"
         :rows="10"
@@ -90,7 +90,7 @@
 
         <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
         <Column
-          field="quotation"
+          field="receipt"
           header="เลขที่"
           sortable
           style="min-width: 12rem"
@@ -113,17 +113,6 @@
         >
           <template #body="slotProps">
             {{ formatDate(slotProps.data.start_date) }}
-          </template>
-        </Column>
-        <Column
-          field="end_date"
-          header="วันที่สิ้นสุด"
-          class="border-b"
-          sortable
-          style="min-width: 10rem"
-        >
-          <template #body="slotProps">
-            {{ formatDate(slotProps.data.end_date) }}
           </template>
         </Column>
 
@@ -178,18 +167,18 @@
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
-              <Button icon="pi pi-file" outlined @click="seeQuotation(slotProps.data)" />
+              <Button icon="pi pi-file" outlined @click="seeReceipt(slotProps.data)" />
               <Button
                 icon="pi pi-pencil"
                 outlined
                 rounded
-                @click="editQuotation(slotProps.data)"
+                @click="editReceipt(slotProps.data)"
               />
               <Button
                 icon="pi pi-trash"
                 outlined
                 rounded
-                @click="confirmDeleteQuotation(slotProps.data)"
+                @click="confirmDeleteReceipt(slotProps.data)"
               />
             </div>
           </template>
@@ -198,12 +187,37 @@
     </div>
 
     <Dialog
-      v-model:visible="quotationDialog"
+      v-model:visible="receiptDialog"
       :style="{ width: '450px' }"
-      header="Quotation Details"
+      header="Receipt Details"
       :modal="true"
       class="p-fluid"
     >
+    <div class="card flex flex-col gap-y-2 justify-content-center">
+      <Dropdown
+        v-model="refQuotation"
+        editable
+        :options="quotations"
+        optionLabel="quotation"
+        placeholder="เลือกใบเสนอราคา"
+        class="w-full md:w-14rem"
+        @change="referQuotation"
+      />
+    </div>
+    <div>
+      <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
+      <div class="card flex justify-content-center">
+        <Dropdown
+          @change="refCompany"
+          v-model="selectedCompany"
+          editable
+          :options="cpStore.myCompanies"
+          optionLabel="Branch_company_name"
+          placeholder="เลือกหัวเอกสาร"
+          class="w-full md:w-14rem p-2"
+        />
+      </div>
+    </div>
       <div
         v-if="loading"
         class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
@@ -214,10 +228,6 @@
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
           <Calendar class="border" v-model="start_date" showButtonBar />
-        </div>
-        <div class="card flex flex-col mt-2 mb-5 gap-y-2 justify-center items-center">
-          <p>วันที่สิ้นสุด</p>
-          <Calendar class="border" v-model="end_date" showButtonBar />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -752,18 +762,29 @@
           icon="pi pi-check"
           :loading="loading"
           text
-          @click="createNewQuotation"
+          @click="createNewReceipt"
         />
       </template>
     </Dialog>
 
     <Dialog
-      v-model:visible="quotationEditDialog"
+      v-model:visible="receiptEditDialog"
       :style="{ width: '450px' }"
-      header="แก้ไขใบเสนอราคา"
+      header="แก้ไขใบเสร็จรับเงิน"
       :modal="true"
       class="p-fluid"
     >
+    <div class="card flex flex-col gap-y-2 justify-content-center">
+      <Dropdown
+        v-model="refQuotation"
+        editable
+        :options="quotations"
+        optionLabel="quotation"
+        placeholder="เลือกใบเสนอราคา"
+        class="w-full md:w-14rem"
+        @change="referQuotation"
+      />
+    </div>
       <div
         v-if="loading"
         class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
@@ -774,10 +795,6 @@
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
           <Calendar class="border" v-model="start_date" showButtonBar />
-        </div>
-        <div class="card flex flex-col mt-2 mb-5 gap-y-2 justify-center items-center">
-          <p>วันที่สิ้นสุด</p>
-          <Calendar class="border" v-model="end_date" showButtonBar />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -1300,21 +1317,21 @@
           icon="pi pi-check"
           :loading="loading"
           text
-          @click="editingQuotation"
+          @click="editingReceipt"
         />
       </template>
     </Dialog>
 
     <Dialog
-      v-model:visible="deleteQuotationDialog"
+      v-model:visible="deleteReceiptDialog"
       :style="{ width: '450px' }"
       header="Confirm"
       :modal="true"
     >
       <div class="confirmation-content">
         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-        <span v-if="quotation"
-          >คุณแน่ใจว่าต้องการลบเอกสารนี้หรือไม่ ?<b>{{ quotation.quotation }}</b
+        <span v-if="receipt"
+          >คุณแน่ใจว่าต้องการลบเอกสารนี้หรือไม่ ?<b>{{ receipt.receipt }}</b
           >?</span
         >
       </div>
@@ -1324,40 +1341,40 @@
           label="ยกเลิก"
           icon="pi pi-times"
           text
-          @click="deleteQuotationDialog = false"
+          @click="deleteReceiptDialog = false"
         />
         <Button
           class="py-3"
           label="ยืนยัน"
           icon="pi pi-check"
           text
-          @click="deleteQuotation"
+          @click="deleteReceipt"
         />
       </template>
     </Dialog>
 
     <Dialog
-      v-model:visible="deleteQuotationsDialog"
+      v-model:visible="deleteReceiptsDialog"
       :style="{ width: '450px' }"
       header="Confirm"
       :modal="true"
     >
       <div class="confirmation-content">
         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-        <span v-if="quotation">คุณแน่ใจว่าต้องการลบเอกสารนี้หรือไม่ ?</span>
+        <span v-if="receipt">คุณแน่ใจว่าต้องการลบเอกสารนี้หรือไม่ ?</span>
       </div>
       <template #footer>
         <Button
           label="ยกเลิก"
           icon="pi pi-times"
           text
-          @click="deleteQuotationsDialog = false"
+          @click="deleteReceiptsDialog = false"
         />
         <Button
           label="ยืนยัน"
           icon="pi pi-check"
           text
-          @click="deleteSelectedQuotations"
+          @click="deleteSelectedReceipts"
         />
       </template>
     </Dialog>
@@ -1370,22 +1387,24 @@ import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import { Documents } from "@/service/ProductService";
 import { Customers } from "@/service/Customer";
-import { useQuotationStore } from "@/stores/quotation";
+import { useReceiptStore } from "@/stores/receipt";
 import { useCompanyStore } from "@/stores/company";
-import DocQuotation from "@/components/Pdf/DocQuotation.vue";
+import DocReceipt from "@/components/Pdf/DocReceipt.vue";
 
-const qtStore = useQuotationStore();
+const reStore = useReceiptStore();
 const cpStore = useCompanyStore();
 
 onMounted(async () => {
-  Documents.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+  Documents.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+  Documents.getQuotations().then((data) => (quotations.value = data.data));
   Customers.getCustomers().then((data) => (customers.value = data.data));
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
 });
 
+const quotations = ref([]);
 const lastRefreshed = ref();
-const openQuotation = ref(false);
+const openReceipt = ref(false);
 const loading = ref(false);
 const openProductForm = ref(false);
 const start_date = ref();
@@ -1405,18 +1424,19 @@ const dt = ref();
 const customer = ref({});
 const customers = ref();
 const selectedCustomer = ref();
-const quotations = ref();
-const quotationDialog = ref(false);
-const deleteQuotationDialog = ref(false);
-const deleteQuotationsDialog = ref(false);
-const quotation = ref({});
-const selectedQuotations = ref();
-const selectedQuotation = ref({});
+const receipts = ref();
+const receiptDialog = ref(false);
+const deleteReceiptDialog = ref(false);
+const deleteReceiptsDialog = ref(false);
+const receipt = ref({});
+const selectedReceipts = ref();
+const selectedReceipt = ref({});
 const uploadfiles = ref([]);
-const quotationEditDialog = ref(false);
+const receiptEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
 const banks = ref();
+const refQuotation = ref();
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -1427,7 +1447,7 @@ const statuses = ref(["ทั่วไป", "องค์กร", "หน่ว�
 const percents = ref([3, 5]);
 
 const refresh = () => {
-  Documents.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+  Documents.getReceipts().then((data) => (receipts.value = data.data.reverse()));
 
   const currentTimestamp = Date.now();
   const options = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
@@ -1437,10 +1457,29 @@ const refresh = () => {
   lastRefreshed.value = formattedTime;
 };
 
-const seeQuotation = (data) => {
-  openQuotation.value = true;
-  selectedQuotation.value = data;
-  console.log("data", selectedQuotation.value);
+const referQuotation = () => {
+    if(refQuotation.value){
+        console.log('rfQT', refQuotation.value)
+        customer.value.customer_taxnumber = refQuotation.value.customer_detail.tax_id
+        customer.value.customer_name = refQuotation.value.customer_detail.customer_name
+        customer.value.customer_lastname = refQuotation.value.customer_detail.customer_lastname
+        customer.value.customer_phone = refQuotation.value.customer_detail.customer_phone
+        customer.value.customer_email = refQuotation.value.customer_detail.customer_email
+        customer.value.customer_position = ''
+        customer.value.customer_type = refQuotation.value.customer_detail.customer_type
+        selectedCustomer.value = customer.value
+        selectedCompany.value = refQuotation.value.customer_branch
+        start_date.value = refQuotation.value.start_date
+        products.value = refQuotation.value.product_detail
+        discount.value = refQuotation.value.discount
+        selectedSignature.value = refQuotation.value.signature
+    }
+}
+
+const seeReceipt = (data) => {
+  openReceipt.value = true;
+  selectedReceipt.value = data;
+  console.log("data", selectedReceipt.value);
 };
 
 const formatDateRef = (isoDateString) => {
@@ -1601,26 +1640,25 @@ const formatDate = (date) => {
 };
 
 const openNew = () => {
-  quotation.value = {};
+  receipt.value = {};
   submitted.value = false;
-  quotationDialog.value = true;
+  receiptDialog.value = true;
   product.value.product_text = [""];
 };
 const hideDialog = () => {
   product.value = {};
   products.value = [];
   customer.value = {};
-  quotationDialog.value = false;
-  quotationEditDialog.value = false;
+  receiptDialog.value = false;
+  receiptEditDialog.value = false;
   submitted.value = false;
 };
 
-const editQuotation = (prod) => {
-  quotation.value = { ...prod };
-  console.log("qt", quotation.value);
+const editReceipt = (prod) => {
+  receipt.value = { ...prod };
+  console.log("qt", receipt.value);
 
   start_date.value = formatDateRef(prod.start_date);
-  end_date.value = formatDateRef(prod.end_date);
 
   const company = cpStore.myCompanies.find(
     (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
@@ -1640,30 +1678,29 @@ const editQuotation = (prod) => {
   remark.value = prod.remark;
   bank.value = company.bank.find((item) => item.number === prod.bank.status);
   selectedSignature.value = prod.signature;
-  console.log(selectedSignature.value)
-  quotationEditDialog.value = true;
+  receiptEditDialog.value = true;
 };
 
-const confirmDeleteQuotation = (prod) => {
-  quotation.value = prod;
-  deleteQuotationDialog.value = true;
+const confirmDeleteReceipt = (prod) => {
+  receipt.value = prod;
+  deleteReceiptDialog.value = true;
 };
-const deleteQuotation = async () => {
-  const quotations_to_delete = quotation.value;
-  if (quotations_to_delete) {
-    console.log(quotations_to_delete._id);
-    await Documents.deleteQuotation(quotations_to_delete._id);
+const deleteReceipt = async () => {
+  const receipts_to_delete = quotation.value;
+  if (receipts_to_delete) {
+    console.log(receipts_to_delete._id);
+    await Documents.deleteReceipt(receipts_to_delete._id);
   }
-  await Documents.getQuotations().then(
-    (data) => (quotations.value = data.data.reverse())
+  await Documents.getReceipts().then(
+    (data) => (receipts.value = data.data.reverse())
   );
-  qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
-  deleteQuotationDialog.value = false;
-  quotation.value = {};
+  reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+  deleteReceiptDialog.value = false;
+  receipt.value = {};
   toast.add({
     severity: "success",
     summary: "Successful",
-    detail: "ลบใบเสนอราคาแล้ว",
+    detail: "ลบใบเสร็จรับเงินแล้ว",
     life: 3000,
   });
 };
@@ -1672,41 +1709,41 @@ const exportCSV = () => {
   dt.value.exportCSV();
 };
 const confirmDeleteSelected = () => {
-  deleteQuotationsDialog.value = true;
+  deleteReceiptsDialog.value = true;
 };
 
-const deleteSelectedQuotations = async () => {
-  const quotations_to_delete = quotations.value.filter(
-    (val) => !selectedQuotations.value.includes(val)
+const deleteSelectedReceipts = async () => {
+  const receipts_to_delete = receipts.value.filter(
+    (val) => !selectedReceipts.value.includes(val)
   );
-  console.log(selectedQuotations.value.length);
-  console.log(quotations_to_delete.length);
+  console.log(selectedReceipts.value.length);
+  console.log(receipts_to_delete.length);
   if (
-    quotations_to_delete.length > 0 &&
-    selectedQuotations.value.length !== quotations.value.length
+    receipts_to_delete.length > 0 &&
+    selectedReceipts.value.length !== receipts.value.length
   ) {
-    for (let qt of selectedQuotations.value) {
+    for (let qt of selectedReceipts.value) {
       console.log(qt._id);
-      await Documents.deleteQuotation(qt._id);
+      await Documents.deleteReceipt(qt._id);
     }
-  } else if (selectedQuotations.value.length === quotations.value.length) {
-    await Documents.deleteQuotations();
+  } else if (selectedReceipts.value.length === quotations.value.length) {
+    await Documents.deleteReceipts();
   }
-  await Documents.getQuotations().then(
-    (data) => (quotations.value = data.data.reverse())
+  await Documents.getReceipts().then(
+    (data) => (receipts.value = data.data.reverse())
   );
-  qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
-  deleteQuotationsDialog.value = false;
-  selectedQuotations.value = null;
+  reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+  deleteReceiptsDialog.value = false;
+  selectedReceipts.value = null;
   toast.add({
     severity: "success",
     summary: "Successful",
-    detail: "ลบใบเสนอราคาแล้ว",
+    detail: "ลบใบเสร็จรับเงินแล้ว",
     life: 3000,
   });
 };
 
-const createNewQuotation = async () => {
+const createNewReceipt = async () => {
   loading.value = true;
   let img = [];
   let qtId = null;
@@ -1715,6 +1752,8 @@ const createNewQuotation = async () => {
   });
 
   const data = {
+    quotation: quotation.quotation,
+    //invoice: invoice.invoice,
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
     signatureID: selectedSignature.value ? selectedSignature.value._id : null,
@@ -1744,7 +1783,7 @@ const createNewQuotation = async () => {
   };
   console.log(data);
   try {
-    const response = await Documents.createNewQuotation(data);
+    const response = await Documents.createNewReceipt(data);
     if (response.data) {
       img = response.data.product_detail;
       qtId = response.data._id;
@@ -1753,73 +1792,73 @@ const createNewQuotation = async () => {
         uploadfiles.value.forEach(async (file, index) => {
           const formData = new FormData();
           formData.append("imgCollection", file);
-          const res = await Documents.uploadFileQuotation(imgId[index], qtId, formData);
+          const res = await Documents.uploadFileReceipt(imgId[index], qtId, formData);
 
-          qtStore
-            .getQuotations()
-            .then((data) => (quotations.value = data.data.reverse()));
-          quotationDialog.value = false;
+          reStore
+            .getReceipts()
+            .then((data) => (receipts.value = data.data.reverse()));
+            receiptDialog.value = false;
           toast.add({
             severity: "success",
             summary: "Successful",
-            detail: "สร้างใบเสนอราคาแล้ว",
+            detail: "สร้างใบเสร็จรับเงินแล้ว",
             life: 3000,
           });
           loading.value = false;
-          quotationDialog.value = false;
+          receiptDialog.value = false;
         });
       } else {
-        qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
-        quotationDialog.value = false;
+        reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+        receiptDialog.value = false;
         toast.add({
           severity: "success",
           summary: "Successful",
-          detail: "สร้างใบเสนอราคาแล้ว",
+          detail: "สร้างใบเสร็จรับเงินแล้ว",
           life: 3000,
         });
         loading.value = false;
       }
     } else {
-      qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
-      quotationDialog.value = false;
+      reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+      receiptDialog.value = false;
       toast.add({
         severity: "error",
         summary: "มีบางอย่างผิดพลาด",
-        detail: "สร้างใบเสนอราคาล้มเหลว",
+        detail: "สร้างใบเสร็จรับเงินล้มเหลว",
         life: 3000,
       });
-      quotationDialog.value = false;
+      receiptDialog.value = false;
       loading.value = false;
     }
     loading.value = false;
     toast.add({
       severity: "success",
       summary: "Successful",
-      detail: "สร้างใบเสนอราคาแล้ว",
+      detail: "สร้างใบเสร็จรับเงินแล้ว",
       life: 3000,
     });
   } catch (err) {
     console.log(err);
-    quotationDialog.value = false;
+    receiptDialog.value = false;
     loading.value = false;
     toast.add({
       severity: "error",
       summary: "มีบางอย่างผิดพลาด",
-      detail: "สร้างใบเสนอราคาล้มเหลว",
+      detail: "สร้างใบเสร็จรับเงินล้มเหลว",
       life: 3000,
     });
   }
-  quotationDialog.value = false;
+  receiptDialog.value = false;
   loading.value = false;
   toast.add({
     severity: "success",
     summary: "Successful",
-    detail: "สร้างใบเสนอราคาแล้ว",
+    detail: "สร้างใบเสร็จรับเงินแล้ว",
     life: 3000,
   });
 };
 
-const editingQuotation = async () => {
+const editingReceipt = async () => {
   loading.value = true;
   let img = [];
   let qtId = null;
@@ -1855,7 +1894,7 @@ const editingQuotation = async () => {
     },
   };
 
-  const response = await Documents.editQuotation(quotation.value._id, data);
+  const response = await Documents.editReceipt(receipt.value._id, data);
   if (response.data) {
     img = response.data.product_detail;
     qtId = response.data._id;
@@ -1864,38 +1903,38 @@ const editingQuotation = async () => {
       uploadfiles.value.forEach(async (file, index) => {
         const formData = new FormData();
         formData.append("imgCollection", file);
-        const res = await Documents.uploadFileQuotation(imgId[index], qtId, formData);
+        const res = await Documents.uploadFileReceipt(imgId[index], qtId, formData);
         if (res) {
-          qtStore
-            .getQuotations()
-            .then((data) => (quotations.value = data.data.reverse()));
-          quotationDialog.value = false;
+          reStore
+            .getReceipts()
+            .then((data) => (receipts.value = data.data.reverse()));
+            receiptDialog.value = false;
           toast.add({
             severity: "success",
             summary: "Successful",
-            detail: "แก้ไขใบเสนอราคาแล้ว",
+            detail: "แก้ไขใบเสร็จรับเงินแล้ว",
             life: 3000,
           });
           loading.value = false;
         }
       });
     } else {
-      qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
-      quotationDialog.value = false;
+      reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+      receiptDialog.value = false;
       toast.add({
         severity: "success",
         summary: "Successful",
-        detail: "สร้างใบเสนอราคาแล้ว",
+        detail: "สร้างใบเสร็จรับเงินแล้ว",
         life: 3000,
       });
       loading.value = false;
     }
   } else {
-    quotationDialog.value = false;
+    receiptDialog.value = false;
     toast.add({
       severity: "danger",
       summary: "มีบางอย่างผิดพลาด",
-      detail: "สร้างใบเสนอราคาล้มเหลว",
+      detail: "สร้างใบเสร็จรับเงินล้มเหลว",
       life: 3000,
     });
     loading.value = false;

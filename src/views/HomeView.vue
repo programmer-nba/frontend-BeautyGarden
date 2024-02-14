@@ -14,7 +14,7 @@
   
       <div class="pt-5">
         <QtTable v-if="table==='quotation'"  />
-        <ReceiptTable v-if="table==='receipt'" />
+        <ReTable v-if="table==='receipt'" />
       </div>
     </div>
   </div>
@@ -26,7 +26,7 @@ import InHeadCard from '@/components/Card/InHeadCard.vue'
 import ReHeadCard from '@/components/Card/ReHeadCard.vue'
 import QtHeadCard from '@/components/Card/QtHeadCard.vue'
 import QtTable from '@/components/Table/QtTable.vue'
-import ReceiptTable from '@/components/Table/ReceiptTable.vue'
+import ReTable from '@/components/Table/ReTable.vue'
 import { ref } from 'vue'
 
 const table = ref('quotation')
