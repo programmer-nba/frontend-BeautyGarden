@@ -1767,6 +1767,7 @@ const createNewQuotation = async () => {
           });
           loading.value = false;
           quotationDialog.value = false;
+          refresh()
         });
       } else {
         qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
@@ -1778,7 +1779,9 @@ const createNewQuotation = async () => {
           life: 3000,
         });
         loading.value = false;
+        refresh()
       }
+      refresh()
     } else {
       qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
       quotationDialog.value = false;
@@ -1790,6 +1793,7 @@ const createNewQuotation = async () => {
       });
       quotationDialog.value = false;
       loading.value = false;
+      refresh()
     }
     loading.value = false;
     toast.add({
@@ -1798,6 +1802,7 @@ const createNewQuotation = async () => {
       detail: "สร้างใบเสนอราคาแล้ว",
       life: 3000,
     });
+    refresh()
   } catch (err) {
     console.log(err);
     quotationDialog.value = false;
@@ -1808,6 +1813,7 @@ const createNewQuotation = async () => {
       detail: "สร้างใบเสนอราคาล้มเหลว",
       life: 3000,
     });
+    refresh()
   }
   quotationDialog.value = false;
   loading.value = false;
@@ -1817,6 +1823,7 @@ const createNewQuotation = async () => {
     detail: "สร้างใบเสนอราคาแล้ว",
     life: 3000,
   });
+  refresh()
 };
 
 const editingQuotation = async () => {
