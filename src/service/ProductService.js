@@ -1416,6 +1416,24 @@ export const Documents = {
             console.error(err)
             return err
         }
-    }
+    },
+    async editReceipt(id, formData) {
+        try {
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/receiptVat/EditReceiptVat/${id}`,
+                formData,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
 };
 

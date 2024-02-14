@@ -40,7 +40,7 @@
                     class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-black bg-orange-200 uppercase last:mr-0 mr-1"
                     :style="{ backgroundColor: `#${data.color}` }"
                     >
-                    ใบเสร็จรับเงิน RECEIPT
+                    ใบแจ้งหนี้ INVOICE
                   </span>
                   <br />
                   <br />
@@ -55,10 +55,6 @@
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง : </span>
                     {{ data.data.quotation }}
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="font-bold pr-4">อ้างอิง : </span>
-                    {{ data.data.invoice }}
                   </div>
                   <br />
                   <hr />
