@@ -126,17 +126,17 @@
               </table>
               <div class="flex w-full justify-between total mt-5">
                 <div class="flex flex-col gap-y-3">
-                  <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-orange-200 text-cente flex justify-center items-center"
+                  <article class="text-wrap w-[450px] min-h-[80px] text-start pr-5">
+                    <strong>หมายเหตุ :</strong>
+<pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
+>{{ mark }}</pre>
+                </article>
+                <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-orange-200 text-cente flex justify-center items-center"
                   :style="{ backgroundColor: `#${data.color}` }">
                     <p class="font-bold">
                      {{ formatNumberToText(data.data.vat.totalVat_deducted) + 'ถ้วน' }}
                     </p>
                   </div>
-                  <article class="text-wrap w-[450px] text-start pr-5">
-                    <strong>หมายเหตุ :</strong>
-<pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
->{{ mark }}</pre>
-                </article>
                 <div class="flex flex-col">
                     <h1 class="text-md font-bold text-start">
                       ช่องทางการชำระเงิน :
@@ -224,6 +224,7 @@
             </div>
           </div>
         </div>
+        
         <div class="flex justify-center px-2 py-2">
             <table>
                 <tbody>
@@ -279,6 +280,7 @@
                 </tbody>
               </table>  
         </div>
+        
       </div>
     </div>
 

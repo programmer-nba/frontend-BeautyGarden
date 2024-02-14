@@ -1620,7 +1620,7 @@ const formatCurrency = (value) => {
 };
 
 const openNew = () => {
-  receipt.value = {};
+  resetData()
   submitted.value = false;
   receiptDialog.value = true;
   product.value.product_text = [""];
@@ -1661,6 +1661,21 @@ const editReceipt = (prod) => {
   receiptEditDialog.value = true;
 };
 
+const resetData = () => {
+  quotation.value = {};
+  start_date.value = null;
+  end_date.value = null;
+  bank.value = {};
+  uploadfiles.value = [];
+  company.value = {};
+  selectedCompany.value = null;
+  customer.value = {};
+  selectedCustomer.value = null;
+  products.value = []
+  product.value = {}
+  remark.value = []
+}
+
 const confirmDeleteReceipt = (prod) => {
   receipt.value = prod;
   deleteReceiptDialog.value = true;
@@ -1674,7 +1689,7 @@ const deleteReceipt = async () => {
   await Documents.getReceipts().then(
     (data) => (receipts.value = data.data.reverse())
   );
-  reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+  reStore.getReceipts().then((data) => {receipts.value = data.data.reverse()});
   deleteReceiptDialog.value = false;
   receipt.value = {};
   toast.add({
@@ -1863,7 +1878,7 @@ const editingReceipt = async () => {
   const data = {
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
-    signatureID: selectedSignature.value ? selectedSignature.value._id : null,
+    signatureID: selectedSignature.value ? selectedSignature.value._id : '',
     customer_detail: {
       tax_id: customer.value.customer_taxnumber,
       customer_name: customer.value.customer_name,

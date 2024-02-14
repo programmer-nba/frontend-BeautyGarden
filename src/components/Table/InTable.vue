@@ -117,6 +117,18 @@
         </Column>
 
         <Column
+          field="start_date"
+          header="วันที่สิ้นสุด"
+          class="border-b"
+          sortable
+          style="min-width: 10rem"
+        >
+          <template #body="slotProps">
+            {{ formatDateRef(slotProps.data.end_date) }}
+          </template>
+        </Column>
+
+        <Column
           field="vat.totalVat_deducted"
           class="border-b"
           header="ราคา"
@@ -206,7 +218,7 @@
     </div>
       <div
         v-if="loading"
-        class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
+        class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2 z-[10000]"
       >
         <img src="@/assets/spinner.svg" alt="Spinner" />
       </div>
@@ -214,6 +226,10 @@
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
           <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
+        </div>
+        <div class="card flex flex-col gap-y-2 justify-center items-center">
+          <p>วันที่สิ้นสุด</p>
+          <Calendar class="border" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -528,14 +544,14 @@
                   class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
                   :class="{ 'surface-border': index !== 0 }"
                 >
-                  <div class="w-[75px] relative">
+                  <!-- <div class="w-[75px] relative">
                     <img
                       v-if="item.product_logo64"
                       class="object-contain block xl:block mx-auto border-round w-full"
                       :src="item.product_logo64"
                       :alt="index"
                     />
-                  </div>
+                  </div> -->
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
@@ -651,7 +667,7 @@
         <div v-if="product?.product_logo64" class="card flex justify-content-center">
           <Image :src="product?.product_logo64" alt="Image" width="250" preview />
         </div>
-        <div class="card flex justify-center">
+        <!-- <div class="card flex justify-center">
           <FileUpload
             class="p-fileupload-file-remove"
             mode="basic"
@@ -661,7 +677,7 @@
             customUpload
             @uploader="customBase64Uploader"
           />
-        </div>
+        </div> -->
         <div class="field">
           <label>หัวข้อ</label>
           <div class="card flex justify-content-center">
@@ -780,7 +796,11 @@
       <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
-          <Calendar class="border" v-model="start_date" showButtonBar />
+          <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
+        </div>
+        <div class="card flex flex-col gap-y-2 justify-center items-center">
+          <p>วันที่สิ้นสุด</p>
+          <Calendar class="border" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -1218,7 +1238,7 @@
         <div v-if="product?.product_logo64" class="card flex justify-content-center">
           <Image :src="product?.product_logo64" alt="Image" width="250" preview />
         </div>
-        <div class="card flex justify-center">
+        <!-- <div class="card flex justify-center">
           <FileUpload
             class="p-fileupload-file-remove"
             mode="basic"
@@ -1228,7 +1248,7 @@
             customUpload
             @uploader="customBase64Uploader"
           />
-        </div>
+        </div> -->
         <div class="field">
           <label>หัวข้อ</label>
           <div class="card flex justify-content-center">
@@ -1421,7 +1441,6 @@ const uploadfiles = ref([]);
 const invoiceEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
-const banks = ref();
 const refQuotation = ref();
 
 const filters = ref({
@@ -1472,6 +1491,9 @@ const seeInvoice = (data) => {
 };
 
 const formatDateRef = (isoDateString) => {
+  if(!isoDateString){
+    return
+  }
   const isoDate = new Date(isoDateString);
   
   // Convert to Buddhist Era (BE) by adding 543 years
@@ -1638,7 +1660,7 @@ const formatDate = (date) => {
 };
 
 const openNew = () => {
-  invoice.value = {};
+  resetData()
   submitted.value = false;
   invoiceDialog.value = true;
   product.value.product_text = [""];
@@ -1656,7 +1678,8 @@ const editInvoice = (prod) => {
   invoice.value = { ...prod };
   console.log("qt", invoice.value);
 
-  start_date.value = formatDateRef(prod.start_date);
+  start_date.value = prod.start_date
+  end_date.value = prod.end_date
 
   const company = cpStore.myCompanies.find(
     (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
@@ -1669,13 +1692,13 @@ const editInvoice = (prod) => {
   selectedCustomer.value = customered;
   refCustomer();
 
-  isWithholding.value = prod.vat.percen_deducted ? true : false;
-  withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
+  isWithholding.value = prod.vat&&prod.vat.percen_deducted ? true : false;
+  withholdingPercent.value = prod.vat&&prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
   discount.value = prod.discount;
   products.value = prod.product_detail;
   remark.value = prod.remark;
   bank.value = company.bank.find((item) => item.number === prod.bank.status);
-  selectedSignature.value = prod.signature;
+  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
   invoiceEditDialog.value = true;
 };
 
@@ -1692,7 +1715,7 @@ const deleteInvoice = async () => {
   await Documents.getInvoices().then(
     (data) => (invoices.value = data.data.reverse())
   );
-  inStore.getInvoices().then((data) => (invoices.value = data.data.reverse()));
+  inStore.getInvoices().then((data) => {invoices.value = data.data.reverse()});
   deleteInvoiceDialog.value = false;
   invoice.value = {};
   toast.add({
@@ -1750,7 +1773,7 @@ const createNewInvoice = async () => {
   });
 
   const data = {
-    quotation: refQuotation.value.quotation,
+    quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: invoice.invoice,
     customer_number: customer.value.customer_number,
     customer_branch: {
@@ -1881,7 +1904,7 @@ const editingInvoice = async () => {
   const data = {
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
-    signatureID: selectedSignature.value ? selectedSignature.value._id : null,
+    signatureID: selectedSignature.value ? selectedSignature.value._id : '',
     customer_detail: {
       tax_id: customer.value.customer_taxnumber,
       customer_name: customer.value.customer_name,

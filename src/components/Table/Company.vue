@@ -42,7 +42,7 @@
               </template>
             </Dropdown>
             <Button v-if="edit || newData" label="ลบ" class="text-red-500 pr-3" @click="removeLogo" />
-            <div class="flex gap-2 justify-center items-center" v-if="newData">
+            <div class="flex gap-2 justify-center items-center" v-if="edit || newData">
               <img
                 v-if="logoPreview"
                 class="w-[65px] h-[65px] rounded"

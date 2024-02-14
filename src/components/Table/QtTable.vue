@@ -1588,8 +1588,23 @@ const formatCurrency = (value) => {
   return;
 };
 
-const openNew = () => {
+const resetData = () => {
   quotation.value = {};
+  start_date.value = null;
+  end_date.value = null;
+  bank.value = {};
+  uploadfiles.value = [];
+  company.value = {};
+  selectedCompany.value = null;
+  customer.value = {};
+  selectedCustomer.value = null;
+  products.value = []
+  product.value = {}
+  remark.value = []
+}
+
+const openNew = () => {
+  resetData()
   submitted.value = false;
   quotationDialog.value = true;
   product.value.product_text = [""];
@@ -1607,8 +1622,8 @@ const editQuotation = (prod) => {
   quotation.value = { ...prod };
   console.log("qt", quotation.value);
 
-  start_date.value = formatDateRef(prod.start_date);
-  end_date.value = formatDateRef(prod.end_date);
+  start_date.value = prod.start_date;
+  end_date.value = prod.end_date;
 
   const company = cpStore.myCompanies.find(
     (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
@@ -1627,8 +1642,10 @@ const editQuotation = (prod) => {
   products.value = prod.product_detail;
   remark.value = prod.remark;
   bank.value = company.bank.find((item) => item.number === prod.bank.status);
-  selectedSignature.value = prod.signature;
+  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
   console.log(selectedSignature.value)
+  console.log(cpStore.mySignatures)
+  console.log(prod.signature)
   quotationEditDialog.value = true;
   sumVat.value = prod.sumVat
 };
@@ -1646,7 +1663,7 @@ const deleteQuotation = async () => {
   await Documents.getQuotations().then(
     (data) => (quotations.value = data.data.reverse())
   );
-  qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+  qtStore.getQuotations().then((data) => {quotations.value = data.data.reverse()});
   deleteQuotationDialog.value = false;
   quotation.value = {};
   toast.add({
@@ -1826,7 +1843,7 @@ const editingQuotation = async () => {
   const data = {
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
-    signatureID: selectedSignature.value ? selectedSignature.value._id : null,
+    signatureID: selectedSignature.value ? selectedSignature.value._id : '',
     customer_detail: {
       tax_id: customer.value.customer_taxnumber,
       customer_name: customer.value.customer_name,
@@ -1854,7 +1871,7 @@ const editingQuotation = async () => {
       status: '',
     },
   };
-  console.log(quotation.value._id)
+  console.log(data)
   try {
     const response = await Documents.editQuotation(quotation.value._id, data);
   if (response.data) {
@@ -1905,8 +1922,9 @@ const editingQuotation = async () => {
 console.log(err)
   }
   finally {
-    loading.value = false
+    loading.value = false;
     quotationEditDialog.value = false;
+    refresh()
   }
 };
 
