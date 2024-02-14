@@ -112,7 +112,7 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            {{ formatDate(slotProps.data.start_date) }}
+            {{ formatDateRef(slotProps.data.start_date) }}
           </template>
         </Column>
         <Column
@@ -123,7 +123,7 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            {{ formatDate(slotProps.data.end_date) }}
+            {{ formatDateRef(slotProps.data.end_date) }}
           </template>
         </Column>
 
@@ -1445,12 +1445,21 @@ const seeQuotation = (data) => {
 
 const formatDateRef = (isoDateString) => {
   const isoDate = new Date(isoDateString);
+  
+  // Convert to Buddhist Era (BE) by adding 543 years
+  const thaiYear = isoDate.getFullYear() + 543;
+  
   const formattedDate = isoDate.toLocaleDateString("en-US", {
-    month: "2-digit",
     day: "2-digit",
+    month: "2-digit",
     year: "numeric",
   });
-  return formattedDate;
+
+  // Construct the final formatted date in "dd/mm/yyyy" format
+  const [month, day, year] = formattedDate.split('/');
+  const formattedThaiDate = `${day}/${month}/${thaiYear}`;
+
+  return formattedThaiDate;
 };
 
 const withholdingPrice = computed(() => {
