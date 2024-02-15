@@ -484,6 +484,7 @@
           <Button label="ยืนยัน" icon="pi pi-check" text @click="deleteSelectedCustomers" />
         </template>
       </Dialog>
+
       <Dialog v-model:visible="openCustomer" modal :header="selectedCustomer?.customer_number" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
         <div class="flex flex-col gap-y-2">
           <span><strong>ชื่อลูกค้า : </strong>{{ selectedCustomer?.customer_name }} 
@@ -504,7 +505,7 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, computed } from "vue";
+  import { ref, onMounted } from "vue";
   import { FilterMatchMode } from "primevue/api";
   import { useToast } from "primevue/usetoast";
   import { Customers } from "@/service/Customer";
