@@ -7,7 +7,7 @@
         <div class="modal-content h-full">
           <div>
             <div class="invoice text-xs">
-              <div class="flex flex-wrap justify-start items-center">
+              <div class="flex flex-wrap gap-3 justify-start items-center py-3">
                 <div>
                   <img
                     v-if="data.data.customer_branch?.Branch_iden_number!=='-'"
@@ -33,11 +33,11 @@
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
                   {{ data.data.customer_detail?.customer_email }}<br />
-                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id }}<br /><br />
+                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}<br /><br />
                 </div>
                 <div class="from">
                   <span
-                    class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-black bg-orange-200 uppercase last:mr-0 mr-1"
+                    class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-black bg-sky-200 uppercase last:mr-0 mr-1"
                     :style="{ backgroundColor: `#${data.color}` }"
                     >
                     ใบแจ้งหนี้ INVOICE
@@ -46,7 +46,7 @@
                   <br />
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เลขที่ : </span>
-                    {{ data.data.invoice }}
+                    {{ data.data.quotation }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่เริ่ม Date : </span>
@@ -55,10 +55,6 @@
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่สิ้นสุด Date due : </span>
                     {{ formatDate(data.data.end_date) }}
-                  </div>
-                  <div class="flex justify-between">
-                    <span class="font-bold pr-4">อ้างอิง : </span>
-                    {{ data.data.quotation }}
                   </div>
                   <br />
                   <hr />
@@ -107,7 +103,8 @@
                       {{ index + 1 }}
                     </td>
                     <td class=".td border">
-                      <div class="flex items-center">
+                      <div class="flex">
+                        <img v-if="product.product_logo && product.product_logo.trim()!==''" class="w-[200px] pr-3" :src="`https://drive.google.com/thumbnail?id=${product.product_logo}`" :alt="index" />
                         <article class="text-wrap w-[250px]">
                             <strong>{{ product.product_name }}</strong>
                             <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
@@ -141,7 +138,7 @@
                     <pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
                     >{{ mark }}</pre>
                   </article>
-                    <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-orange-200 text-center border-t border-l flex justify-center items-center"
+                    <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-sky-200 text-center border-t border-l flex justify-center items-center"
                       :style="{ backgroundColor: `#${data.color}` }">
                       <p class="font-bold">
                         ( {{ formatNumberToText(data.data.vat.totalVat_deducted) + 'ถ้วน' }} )
@@ -190,7 +187,7 @@
                       </tr>
                       <tr v-if="!data.data.customer_branch?.isVat" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.vat.totalVat_deducted) }}</strong>บาท</td>
+                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency((data.data.vat.totalvat-data.data.vat.amount_vat)) }}</strong>บาท</td>
                       </tr>
                     </tbody>
                 </table>
@@ -234,8 +231,7 @@
             </div>
           </div>
         
-        
-        <div class="flex justify-center px-2 py-2">
+        <div class="flex justify-center px-2">
             <table>
                 <tbody>
                   <tr>
@@ -243,46 +239,51 @@
                     <td class="border text-sm" style="text-align: center; padding:0;">ผู้สั่งซื้อ / customer</td>
                   </tr>
                   <tr>
-                    <td class="border h-full min-h-[50px]" style="text-align: bottom; padding:0;">
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                            <img class="w-[75px] border-b pb-1 mb-1" 
-                            v-if="data.data.signature?.image_signature 
-                            && data.data.signature?.image_signature.trim()!==''
-                            && data.data.signature?.image_signature.trim()!=='-'
-                            " 
-                            :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                            <p 
-                            v-if="!data.data.signature?.image_signature 
-                            || data.data.signature?.image_signature.trim()===''
-                            || data.data.signature?.image_signature.trim()==='-'
-                            ">____________________</p>
-                            <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                            ">
-                              ( {{ data.data.signature.name }} )
-                            </p>
-                            <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                              {{`(.................................)`}}
-                            </p>
-                            <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                            ">
-                              {{ data.data.signature.position }}
-                            </p>
-                            <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
-                            <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
-                        </div>
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                          <img class="w-[75px] border-b pb-1 mb-1" 
+                    <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
+                      <div class="text-center w-fit text-sm pt-5 flex flex-col items-center justify-end">
+                        <!-- <img class="w-[75px] border-b pb-1 mb-1" 
+                        v-if="data.data.signature?.image_signature 
+                        && data.data.signature?.image_signature.trim()!==''
+                        && data.data.signature?.image_signature.trim()!=='-'
+                        " 
+                        :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" /> -->
+                        <!-- <p 
+                        v-if="!data.data.signature?.image_signature 
+                        || data.data.signature?.image_signature.trim()===''
+                        || data.data.signature?.image_signature.trim()==='-'
+                        ">________________</p> -->
+                       <!--  <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
+                        ">
+                          ( {{ data.data.signature.name }} )
+                        </p>
+                        <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
+                          {{`(.................................)`}}
+                        </p>
+                        <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
+                        ">
+                          {{ data.data.signature.position }}
+                        </p> -->
+                        <img class="w-[130px]" 
+                        :src="ssn_2" alt="..." />
+                        <p>( เตชิตา รัตนกิตติกร )</p>
+                        <p>ผู้อนุมัติ</p>
+                        <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
+                        <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
+                      </div>
+
+                        <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
+                          <!-- <img class="w-[75px] border-b pb-1 mb-1" 
                           v-if="data.data.signature?.image_signature 
                           && data.data.signature?.image_signature.trim()!==''
                           && data.data.signature?.image_signature.trim()!=='-'
                           " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                          <p 
+                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" /> -->
+                          <!-- <p 
                           v-if="!data.data.signature?.image_signature 
                           || data.data.signature?.image_signature.trim()===''
                           || data.data.signature?.image_signature.trim()==='-'
-                          ">____________________</p>
-                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
+                          ">________________</p> -->
+                         <!--  <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
                           ">
                             ( {{ data.data.signature.name }} )
                           </p>
@@ -292,173 +293,19 @@
                           <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
                           ">
                             {{ data.data.signature.position }}
-                          </p>
+                          </p> -->
+                          <img class="w-[180px]" 
+                          :src="ssn_1" alt="..." />
+                          <p>( เพชรลดา หงษ์สี )</p>
+                          <p>ผู้ออกเอกสาร</p>
                           <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
                           <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
                         </div>
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                          <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                          <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">____________________</p>
-                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                          ">
-                            ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
-                          </p>
-                          <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                          ">
-                            {{ data.data.signature.position }}
-                          </p>
-                          <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
-                          <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
-                        </div>
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                          <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                          <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">____________________</p>
-                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                          ">
-                            ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
-                          </p>
-                          <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                          ">
-                            {{ data.data.signature.position }}
-                          </p>
-                          <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
-                          <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
-                        </div>
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                          <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                          <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">____________________</p>
-                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                          ">
-                            ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
-                          </p>
-                          <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                          ">
-                            {{ data.data.signature.position }}
-                          </p>
-                          <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
-                          <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
-                        </div>
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                          <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                          <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">____________________</p>
-                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                          ">
-                            ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
-                          </p>
-                          <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                          ">
-                            {{ data.data.signature.position }}
-                          </p>
-                          <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
-                          <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
-                        </div>
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                          <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                          <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">____________________</p>
-                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                          ">
-                            ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
-                          </p>
-                          <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                          ">
-                            {{ data.data.signature.position }}
-                          </p>
-                          <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
-                          <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
-                        </div>
-                        <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
-                          <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" />
-                          <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">____________________</p>
-                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                          ">
-                            ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
-                          </p>
-                          <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                          ">
-                            {{ data.data.signature.position }}
-                          </p>
-                          <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
-                          <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
-                        </div>
+                        
                     </td>
 
-
-
-
-                    <td class="border h-full min-h-[50px]" style="text-align: bottom; padding:0;">
-                      <div class="text-center w-full text-sm pt-5 flex flex-col items-center justify-center">
+                    <td class="border h-full min-h-[50px] px-4 w-fit" style="text-align: bottom;">
+                      <div class="text-center w-full h-full pt-5 text-sm flex flex-col items-center justify-center" style="text-align: bottom;">
                           <p 
                           >____________________</p>
                         <p v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''
@@ -485,6 +332,8 @@
 
 <script setup>
 import { onMounted } from 'vue';
+import ssn_1 from '@/assets/img/ssn-1.jpg'
+import ssn_2 from '@/assets/img/ssn-2.png'
 
 onMounted(()=>{
   setTimeout(print, 2000)
@@ -664,7 +513,8 @@ th,
   border-top: 1px solid #353434;
 }
 .th {
-  background-color: #ffd89d
+  --tw-bg-opacity: 1;
+  background-color: rgb(186 230 253 / var(--tw-bg-opacity));
 }
 
 .total {
