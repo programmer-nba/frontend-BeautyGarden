@@ -33,7 +33,7 @@
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
                   {{ data.data.customer_detail?.customer_email }}<br />
-                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id }}<br /><br />
+                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}<br /><br />
                 </div>
                 <div class="from">
                   <span
@@ -103,7 +103,8 @@
                       {{ index + 1 }}
                     </td>
                     <td class=".td border">
-                      <div class="flex items-center">
+                      <div class="flex">
+                        <img v-if="product.product_logo && product.product_logo.trim()!==''" class="w-[200px] pr-3" :src="`https://drive.google.com/thumbnail?id=${product.product_logo}`" :alt="index" />
                         <article class="text-wrap w-[250px]">
                             <strong>{{ product.product_name }}</strong>
                             <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
@@ -186,7 +187,7 @@
                       </tr>
                       <tr v-if="!data.data.customer_branch?.isVat" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.vat.totalVat_deducted) }}</strong>บาท</td>
+                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency((data.data.vat.totalvat-data.data.vat.amount_vat)) }}</strong>บาท</td>
                       </tr>
                     </tbody>
                 </table>

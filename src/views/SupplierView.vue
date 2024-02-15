@@ -7,7 +7,7 @@
     <div>
   
       <div class="pt-5">
-        <Customer/>
+        <Supplier />
       </div>
     </div>
    

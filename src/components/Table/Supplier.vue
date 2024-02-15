@@ -175,48 +175,38 @@
             >
           </div>
           <div class="field">
-            <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
+            <label for="supplier_tel">เบอร์ติดต่อร้านค้า</label>
             <InputText
               class="p-2"
-              id="customer_phone"
-              v-model.trim="customer.customer_phone"
+              id="supplier_tel"
+              v-model.trim="supplier.supplier_tel"
               required="false"
               autofocus
-              :class="{ 'p-invalid': submitted && !customer.customer_phone }"
+              :class="{ 'p-invalid': submitted && !supplier.supplier_tel }"
             />
-            <small class="p-error" v-if="submitted && !customer.customer_phone"
-              >เบอร์ติดต่อลูกค้า</small
+            <small class="p-error" v-if="submitted && !supplier.supplier_tel"
+              >เบอร์ติดต่อร้านค้า</small
             >
           </div>
           <div class="field">
-            <label for="customer_position">ที่อยู่ลูกค้า</label>
+            <label for="supplier_company_address">ที่อยู่ร้านค้า</label>
             <InputText
               class="p-2"
-              id="customer_position"
-              v-model.trim="customer.customer_position"
+              id="supplier_company_address"
+              v-model.trim="supplier.supplier_company_address"
               required="true"
               autofocus
-              :class="{ 'p-invalid': submitted && !customer.customer_position }"
+              :class="{ 'p-invalid': submitted && !supplier.supplier_company_address }"
             />
           </div>
-          <div class="field">
-            <label for="customer_email">อีเมล์ลูกค้า</label>
-            <InputText
-              class="p-2"
-              id="customer_email"
-              v-model.trim="customer.customer_email"
-              required="false"
-              autofocus
-              :class="{ 'p-invalid': submitted && !customer.customer_email }"
-            />
-          </div>
+          
           <div class="field">
             <div>
-              <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
+              <label for="inventoryStatus" class="mb-3">ประเภทร้านค้า</label>
               <Dropdown
                 id="inventoryStatus"
-                v-model.trim="customer.customer_type"
-                :options="statuses"
+                v-model.trim="supplier.supplier_type"
+                :options="supplierTypes"
                 placeholder="เลือกประเภทลูกค้า"
               >
                 <template #value="slotProps">
@@ -238,28 +228,6 @@
                 </template>
               </Dropdown>
             </div>
-          </div>
-          <div class="field">
-            <label for="customer_contact">ผู้ติดต่อ</label>
-            <InputText
-              class="p-2"
-              id="customer_contact"
-              v-model.trim="customer.customer_contact"
-              required="false"
-              autofocus
-              :class="{ 'p-invalid': submitted && !customer.customer_contact }"
-            />
-          </div>
-          <div class="field">
-            <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
-            <InputText
-              class="p-2"
-              id="customer_contact_number"
-              v-model.trim="customer.customer_contact_number"
-              required="false"
-              autofocus
-              :class="{ 'p-invalid': submitted && !customer.customer_contact_number }"
-            />
           </div>
         </div>
         <br />
@@ -369,12 +337,12 @@
           </div>
           <div class="field">
             <div>
-              <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
+              <label class="mb-3">ประเภทร้านค้า</label>
               <Dropdown
                 id="inventoryStatus"
-                v-model.trim="customer.customer_type"
-                :options="statuses"
-                placeholder="เลือกประเภทลูกค้า"
+                v-model.trim="supplier.supplier_type"
+                :options="supplierTypes"
+                placeholder="เลือกประเภทร้านค้า"
               >
                 <template #value="slotProps">
                   <div v-if="slotProps.value && slotProps.value.value">
@@ -396,28 +364,6 @@
               </Dropdown>
             </div>
           </div>
-          <div class="field">
-            <label for="customer_contact">ผู้ติดต่อ</label>
-            <InputText
-              class="p-2"
-              id="customer_contact"
-              v-model.trim="customer.customer_contact"
-              required="false"
-              autofocus
-              :class="{ 'p-invalid': submitted && !customer.customer_contact }"
-            />
-          </div>
-          <div class="field">
-            <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
-            <InputText
-              class="p-2"
-              id="customer_contact_number"
-              v-model.trim="customer.customer_contact_number"
-              required="false"
-              autofocus
-              :class="{ 'p-invalid': submitted && !customer.customer_contact_number }"
-            />
-          </div>
         </div>
         <br />
   
@@ -428,21 +374,21 @@
             icon="pi pi-check"
             :loading="loading"
             text
-            @click="editingCustomer"
+            @click="editingSupplier"
           />
         </template>
       </Dialog>
   
       <Dialog
-        v-model:visible="deleteCustomerDialog"
+        v-model:visible="deleteSupplierDialog"
         :style="{ width: '450px' }"
         header="Confirm"
         :modal="true"
       >
         <div class="confirmation-content">
           <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="customer"
-            >คุณแน่ใจว่าต้องการลบลูกค้ารายนี้หรือไม่ ?<b>{{ customer.customer_name }}</b
+          <span v-if="supplier.supplier_company_name"
+            >คุณแน่ใจว่าต้องการลบร้านค้ารายนี้หรือไม่ ?<b>{{ supplier.supplier_company_name }}</b
             >?</span
           >
         </div>
@@ -452,55 +398,49 @@
             label="ยกเลิก"
             icon="pi pi-times"
             text
-            @click="deleteCustomerDialog = false"
+            @click="deleteSupplierDialog = false"
           />
           <Button
             class="py-3"
             label="ยืนยัน"
             icon="pi pi-check"
             text
-            @click="deleteCustomer"
+            @click="deleteSupplier"
           />
         </template>
       </Dialog>
   
       <Dialog
-        v-model:visible="deleteCustomersDialog"
+        v-model:visible="deleteSuppliersDialog"
         :style="{ width: '450px' }"
         header="Confirm"
         :modal="true"
       >
         <div class="confirmation-content">
           <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-          <span v-if="customer">คุณแน่ใจว่าต้องการลบลูกค้ารายนี้หรือไม่ ?</span>
+          <span v-if="supplier">คุณแน่ใจว่าต้องการลบร้านค้ารายนี้หรือไม่ ?</span>
         </div>
         <template #footer>
           <Button
             label="ยกเลิก"
             icon="pi pi-times"
             text
-            @click="deleteCustomersDialog = false"
+            @click="deleteSuppliersDialog = false"
           />
-          <Button label="ยืนยัน" icon="pi pi-check" text @click="deleteSelectedCustomers" />
+          <Button label="ยืนยัน" icon="pi pi-check" text @click="deleteSelectedSuppliers" />
         </template>
       </Dialog>
 
-      <Dialog v-model:visible="openCustomer" modal :header="selectedCustomer?.customer_number" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+      <Dialog v-model:visible="openSupplier" modal :header="selectedSupplier?.supplier_company_name" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
         <div class="flex flex-col gap-y-2">
-          <span><strong>ชื่อลูกค้า : </strong>{{ selectedCustomer?.customer_name }} 
-            {{ selectedCustomer?.customer_lastname.trim()!=='' 
-            ? `(${selectedCustomer?.customer_lastname})` 
-            : null }}
+          <span><strong>ชื่อลูกค้า : </strong>{{ selectedSupplier?.supplier_company_name }} 
           </span>
-          <span><strong>เลขประจำตัวผู้เสียภาษี TAX ID : </strong>{{ selectedCustomer?.customer_taxnumber }}</span>
-          <span><strong>ที่อยู่ : </strong>{{ selectedCustomer?.customer_position }}</span>
-          <span><strong>ประเภทลูกค้า : </strong>{{ selectedCustomer?.customer_type }}</span>
-          <span><strong>อีเมล์ Email : </strong>{{ selectedCustomer?.customer_email }}</span>
-          <span><strong>เบอร์โทร : </strong>{{ selectedCustomer?.customer_phone }}</span>
-          <span><strong>ผู้ติดต่อ : </strong>{{ selectedCustomer?.customer_contact }}</span>
-          <span><strong>เบอร์โทรผู้ติดต่อ : </strong>{{ selectedCustomer?.customer_contact_number }}</span>
+          <span><strong>เลขประจำตัวผู้เสียภาษี TAX ID : </strong>{{ selectedSupplier?.supplier_iden_number }}</span>
+          <span><strong>ที่อยู่ : </strong>{{ selectedSupplier?.supplier_company_address }}</span>
+          <span><strong>ประเภทร้านค้า : </strong>{{ selectedSupplier?.supplier_type }}</span>
+          <span><strong>เบอร์โทร : </strong>{{ selectedSupplier?.supplier_company_number }}</span>
         </div>
-    </Dialog>
+      </Dialog>
     </div>
   </template>
   
@@ -508,53 +448,45 @@
   import { ref, onMounted } from "vue";
   import { FilterMatchMode } from "primevue/api";
   import { useToast } from "primevue/usetoast";
-  import { Customers } from "@/service/Customer";
+  import { Suppliers } from "@/service/Supplier";
   
   onMounted(async () => {
-    Customers.getCustomers().then((data) => (customers.value = data.data));
+    Suppliers.getSuppliers().then((data) => (suppliers.value = data.data));
   });
   
   const isMain = ref(false)
-  const openCustomer = ref(false);
+  const openSupplier = ref(false);
   const loading = ref(false);
-  const customerEditDialog = ref(false);
+  const supplierEditDialog = ref(false);
   const lastRefreshed = ref()
   const toast = useToast();
   const dt = ref();
-  const customer = ref({});
-  const customers = ref();
-  const selectedCustomer = ref();
-  const customerDialog = ref(false);
-  const deleteCustomerDialog = ref(false);
-  const deleteCustomersDialog = ref(false);
-  const selectedCustomers = ref();
+  const supplier = ref({});
+  const suppliers = ref();
+  const selectedSupplier = ref();
+  const supplierDialog = ref(false);
+  const deleteSupplierDialog = ref(false);
+  const deleteSuppliersDialog = ref(false);
+  const selectedSuppliers = ref();
   const uploadfiles = ref([]);
   const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
   const submitted = ref(false);
-  const statuses = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
-  
-  const changeMain = () => {
-    if(isMain.value && customer.value){
-      customer.value.customer_lastname = 'สำนักงานใหญ่'
-    } else {
-      customer.value.customer_lastname = null
-    }
-  }
+  const supplierTypes = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
   
   const refreshData = () => {
-    Customers.getCustomers().then((data) => (customers.value = data.data));
+    Suppliers.getSuppliers().then((data) => (suppliers.value = data.data));
     const currentTimestamp = Date.now();
     const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
     const formattedTime = new Intl.DateTimeFormat('en-US', options).format(new Date(currentTimestamp));
     lastRefreshed.value = formattedTime
   };
   
-  const seeCustomer = (data) => {
-    openCustomer.value = true;
-    selectedCustomer.value = data;
-    console.log("data", selectedCustomer.value);
+  const seeSupplier = (data) => {
+    openSupplier.value = true;
+    selectedSupplier.value = data;
+    console.log("data", selectedSupplier.value);
   };
   
   const customBase64Uploader = async (event) => {
@@ -574,43 +506,40 @@
   };
   
   const openNew = () => {
-    customer.value = {};
+    supplier.value = {};
     submitted.value = false;
-    customerDialog.value = true;
+    supplierDialog.value = true;
   };
+
   const hideDialog = () => {
-    customer.value = {};
-    customerDialog.value = false;
-    customerEditDialog.value = false;
+    supplier.value = {};
+    supplierDialog.value = false;
+    supplierEditDialog.value = false;
     submitted.value = false;
   };
   
-  const editCustomer = (prod) => {
-    customer.value = { ...prod };
-    customerEditDialog.value = true;
-    if(customer.value.customer_lastname && customer.value.customer_lastname.trim() === 'สำนักงานใหญ่'){
-      isMain.value = true
-    } else {
-      isMain.value = false
-    }
+  const editSupplier = (prod) => {
+    supplier.value = { ...prod };
+    supplierEditDialog.value = true;
   };
-  const confirmDeleteCustomer = (prod) => {
-    customer.value = prod;
-    deleteCustomerDialog.value = true;
+
+  const confirmDeleteSupplier = (prod) => {
+    supplier.value = prod;
+    deleteSupplierDialog.value = true;
   };
-  const deleteCustomer = async () => {
-    const customers_to_delete = customer.value;
-    if (customers_to_delete) {
-      console.log(customers_to_delete._id);
-      await Customers.deleteCustomer(customers_to_delete._id);
+  const deleteSupplier = async () => {
+    const suppliers_to_delete = supplier.value;
+    if (suppliers_to_delete) {
+      console.log(suppliers_to_delete._id);
+      await Suppliers.deleteSupplier(suppliers_to_delete._id);
     }
-    await Customers.getCustomers().then((data) => (customers.value = data.data));
-    deleteCustomerDialog.value = false;
-    customer.value = {};
+    await Suppliers.getSuppliers().then((data) => (suppliers.value = data.data));
+    deleteSupplierDialog.value = false;
+    supplier.value = {};
     toast.add({
       severity: "success",
       summary: "Successful",
-      detail: "ลบใบลูกค้าแล้ว",
+      detail: "ลบร้านค้าแล้ว",
       life: 3000,
     });
   };
@@ -619,119 +548,113 @@
     dt.value.exportCSV();
   };
   const confirmDeleteSelected = () => {
-    deleteCustomersDialog.value = true;
+    deleteSuppliersDialog.value = true;
   };
   
-  const deleteSelectedCustomers = async () => {
-    const customers_to_delete = customers.value.filter(
-      (val) => !selectedCustomers.value.includes(val)
+  const deleteSelectedSuppliers = async () => {
+    const suppliers_to_delete = suppliers.value.filter(
+      (val) => !selectedSuppliers.value.includes(val)
     );
-    console.log(selectedCustomers.value.length);
-    console.log(customers_to_delete.length);
+    console.log(selectedSuppliers.value.length);
+    console.log(suppliers_to_delete.length);
     if (
-      customers_to_delete.length > 0 
+        suppliers_to_delete.length > 0 
     ) {
-      for (let ct of selectedCustomers.value) {
-        console.log(ct._id);
-        await Customers.deleteCustomer(ct._id);
+      for (let ct of selectedSuppliers.value) {
+        console.log(sp._id);
+        await Suppliers.deleteCustomer(sp._id);
       }
     }
-    await Customers.getCustomers().then((data) => (customers.value = data.data));
-    deleteCustomersDialog.value = false;
-    selectedCustomers.value = null;
+    await Suppliers.getSuppliers().then((data) => (suppliers.value = data.data));
+    deleteSuppliersDialog.value = false;
+    selectedSuppliers.value = null;
     toast.add({
       severity: "success",
       summary: "Successful",
-      detail: "ลบลูกค้าแล้ว",
+      detail: "ลบร้านค้าแล้ว",
       life: 3000,
     });
   };
   
-  const createNewCustomer = async () => {
+  const createNewSupplier = async () => {
     loading.value = true;
-  
-    const formData = new FormData();
-    formData.append("customer_name", customer.value.customer_name);
-    formData.append("customer_lastname", customer.value.customer_lastname);
-    formData.append("customer_phone", customer.value.customer_phone);
-    formData.append("customer_position", customer.value.customer_position);
-    formData.append("customer_email", customer.value.customer_email);
-    formData.append("customer_type", customer.value.customer_type);
-    formData.append("customer_taxnumber", customer.value.customer_taxnumber);
-    formData.append("customer_contact", customer.value.customer_contact);
-    formData.append("customer_contact_number", customer.value.customer_contact_number);
-  
-    const response = await Customers.createNewCustomer(formData);
-    if (response.data) {
-      toast.add({
-        severity: "success",
-        summary: "สำเร็จ",
-        detail: "เพิ่มลูกค้าใหม่แล้ว",
-        life: 3000,
-      });
-      loading.value = false;
-      customerDialog.value = false;
-      await Customers.getCustomers().then((data) => (customers.value = data.data));
-    } else {
-      customerDialog.value = false;
-      toast.add({
-        severity: "error",
-        summary: "มีบางอย่างผิดพลาด",
-        detail: "เพิ่มลูกค้าใหม่ล้มเหลว",
-        life: 3000,
-      });
-      loading.value = false;
+    const data = {
+        supplier_tel: supplier.value.supplier_tel,
+        supplier_status: supplier.value.supplier_status,
+        supplier_company_name: supplier.value.supplier_company_name,
+        supplier_company_number: supplier.value.supplier_company_number,
+        supplier_company_address: supplier.value.supplier_company_address,
+        supplier_type : supplier.value.supplier_type,
+        remark : supplier.value.supplier_remark
     }
-  };
-  
-  const editingCustomer = async () => {
-    loading.value = true;
-  
-    const formData = new FormData();
-    formData.append("customer_name", customer.value.customer_name);
-    formData.append("customer_lastname", customer.value.customer_lastname);
-    formData.append("customer_phone", customer.value.customer_phone);
-    formData.append("customer_position", customer.value.customer_position);
-    formData.append("customer_email", customer.value.customer_email);
-    formData.append("customer_type", customer.value.customer_type);
-    formData.append("customer_taxnumber", customer.value.customer_taxnumber);
-    formData.append("customer_contact", customer.value.customer_contact);
-    formData.append("customer_contact_number", customer.value.customer_contact_number);
-  
     try {
-      const response = await Customers.editCustomer(customer.value._id, formData);
+        const response = await Suppliers.createNewSupplier(data);
+        if (response.data) {
+        toast.add({
+            severity: "success",
+            summary: "สำเร็จ",
+            detail: "เพิ่มร้านค้าใหม่แล้ว",
+            life: 3000,
+        });
+        supplierEditDialog.value = false;
+        refreshData()
+        } else {
+        toast.add({
+            severity: "error",
+            summary: "มีบางอย่างผิดพลาด",
+            detail: "เพิ่มร้านค้าใหม่ล้มเหลว",
+            life: 3000,
+        });
+        supplierEditDialog.value = false;
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        loading.value = false
+        refreshData()
+    }
+  }
   
-      if (response.data) {
-        await Customers.getCustomers().then((data) => (customers.value = data.data));
+  const editingSupplier = async () => {
+    loading.value = true;
+    const data = {
+        supplier_tel: supplier.value.supplier_tel,
+        supplier_status: supplier.value.supplier_status,
+        supplier_company_name: supplier.value.supplier_company_name,
+        supplier_company_number: supplier.value.supplier_company_number,
+        supplier_company_address: supplier.value.supplier_company_address,
+        supplier_type : supplier.value.supplier_type,
+        remark : supplier.value.supplier_remark
+    }
+    try {
+        const response = await Suppliers.editSupplier(id, data);
+        if (response.data) {
         toast.add({
-          severity: "success",
-          summary: "สำเร็จ",
-          detail: "แก้ไขข้อมูลลูกค้าแล้ว",
-          life: 3000,
+            severity: "success",
+            summary: "สำเร็จ",
+            detail: "เแก้ไขร้านค้าใหม่แล้ว",
+            life: 3000,
         });
-        loading.value = false;
-        customerEditDialog.value = false;
-      } else {
-        customerEditDialog.value = false;
+        supplierEditDialog.value = false;
+        refreshData()
+        } else {
         toast.add({
-          severity: "success",
-          summary: "สำเร็จ",
-          detail: "แก้ไขข้อมูลลูกค้าแล้ว",
-          life: 3000,
+            severity: "error",
+            summary: "มีบางอย่างผิดพลาด",
+            detail: "แก้ไขร้านค้าล้มเหลว",
+            life: 3000,
         });
-        loading.value = false;
-        await Customers.getCustomers().then((data) => (customers.value = data.data));
-      }
-    } catch (err) {
-      customerEditDialog.value = false;
-        toast.add({
-          severity: "error",
-          summary: "มีบางอย่างผิดพลาด",
-          detail: "แก้ไขข้อมูลลูกค้าล้มเหลว",
-          life: 3000,
-        });
-      loading.value = false;
-      await Customers.getCustomers().then((data) => (customers.value = data.data));
+        supplierEditDialog.value = false;
+        }
+    }
+    catch (err) {
+        console.log(err)
+    }
+    finally {
+        loading.value = false
+        refreshData()
     }
   };
   
