@@ -129,7 +129,22 @@
         <Column
           field="vat.totalVat_deducted"
           class="border-b"
-          header="ราคา"
+          header="ราคาเต็ม"
+          sortable
+          style="min-width: 8rem"
+        >
+          <template #body="slotProps">
+            {{
+              slotProps.data.total_products
+                ? formatCurrency(slotProps.data.total_products?.total_all_end)
+                : formatCurrency(slotProps.data.vat?.totalVat_deducted)
+            }}
+          </template>
+        </Column>
+        <Column
+          field=""
+          class="border-b"
+          header="ยอดคงค้าง"
           sortable
           style="min-width: 8rem"
         >
@@ -170,9 +185,9 @@
           style="min-width: 6rem"
           class="border-b"
         >
-          <!-- <template #body="slotProps">
-                        <Tag :value="slotProps.data.staus" :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
-                    </template> -->
+          <template #body="slotProps">
+            <Tag :value="slotProps.data.status.pop()" />
+          </template>
         </Column>
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">
@@ -295,7 +310,7 @@
                       <img
                         :alt="slotProps.value"
                         :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
+                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name}`"
                       />
                       <div>{{ slotProps.value?.name }}</div>
                     </div>
@@ -401,7 +416,7 @@
         </div>
 
         <div class="field">
-          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+          <label for="customer_taxnumber">เลขประจำตัวผู้เสียภาษี หรือ รหัสประชาชน</label>
           <InputText
             class="p-2"
             id="customer_taxnumber"
@@ -1468,8 +1483,10 @@ const closeHandle = () => {
 
 const referQuotation = () => {
     if(refQuotation.value){
-      console.log('rfQT', refQuotation.value)   
-      customer.value.customer_taxnumber = refQuotation.value.customer_detail.tax_id
+      console.log('rfQT', refQuotation.value)
+      start_date.value = refQuotation.value.start_date
+      end_date.value = refQuotation.value.end_date
+      customer.value.customer_taxnumber = refQuotation.value.customer_detail ? refQuotation.value.customer_detail.tax_id : null
       customer.value.customer_name = refQuotation.value.customer_detail.customer_name
       customer.value.customer_lastname = refQuotation.value.customer_detail.customer_lastname
       customer.value.customer_phone = refQuotation.value.customer_detail.customer_phone
@@ -1483,8 +1500,6 @@ const referQuotation = () => {
       discount.value = refQuotation.value.discount
       selectedSignature.value = refQuotation.value.signature
       bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
-      console.log('bank', bank.value)
-      console.log('company', company.value)
     }
 }
 

@@ -23,8 +23,8 @@ const router = createRouter({
       component: CompanyView
     },
     {
-      path: '/supplier',
-      name: 'supplier',
+      path: '/suppliers',
+      name: 'suppliers',
       component: SupplierView
     }
   ]

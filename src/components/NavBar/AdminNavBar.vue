@@ -94,6 +94,9 @@ const items = ref([
     {
         label: 'ซัพพลายเออร์',
         icon: 'pi pi-shopping-cart',
+        command: () => {
+            router.push('/suppliers');
+        },
         badge: 0
     }
 ]);
