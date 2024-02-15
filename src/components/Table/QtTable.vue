@@ -148,7 +148,7 @@
           class="border-b"
         >
           <template #body="slotProps">
-            {{ slotProps.data.total_products ? "VAT" : "-" }}
+            {{ slotProps.data.customer_branch.isVat ? "VAT" : "-" }}
           </template>
         </Column>
         <Column
