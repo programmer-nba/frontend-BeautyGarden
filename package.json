@@ -10,6 +10,7 @@
     "deploy:test": "scp -r dist/* root@143.198.204.72:/var/www/beautygarden.nbadigital.tech"
   },
   "dependencies": {
+    "@types/googlemaps": "^3.43.3",
     "axios": "^1.6.7",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",

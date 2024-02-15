@@ -96,3 +96,4 @@ app.component('InputSwitch', InputSwitch)
 app.component('ConfirmPopup', ConfirmPopup)
 
 app.mount('#app')
+
