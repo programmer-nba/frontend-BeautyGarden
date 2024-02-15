@@ -1,18 +1,16 @@
 <template>
   <div class="h-full">
     <Toast />
-    <Dialog
-      dismissableMask
-      :closable="false"
-      class="shadow-none rounded-none max-h-full p-0 cursor-pointer absolute top-0 bg-white w-full h-full"
-      v-model:visible="openReceipt"
+    <div
+      class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
+      v-if="openReceipt"
     >
       <DocReceipt
         :color="color"
         :data="selectedReceipt"
-        @close="openReceipt = false"
+        @close="closeHandle"
       />
-    </Dialog>
+  </div>
 
     <div v-if="!openReceipt" class="card">
       <Toolbar class="mb-4">
@@ -1468,6 +1466,8 @@ const seeReceipt = (data) => {
   openReceipt.value = true;
   selectedReceipt.value = data;
   console.log("data", selectedReceipt.value);
+  const body = document.body;
+  body.style.backgroundColor = 'white';
 };
 
 const formatDateRef = (isoDateString) => {
@@ -1662,7 +1662,7 @@ const editReceipt = (prod) => {
 };
 
 const resetData = () => {
-  quotation.value = {};
+  refQuotation.value = null;
   start_date.value = null;
   end_date.value = null;
   bank.value = {};
@@ -1689,7 +1689,8 @@ const deleteReceipt = async () => {
   await Documents.getReceipts().then(
     (data) => (receipts.value = data.data.reverse())
   );
-  reStore.getReceipts().then((data) => {receipts.value = data.data.reverse()});
+  reStore.getReceipts()
+  refresh()
   deleteReceiptDialog.value = false;
   receipt.value = {};
   toast.add({
@@ -1699,6 +1700,12 @@ const deleteReceipt = async () => {
     life: 3000,
   });
 };
+
+const closeHandle = () => {
+  openReceipt.value = false
+  const body = document.body;
+  body.style.backgroundColor = 'aliceblue';   
+}
 
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -1727,7 +1734,8 @@ const deleteSelectedReceipts = async () => {
   await Documents.getReceipts().then(
     (data) => (receipts.value = data.data.reverse())
   );
-  reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+  reStore.getReceipts()
+  refresh()
   deleteReceiptsDialog.value = false;
   selectedReceipts.value = null;
   toast.add({
@@ -1936,7 +1944,8 @@ const editingReceipt = async () => {
         }
       });
     } else {
-      reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+      reStore.getReceipts()
+      refresh()
       receiptEditDialog.value = false;
       toast.add({
         severity: "success",

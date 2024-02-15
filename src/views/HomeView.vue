@@ -12,8 +12,8 @@
         <ReHeadCard @choose="ontable('receipt')" :class="table==='receipt' ? 'shadow-lg shadow-green-200' : ''" />
       </div>
   
-      <div class="pt-5">
-        <QtTable v-if="table==='quotation'"  />
+      <div class="pt-5 h-full overflow-y-auto">
+        <QtTable v-if="table==='quotation'" />
         <InTable v-if="table==='invoice'" />
         <ReTable v-if="table==='receipt'" />
       </div>

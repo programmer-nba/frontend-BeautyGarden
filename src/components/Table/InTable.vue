@@ -1,18 +1,16 @@
 <template>
   <div class="h-full">
     <Toast />
-    <Dialog
-      dismissableMask
-      :closable="false"
-      class="shadow-none rounded-none max-h-full p-0 cursor-pointer absolute top-0 bg-white w-full h-full"
-      v-model:visible="openInvoice"
+    <div
+      class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
+      v-if="openInvoice"
     >
       <DocInvoice
         :color="color"
         :data="selectedInvoice"
-        @close="openInvoice = false"
+        @close="closeHandle"
       />
-    </Dialog>
+    </div>
 
     <div v-if="!openInvoice" class="card">
       <Toolbar class="mb-4">
@@ -1462,6 +1460,12 @@ const refresh = () => {
   lastRefreshed.value = formattedTime;
 };
 
+const closeHandle = () => {
+  openInvoice.value = false
+  const body = document.body;
+  body.style.backgroundColor = 'aliceblue';   
+}
+
 const referQuotation = () => {
     if(refQuotation.value){
       console.log('rfQT', refQuotation.value)   
@@ -1488,6 +1492,8 @@ const seeInvoice = (data) => {
   openInvoice.value = true;
   selectedInvoice.value = data;
   console.log("data", selectedInvoice.value);
+  const body = document.body;
+  body.style.backgroundColor = 'white';
 };
 
 const formatDateRef = (isoDateString) => {
@@ -1639,25 +1645,20 @@ const formatCurrency = (value) => {
   return;
 };
 
-const formatDate = (date) => {
-  if (date) {
-    const inputDate = date;
-    const dateObj = new Date(inputDate);
-
-    const day = dateObj.getUTCDate().toString().padStart(2, "0");
-    const month = (dateObj.getUTCMonth() + 1).toString().padStart(2, "0");
-    const year = (dateObj.getUTCFullYear() + 543).toString(); // Convert to Thai Buddhist Era
-
-    if (day !== NaN && month !== NaN && year !== NaN) {
-      const formattedDate = `${day}/${month}/${year}`;
-      return formattedDate; // Output: 09/02/2567
-    } else {
-      return "-";
-    }
-  } else {
-    return "-";
-  }
-};
+const resetData = () => {
+  invoice.value = {};
+  start_date.value = null;
+  end_date.value = null;
+  bank.value = {};
+  uploadfiles.value = [];
+  company.value = {};
+  selectedCompany.value = null;
+  customer.value = {};
+  selectedCustomer.value = null;
+  products.value = []
+  product.value = {}
+  remark.value = []
+}
 
 const openNew = () => {
   resetData()

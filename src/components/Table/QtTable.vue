@@ -1,18 +1,16 @@
 <template>
   <div class="h-full">
     <Toast />
-    <Dialog
-      dismissableMask
-      :closable="false"
-      class="shadow-none rounded-none max-h-full p-0 cursor-pointer absolute top-0 bg-white w-full h-full"
-      v-model:visible="openQuotation"
+    <div
+      class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
+      v-if="openQuotation"
     >
       <DocQuotation
         :color="color"
         :data="selectedQuotation"
-        @close="openQuotation = false"
+        @close="closeHandle"
       />
-    </Dialog>
+    </div>
 
     <div v-if="!openQuotation" class="card">
       <Toolbar class="mb-4">
@@ -1417,6 +1415,12 @@ const quotationEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
 
+const closeHandle = () => {
+  openQuotation.value = false
+  const body = document.body;
+  body.style.backgroundColor = 'aliceblue';   
+}
+
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -1440,6 +1444,8 @@ const seeQuotation = (data) => {
   openQuotation.value = true;
   selectedQuotation.value = data;
   console.log("data", selectedQuotation.value);
+  const body = document.body;
+  body.style.backgroundColor = 'white';
 };
 
 const formatDateRef = (isoDateString) => {
@@ -1663,7 +1669,8 @@ const deleteQuotation = async () => {
   await Documents.getQuotations().then(
     (data) => (quotations.value = data.data.reverse())
   );
-  qtStore.getQuotations().then((data) => {quotations.value = data.data.reverse()});
+  qtStore.getQuotations()
+  refresh()
   deleteQuotationDialog.value = false;
   quotation.value = {};
   toast.add({
@@ -1776,7 +1783,7 @@ const createNewQuotation = async () => {
           refresh()
         });
       } else {
-        qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+        qtStore.getQuotations()
         quotationDialog.value = false;
         toast.add({
           severity: "success",
