@@ -156,9 +156,9 @@
         </Column>
 
         <Column
-          field="vat.totalVat_deducted"
+          field="total"
           class="border-b"
-          header="ราคา"
+          header="จำนวนเต็ม"
           sortable
           style="min-width: 8rem"
         >
@@ -171,6 +171,21 @@
           </template>
         </Column>
         <Column
+          field="total"
+          class="border-b"
+          header="คงค้าง"
+          sortable
+          style="min-width: 8rem"
+        >
+          <template #body="slotProps">
+            {{ 
+              slotProps.data.sumVat
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+            }}
+          </template>
+        </Column>
+        <!-- <Column
           field="total_products"
           header="VAT 7%"
           sortable
@@ -205,7 +220,7 @@
               </span>
             </div>
           </template>
-        </Column>
+        </Column> -->
         <Column
           field="status[0]"
           header="สถานะ"
@@ -217,17 +232,26 @@
             งวด {{ slotProps.data.cur_period }} / {{ slotProps.data.end_period }}
           </template>
         </Column>
-        <Column :exportable="false" style="min-width: 10rem" class="border-b">
+        <Column :exportable="false" style="min-width: 13rem" class="border-b">
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
               <Button 
+                class="text-green-600 hover:bg-green-100" 
+                v-tooltip.top="'ดูใบเสร็จ'"
+                icon="pi pi-dollar" 
+                outlined 
+                rounded
+                @click="openRefReceipt(slotProps.data)" />
+              <Button 
                 class="text-blue-600 hover:bg-blue-100" 
+                v-tooltip.top="'ปริ้นท์'"
                 icon="pi pi-file" 
                 outlined 
                 rounded
                 @click="seeInvoice(slotProps.data)" />
               <Button
                 class="text-yellow-600 hover:bg-orange-100"
+                v-tooltip.top="'แก้ไข'"
                 icon="pi pi-pencil"
                 outlined
                 rounded
@@ -235,6 +259,7 @@
               />
               <Button
                 class="text-red-600 hover:bg-red-100"
+                v-tooltip.top="'ลบ'"
                 icon="pi pi-trash"
                 outlined
                 rounded
@@ -435,7 +460,6 @@
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
-            autofocus
             :class="{ 'p-invalid': submitted && !customer.customer_name }"
           />
           <small class="p-error" v-if="submitted && !customer.customer_name"
@@ -450,7 +474,6 @@
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
-            autofocus
             :class="{ 'p-invalid': submitted && !customer.customer_number }"
           />
           <small class="p-error" v-if="submitted && !customer.customer_number"
@@ -465,7 +488,6 @@
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
             required="true"
-            autofocus
             :class="{ 'p-invalid': submitted && !customer.customer_taxnumber }"
           />
           <small class="p-error" v-if="submitted && !customer.customer_taxnumber"
@@ -479,10 +501,9 @@
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_phone }"
+            :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_phone"
+          <small class="p-error" v-if="!customer.customer_phone"
             >เบอร์ติดต่อลูกค้า</small
           >
         </div>
@@ -493,8 +514,7 @@
             id="customer_lastname"
             v-model.trim="customer.customer_lastname"
             required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
+            :class="{ 'p-invalid': !customer.customer_lastname }"
           />
         </div>
         <div class="field">
@@ -504,8 +524,7 @@
             id="customer_position"
             v-model.trim="customer.customer_position"
             required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_position }"
+            :class="{ 'p-invalid': !customer.customer_position }"
           />
         </div>
         <div class="field">
@@ -515,8 +534,7 @@
             id="customer_email"
             v-model.trim="customer.customer_email"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_email }"
+            :class="{ 'p-invalid': !customer.customer_email }"
           />
         </div>
         <div class="field">
@@ -572,8 +590,7 @@
             id="customer_contact"
             v-model.trim="customer.customer_contact"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact }"
+            :class="{ 'p-invalid': !customer.customer_contact }"
           />
         </div>
         <div class="field">
@@ -583,8 +600,7 @@
             id="customer_contact_number"
             v-model.trim="customer.customer_contact_number"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact_number }"
+            :class="{ 'p-invalid': !customer.customer_contact_number }"
           />
         </div>
       </div>
@@ -1026,8 +1042,7 @@
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_name }"
+            :class="{ 'p-invalid': !customer.customer_name }"
           />
           <small class="p-error" v-if="submitted && !customer.customer_name"
             >กรุณาเพิ่มชื่อลูกค้า</small
@@ -1041,10 +1056,9 @@
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_number }"
+            :class="{ 'p-invalid': !customer.customer_number }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_number"
+          <small class="p-error" v-if="!customer.customer_number"
             >กรุณาเพิ่มรหัสลูกค้า</small
           >
         </div>
@@ -1056,10 +1070,9 @@
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
             required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_taxnumber }"
+            :class="{ 'p-invalid': !customer.customer_taxnumber }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_taxnumber"
+          <small class="p-error" v-if="!customer.customer_taxnumber"
             >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
           >
         </div>
@@ -1070,10 +1083,9 @@
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_phone }"
+            :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_phone"
+          <small class="p-error" v-if="!customer.customer_phone"
             >เบอร์ติดต่อลูกค้า</small
           >
         </div>
@@ -1084,8 +1096,7 @@
             id="customer_lastname"
             v-model.trim="customer.customer_lastname"
             required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
+            :class="{ 'p-invalid': !customer.customer_lastname }"
           />
         </div>
         <div class="field">
@@ -1095,8 +1106,7 @@
             id="customer_position"
             v-model.trim="customer.customer_position"
             required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_position }"
+            :class="{ 'p-invalid': !customer.customer_position }"
           />
         </div>
         <div class="field">
@@ -1106,8 +1116,7 @@
             id="customer_email"
             v-model.trim="customer.customer_email"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_email }"
+            :class="{ 'p-invalid': !customer.customer_email }"
           />
         </div>
         <div class="field">
@@ -1164,8 +1173,7 @@
             id="customer_contact"
             v-model.trim="customer.customer_contact"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact }"
+            :class="{ 'p-invalid': !customer.customer_contact }"
           />
         </div>
         <div class="field">
@@ -1175,8 +1183,7 @@
             id="customer_contact_number"
             v-model.trim="customer.customer_contact_number"
             required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact_number }"
+            :class="{ 'p-invalid': !customer.customer_contact_number }"
           />
         </div>
       </div>
@@ -1495,6 +1502,13 @@
         />
       </template>
     </Dialog>
+
+    <RefReceipt 
+      v-if="openRefReceiptDialog" 
+      :invoice="selected_invoice" 
+      @open_close="val=>openRefReceiptDialog=val" 
+    />
+
   </div>
 </template>
 
@@ -1507,6 +1521,7 @@ import { Customers } from "@/service/Customer";
 import { useInvoiceStore } from "@/stores/invoice";
 import { useCompanyStore } from "@/stores/company";
 import DocInvoice from "@/components/Pdf/DocInvoice.vue";
+import RefReceipt from '@/components/Dialog/RefReceipt.vue';
 
 const reStore = useInvoiceStore();
 const cpStore = useCompanyStore();
@@ -1555,6 +1570,15 @@ const bank = ref({});
 const refQuotation = ref()
 const end_period = ref(1)
 const cur_period = ref(0)
+
+// open reference receipts list
+const selected_invoice = ref()
+const openRefReceiptDialog = ref(false);
+const openRefReceipt = (invoice) => {
+  selected_invoice.value = invoice
+  openRefReceiptDialog.value = true
+  console.log(openRefReceiptDialog.value)
+}
 
 const closeHandle = () => {
   openInvoice.value = false
@@ -1606,14 +1630,14 @@ const refresh = () => {
 };
 
 const referQuotation = () => {
-  console.log(refQuotation.value.quotation)
   if(refQuotation.value){
     console.log('rfQT', refQuotation.value)   
+    console.log('custoers.value-1613', customers.value)
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
     selectedCustomer.value = customer.value
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
     company.value = selectedCompany.value
-    openProductForm.value = true
+    openProductForm.value = false
     products.value = refQuotation.value.product_detail
     discount.value = refQuotation.value.discount
     selectedSignature.value = refQuotation.value.signature
@@ -1751,15 +1775,6 @@ const netPrices = computed(() => {
 });
 
 const vat = computed(() => {
-  /* if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
-    const result = netPrices.value * 0.07;
-    return result;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = sumProductsPrice.value * 7/107;
-    return result;
-  } else {
-    return 0;
-  } */
   const all_vat = products.value.map(item=>{
     return item.vat_price
   })
@@ -1839,7 +1854,7 @@ const openNew = () => {
   resetData()
   submitted.value = false;
   invoiceDialog.value = true;
-  product.value.product_text = [""];
+  product.value.product_text = [];
 };
 
 const hideDialog = () => {
@@ -1882,8 +1897,7 @@ const editInvoice = (prod) => {
   product.value = {}
   product.value.product_text = [""]
   sumVat.value = prod.sumVat
-  refQuotation.value = invoice.value.quotation
-  referQuotation()
+  refQuotation.value = quotations.value.find(qt=>qt.quotation===invoice.value.quotation)
 };
 
 const totalPrice = (product) => {

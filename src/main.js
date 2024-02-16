@@ -41,6 +41,7 @@ import ColorPicker from 'primevue/colorpicker';
 import InputSwitch from 'primevue/inputswitch';
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
+import Tooltip from 'primevue/tooltip';
 
 import App from './App.vue'
 import router from './router'
@@ -62,6 +63,7 @@ app.use(PrimeVue, {
 
 app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
+app.directive('tooltip', Tooltip);
 
 app.component('Button', Button)
 app.component('InputText', InputText);
