@@ -133,10 +133,16 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{
-              slotProps.data.total_products
-                ? formatCurrency(slotProps.data.total_products?.total_all_end)
-                : formatCurrency(slotProps.data.vat?.totalVat_deducted)
+            <!-- <div class="flex flex-col gap-y-2">
+              <p>totalPrice : {{ totalPrice(slotProps.data) }}</p>
+              <p>discount : {{ slotProps.data.discount }}</p>
+              <p>vat : {{ totalVat(slotProps.data) }}</p>
+              <p>ณ ที่จ่าย : {{ withHolding(slotProps.data) }}</p>
+            </div> -->
+            {{ 
+              slotProps.data.sumVat
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
             }}
           </template>
         </Column>
@@ -148,7 +154,17 @@
           class="border-b"
         >
           <template #body="slotProps">
-            {{ slotProps.data.customer_branch.isVat ? "VAT" : "-" }}
+            <div class="grid place-items-center w-full">
+              <span class="text-sm text-center" 
+              :class="slotProps.data.customer_branch.isVat 
+              ? 'bg-yellow-200 rounded p-1' : ''">
+                {{ 
+                  slotProps.data.customer_branch.isVat && slotProps.data.sumVat ? "VAT นอก" 
+                  : slotProps.data.customer_branch.isVat && !slotProps.data.sumVat ? "VAT ใน"
+                  : "-" 
+              }}
+              </span>
+            </div>
           </template>
         </Column>
         <Column
@@ -159,7 +175,11 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            {{ slotProps.data.vat?.percen_deducted ? "หัก ณ ที่จ่าย" : "-" }}
+            <div class="grid place-items-center w-full">
+              <span class="text-sm text-center" :class="slotProps.data.vat?.percen_deducted ? 'text-orange-500' : ''">
+                {{ slotProps.data.vat?.percen_deducted ? "หัก ณ ที่จ่าย" : "-" }}
+              </span>
+            </div>
           </template>
         </Column>
         <Column
@@ -176,14 +196,21 @@
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
-              <Button icon="pi pi-file" outlined @click="seeQuotation(slotProps.data)" />
+              <Button 
+                class="text-blue-600 hover:bg-blue-100" 
+                icon="pi pi-file" 
+                outlined 
+                rounded
+                @click="seeQuotation(slotProps.data)" />
               <Button
+                class="text-yellow-600 hover:bg-orange-100"
                 icon="pi pi-pencil"
                 outlined
                 rounded
                 @click="editQuotation(slotProps.data)"
               />
               <Button
+                class="text-red-600 hover:bg-red-100"
                 icon="pi pi-trash"
                 outlined
                 rounded
@@ -268,7 +295,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <div>
+            <!-- <div>
               <h1>เลือกลายเซ็น</h1>
               <div class="card flex justify-content-center">
                 <Dropdown
@@ -303,7 +330,7 @@
                   </template>
                 </Dropdown>
               </div>
-            </div>
+            </div> -->
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -781,7 +808,7 @@
     <Dialog
       v-model:visible="quotationEditDialog"
       :style="{ width: '450px' }"
-      header="แก้ไขใบเสนอราคา"
+      header="Quotation Details"
       :modal="true"
       class="p-fluid"
     >
@@ -794,11 +821,11 @@
       <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
-          <Calendar class="border" v-model="start_date" showButtonBar />
+          <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div class="card flex flex-col mt-2 mb-5 gap-y-2 justify-center items-center">
           <p>วันที่สิ้นสุด</p>
-          <Calendar class="border" v-model="end_date" showButtonBar />
+          <Calendar class="border" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -851,7 +878,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <div>
+            <!-- <div>
               <h1>เลือกลายเซ็น</h1>
               <div class="card flex justify-content-center">
                 <Dropdown
@@ -886,7 +913,7 @@
                   </template>
                 </Dropdown>
               </div>
-            </div>
+            </div> -->
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -1104,6 +1131,10 @@
       </div>
       <br />
 
+      <span class="my-2" v-if="selectedCompany?.isVat">
+        <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
+      </span>
+
       <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
@@ -1115,10 +1146,10 @@
                 >
                   <div class="w-[75px] relative">
                     <img
-                      v-if="item.product_logo"
+                      v-if="item.product_logo64"
                       class="object-contain block xl:block mx-auto border-round w-full"
-                      :src="`https://drive.google.com/thumbnail?id=${item.product_logo}`"
-                      :alt="item.product_logo"
+                      :src="item.product_logo64"
+                      :alt="index"
                     />
                   </div>
                   <div
@@ -1143,13 +1174,18 @@
                         >
                           {{ formatCurrency(item.product_price) }} x
                           {{ item.product_amount }}
+                          {{
+                            item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
+                            : item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            : null 
+                          }}
                         </p>
                       </div>
                     </div>
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency(item.product_price * item.product_amount)
+                          formatCurrency((item.product_amount * item.product_price)+item.vat_price)
                         }}.-</span
                       >
                       <div class="flex flex-row-reverse md:flex-row gap-2">
@@ -1167,65 +1203,19 @@
           </template>
         </DataView>
       </div>
-      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
-        <p>ส่วนลด</p>
-        <InputNumber
-          v-model="discount"
-          inputId="minmaxfraction"
-          :minFractionDigits="2"
-          :maxFractionDigits="5"
-        />
-      </div>
 
-      <div class="flex flex-col gap-y-2">
-        <span class="my-2" v-if="selectedCompany?.isVat">
-          Vat ใน : <InputSwitch v-model="sumVat" />
-        </span>
-        
-        <span v-if="sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(sumProductsPrice) || 0
-          }}</span></span
-        >
-        <span v-if="!sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(notSumVatsumProductsPrice) || 0
-          }}</span></span
-        >
-        <span
-          >ส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
-        >
-        <span
-          >ราคาหลังหักส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >ราคารวม VAT
-          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
-        >
-        <span v-if="isWithholding"
-          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
-          <span class="border-b px-2">{{
-            formatCurrency(withholdingPrice) || 0
-          }}</span></span
-        >
-        <span class="font-bold py-3"
-          >ราคาสุทธิ
-          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
-        >
-      </div>
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
           class="px-2 py-2 w-fit text-lg font-bold text-white"
           label="เพิ่มสินค้า/บริการ"
-          @click="openProductForm = true"
+          @click="
+            ()=>{
+              openProductForm = true
+              product.isVat = false
+              product.vat_price = 0
+            }
+          "
         />
       </div>
 
@@ -1253,9 +1243,22 @@
             <InputText v-model="product.product_name" />
           </div>
           <label>รายละเอียด</label>
-          <div class="card flex justify-content-center">
-            <Textarea v-model="product.product_text" autoResize rows="5" cols="50" />
+          <div
+            v-for="(text, textInputIndex) in product.product_text"
+            class="card flex justify-content-center"
+          >
+            <Textarea
+              v-model="product.product_text[textInputIndex]"
+              autoResize
+              rows="5"
+              cols="50"
+            />
           </div>
+          <Button
+            label="add"
+            class="bg-orange-300 px-2"
+            @click="product.product_text.push('')"
+          />
         </div>
         <div class="field grid w-full px-5">
           <div class="field grid">
@@ -1277,10 +1280,18 @@
               integeronly
             />
           </div>
+          <div class="flex items-center gap-2">
+            <p>VAT</p>
+            <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+          </div>
           <div class="field grid">
             <label for="quantity">รวม</label>
             <p class="font-semibold px-2">
-              {{ formatCurrency(product.product_amount * product.product_price) }} บาท
+              {{ 
+                sumVat
+                ? formatCurrency((product.product_amount * product.product_price)+product.vat_price) 
+                : formatCurrency((product.product_amount * product.product_price)-product.vat_price) 
+              }} บาท
             </p>
           </div>
         </div>
@@ -1301,6 +1312,58 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
+        <p>ส่วนลด</p>
+        <InputNumber
+          v-model="discount"
+          inputId="minmaxfraction"
+          :minFractionDigits="2"
+          :maxFractionDigits="5"
+        />
+      </div>
+
+      <div class="flex flex-col gap-y-2">
+        
+        <span v-if="sumVat"
+          >ราคาสินค้า
+          <span class="border-b px-2">{{
+            formatCurrency(sumProductsPrice) || 0
+          }}</span></span
+        >
+        <span v-if="!sumVat"
+          >ราคาสินค้า
+          <span class="border-b px-2">{{
+            formatCurrency(notSumVatsumProductsPrice) || 0
+          }}</span></span
+        >
+        
+        <span
+          >ส่วนลด
+          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
+        >
+        <span
+          >ราคาหลังหักส่วนลด
+          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
+        >
+        <span v-if="selectedCompany?.isVat"
+          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
+        >
+        <span v-if="selectedCompany?.isVat"
+          >ราคารวม VAT
+          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
+        >
+        <span v-if="isWithholding"
+          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
+          <span class="border-b px-2">{{
+            formatCurrency(withholdingPrice) || 0
+          }}</span></span
+        >
+        <span class="font-bold py-3"
+          >ราคาสุทธิ
+          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
+        >
+      </div>
+      
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
         <p>หมายเหตุ</p>
         <Textarea
@@ -1309,15 +1372,14 @@
           autoResize
           rows="5"
           cols="30"
-          class="border my-2"
         />
-        <Button class="px-2 border rounded" label="เพิ่ม" @click="remark.push('')" />
+        <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
       </div>
 
       <template #footer>
-        <Button label="ยกเลิก" icon="pi pi-times" text @click="hideDialog" />
+        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
         <Button
-          label="บันทึก"
+          label="Save"
           icon="pi pi-check"
           :loading="loading"
           text
@@ -1696,8 +1758,27 @@ const editQuotation = (prod) => {
   console.log(cpStore.mySignatures)
   console.log(prod.signature)
   quotationEditDialog.value = true;
+  discount.value = 0
+  product.value = {}
+  product.value.product_text = [""]
   sumVat.value = prod.sumVat
 };
+
+const totalPrice = (product) => {
+  const price = product.product_detail.map((item)=>{
+    return item.product_total - item.vat_price
+  })
+  const all_price = price.length > 0 ? price.reduce((a,b) => a + b) : 0
+  return all_price
+}
+
+const totalVat = (product) => {
+  const vat = product.product_detail.map((item)=>{
+    return item.vat_price
+  })
+  const result = vat.length > 0 ? vat.reduce((a,b) => a + b) : 0
+  return result
+}
 
 const confirmDeleteQuotation = (prod) => {
   quotation.value = prod;
@@ -1705,24 +1786,42 @@ const confirmDeleteQuotation = (prod) => {
 };
 const deleteQuotation = async () => {
   const quotations_to_delete = quotation.value;
-  if (quotations_to_delete) {
-    console.log(quotations_to_delete._id);
-    await Documents.deleteQuotation(quotations_to_delete._id);
+  try {
+    if (quotations_to_delete) {
+      console.log(quotations_to_delete._id);
+      await Documents.deleteQuotation(quotations_to_delete._id);
+      Documents.getQuotations()
+      qtStore.getQuotations()
+      refresh()
+      quotation.value = {};
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "ลบใบเสนอราคาแล้ว",
+        life: 3000,
+      });
+    }
   }
-  await Documents.getQuotations().then(
-    (data) => (quotations.value = data.data.reverse())
-  );
-  qtStore.getQuotations()
-  refresh()
-  deleteQuotationDialog.value = false;
-  quotation.value = {};
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "ลบใบเสนอราคาแล้ว",
-    life: 3000,
-  });
+  catch(err){
+    console.log(err)
+    toast.add({
+      severity: "error",
+      summary: "เกิดข้อผิดพลาด",
+      detail: "ลบใบเสนอราคาล้มเหลว",
+      life: 3000,
+    });
+  }
+  finally {
+    deleteQuotationDialog.value = false;
+  }
 };
+
+const withHolding = (product) => {
+  const percent = product.vat.percen_deducted
+  const price = totalPrice(product)
+  const result = percent > 0 ? price*percent/100 : 0
+  return result
+}
 
 const exportCSV = () => {
   dt.value.exportCSV();
@@ -1732,34 +1831,38 @@ const confirmDeleteSelected = () => {
 };
 
 const deleteSelectedQuotations = async () => {
-  const quotations_to_delete = quotations.value.filter(
-    (val) => !selectedQuotations.value.includes(val)
-  );
-  console.log(selectedQuotations.value.length);
-  console.log(quotations_to_delete.length);
+  try {
+    const quotations_to_delete = quotations.value
+      .filter((val) => !selectedQuotations.value.includes(val))
   if (
     quotations_to_delete.length > 0 &&
     selectedQuotations.value.length !== quotations.value.length
   ) {
-    for (let qt of selectedQuotations.value) {
-      console.log(qt._id);
-      await Documents.deleteQuotation(qt._id);
-    }
+      for (let qt of selectedQuotations.value) {
+        console.log(qt._id);
+        await Documents.deleteQuotation(qt._id);
+      }
   } else if (selectedQuotations.value.length === quotations.value.length) {
     await Documents.deleteQuotations();
   }
-  await Documents.getQuotations().then(
-    (data) => (quotations.value = data.data.reverse())
-  );
-  qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
-  deleteQuotationsDialog.value = false;
-  selectedQuotations.value = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "ลบใบเสนอราคาแล้ว",
-    life: 3000,
-  });
+    selectedQuotations.value = null;
+    toast.add({
+      severity: "success",
+      summary: "Successful",
+      detail: "ลบใบเสนอราคาแล้ว",
+      life: 3000,
+    });
+  }
+  catch (err) {
+    console.log(err)
+  }
+  finally {
+    deleteQuotationsDialog.value = false
+    loading.value = false
+    Documents.getQuotations()
+    qtStore.getQuotations()
+    refresh()
+  }
 };
 
 const createNewQuotation = async () => {
@@ -1810,10 +1913,8 @@ const createNewQuotation = async () => {
           const formData = new FormData();
           formData.append("imgCollection", file);
           const res = await Documents.uploadFileQuotation(imgId[index], qtId, formData);
-
-          qtStore
-            .getQuotations()
-            .then((data) => (quotations.value = data.data.reverse()));
+          qtStore.getQuotations()
+          refresh()
           quotationDialog.value = false;
           toast.add({
             severity: "success",
@@ -1827,6 +1928,7 @@ const createNewQuotation = async () => {
         });
       } else {
         qtStore.getQuotations()
+        refresh()
         quotationDialog.value = false;
         toast.add({
           severity: "success",
@@ -1839,7 +1941,8 @@ const createNewQuotation = async () => {
       }
       refresh()
     } else {
-      qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+      qtStore.getQuotations()
+      refresh()
       quotationDialog.value = false;
       toast.add({
         severity: "error",
@@ -1948,7 +2051,8 @@ const editingQuotation = async () => {
         }
       });
     } else {
-      qtStore.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+      qtStore.getQuotations()
+      refresh()
       quotationEditDialog.value = false;
       toast.add({
         severity: "success",

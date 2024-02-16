@@ -5,12 +5,12 @@
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openReceipt"
     >
-      <DocReceipt
+      <DocReceiptRef
         :color="color"
         :data="selectedReceipt"
         @close="closeHandle"
       />
-  </div>
+    </div>
 
     <div v-if="!openReceipt" class="card">
       <Toolbar class="mb-4">
@@ -113,6 +113,17 @@
             {{ formatDateRef(slotProps.data.start_date) }}
           </template>
         </Column>
+        <Column
+          field="end_date"
+          header="วันที่สิ้นสุด"
+          class="border-b"
+          sortable
+          style="min-width: 10rem"
+        >
+          <template #body="slotProps">
+            {{ formatDateRef(slotProps.data.end_date) }}
+          </template>
+        </Column>
 
         <Column
           field="vat.totalVat_deducted"
@@ -122,10 +133,16 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{
-              slotProps.data.total_products
-                ? formatCurrency(slotProps.data.total_products?.total_all_end)
-                : formatCurrency(slotProps.data.vat?.totalVat_deducted)
+            <!-- <div class="flex flex-col gap-y-2">
+              <p>totalPrice : {{ totalPrice(slotProps.data) }}</p>
+              <p>discount : {{ slotProps.data.discount }}</p>
+              <p>vat : {{ totalVat(slotProps.data) }}</p>
+              <p>ณ ที่จ่าย : {{ withHolding(slotProps.data) }}</p>
+            </div> -->
+            {{ 
+              slotProps.data.sumVat
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
             }}
           </template>
         </Column>
@@ -137,7 +154,17 @@
           class="border-b"
         >
           <template #body="slotProps">
-            {{ slotProps.data.total_products ? "VAT" : "-" }}
+            <div class="grid place-items-center w-full">
+              <span class="text-sm text-center" 
+              :class="slotProps.data.customer_branch.isVat 
+              ? 'bg-yellow-200 rounded p-1' : ''">
+                {{ 
+                  slotProps.data.customer_branch.isVat && slotProps.data.sumVat ? "VAT นอก" 
+                  : slotProps.data.customer_branch.isVat && !slotProps.data.sumVat ? "VAT ใน"
+                  : "-" 
+              }}
+              </span>
+            </div>
           </template>
         </Column>
         <Column
@@ -148,7 +175,11 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            {{ slotProps.data.vat?.percen_deducted ? "หัก ณ ที่จ่าย" : "-" }}
+            <div class="grid place-items-center w-full">
+              <span class="text-sm text-center" :class="slotProps.data.vat?.percen_deducted ? 'text-orange-500' : ''">
+                {{ slotProps.data.vat?.percen_deducted ? "หัก ณ ที่จ่าย" : "-" }}
+              </span>
+            </div>
           </template>
         </Column>
         <Column
@@ -165,14 +196,21 @@
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
-              <Button icon="pi pi-file" outlined @click="seeReceipt(slotProps.data)" />
+              <Button 
+                class="text-blue-600 hover:bg-blue-100" 
+                icon="pi pi-file" 
+                outlined 
+                rounded
+                @click="seeReceipt(slotProps.data)" />
               <Button
+                class="text-yellow-600 hover:bg-orange-100"
                 icon="pi pi-pencil"
                 outlined
                 rounded
                 @click="editReceipt(slotProps.data)"
               />
               <Button
+                class="text-red-600 hover:bg-red-100"
                 icon="pi pi-trash"
                 outlined
                 rounded
@@ -197,7 +235,7 @@
         editable
         :options="quotations"
         optionLabel="quotation"
-        placeholder="เลือกใบเสนอราคา"
+        placeholder="เลือกใบเสร็จรับเงิน"
         class="w-full md:w-14rem"
         @change="referQuotation"
       />
@@ -264,7 +302,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <div>
+            <!-- <div>
               <h1>เลือกลายเซ็น</h1>
               <div class="card flex justify-content-center">
                 <Dropdown
@@ -299,7 +337,7 @@
                   </template>
                 </Dropdown>
               </div>
-            </div>
+            </div> -->
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -517,6 +555,10 @@
       </div>
       <br />
 
+      <span class="my-2" v-if="selectedCompany?.isVat">
+        <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
+      </span>
+
       <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
@@ -556,13 +598,18 @@
                         >
                           {{ formatCurrency(item.product_price) }} x
                           {{ item.product_amount }}
+                          {{
+                            item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
+                            : item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            : null 
+                          }}
                         </p>
                       </div>
                     </div>
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency(item.product_price * item.product_amount)
+                          formatCurrency((item.product_amount * item.product_price)+item.vat_price)
                         }}.-</span
                       >
                       <div class="flex flex-row-reverse md:flex-row gap-2">
@@ -580,65 +627,19 @@
           </template>
         </DataView>
       </div>
-      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
-        <p>ส่วนลด</p>
-        <InputNumber
-          v-model="discount"
-          inputId="minmaxfraction"
-          :minFractionDigits="2"
-          :maxFractionDigits="5"
-        />
-      </div>
 
-      <div class="flex flex-col gap-y-2">
-        <span class="my-2" v-if="selectedCompany?.isVat">
-          <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
-        </span>
-        
-        <span v-if="sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(sumProductsPrice) || 0
-          }}</span></span
-        >
-        <span v-if="!sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(notSumVatsumProductsPrice) || 0
-          }}</span></span
-        >
-        <span
-          >ส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
-        >
-        <span
-          >ราคาหลังหักส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >ราคารวม VAT
-          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
-        >
-        <span v-if="isWithholding"
-          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
-          <span class="border-b px-2">{{
-            formatCurrency(withholdingPrice) || 0
-          }}</span></span
-        >
-        <span class="font-bold py-3"
-          >ราคาสุทธิ
-          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
-        >
-      </div>
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
           class="px-2 py-2 w-fit text-lg font-bold text-white"
           label="เพิ่มสินค้า/บริการ"
-          @click="openProductForm = true"
+          @click="
+            ()=>{
+              openProductForm = true
+              product.isVat = false
+              product.vat_price = 0
+            }
+          "
         />
       </div>
 
@@ -703,10 +704,18 @@
               integeronly
             />
           </div>
+          <div class="flex items-center gap-2">
+            <p>VAT</p>
+            <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+          </div>
           <div class="field grid">
             <label for="quantity">รวม</label>
             <p class="font-semibold px-2">
-              {{ formatCurrency(product.product_amount * product.product_price) }} บาท
+              {{ 
+                sumVat
+                ? formatCurrency((product.product_amount * product.product_price)+product.vat_price) 
+                : formatCurrency((product.product_amount * product.product_price)-product.vat_price) 
+              }} บาท
             </p>
           </div>
         </div>
@@ -727,6 +736,58 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
+        <p>ส่วนลด</p>
+        <InputNumber
+          v-model="discount"
+          inputId="minmaxfraction"
+          :minFractionDigits="2"
+          :maxFractionDigits="5"
+        />
+      </div>
+
+      <div class="flex flex-col gap-y-2">
+        
+        <span v-if="sumVat"
+          >ราคาสินค้า
+          <span class="border-b px-2">{{
+            formatCurrency(sumProductsPrice) || 0
+          }}</span></span
+        >
+        <span v-if="!sumVat"
+          >ราคาสินค้า
+          <span class="border-b px-2">{{
+            formatCurrency(notSumVatsumProductsPrice) || 0
+          }}</span></span
+        >
+        
+        <span
+          >ส่วนลด
+          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
+        >
+        <span
+          >ราคาหลังหักส่วนลด
+          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
+        >
+        <span v-if="selectedCompany?.isVat"
+          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
+        >
+        <span v-if="selectedCompany?.isVat"
+          >ราคารวม VAT
+          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
+        >
+        <span v-if="isWithholding"
+          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
+          <span class="border-b px-2">{{
+            formatCurrency(withholdingPrice) || 0
+          }}</span></span
+        >
+        <span class="font-bold py-3"
+          >ราคาสุทธิ
+          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
+        >
+      </div>
+      
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
         <p>หมายเหตุ</p>
         <Textarea
@@ -754,20 +815,20 @@
     <Dialog
       v-model:visible="receiptEditDialog"
       :style="{ width: '450px' }"
-      header="แก้ไขใบเสร็จรับเงิน"
+      header="Receipt Details"
       :modal="true"
       class="p-fluid"
     >
     <div class="card flex flex-col gap-y-2 justify-content-center">
       <Dropdown
-        v-model="refQuotation"
-        editable
-        :options="quotations"
-        optionLabel="quotation"
-        placeholder="เลือกใบเสนอราคา"
-        class="w-full md:w-14rem"
-        @change="referQuotation"
-      />
+          v-model="refQuotation"
+          editable
+          :options="quotations"
+          optionLabel="quotation"
+          placeholder="เลือกใบเสร็จรับเงิน"
+          class="w-full md:w-14rem"
+          @change="referQuotation"
+        />
     </div>
       <div
         v-if="loading"
@@ -831,7 +892,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <div>
+            <!-- <div>
               <h1>เลือกลายเซ็น</h1>
               <div class="card flex justify-content-center">
                 <Dropdown
@@ -866,7 +927,7 @@
                   </template>
                 </Dropdown>
               </div>
-            </div>
+            </div> -->
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -1084,6 +1145,10 @@
       </div>
       <br />
 
+      <span class="my-2" v-if="selectedCompany?.isVat">
+        <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
+      </span>
+
       <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
@@ -1095,10 +1160,10 @@
                 >
                   <div class="w-[75px] relative">
                     <img
-                      v-if="item.product_logo"
+                      v-if="item.product_logo64"
                       class="object-contain block xl:block mx-auto border-round w-full"
-                      :src="`https://drive.google.com/thumbnail?id=${item.product_logo}`"
-                      :alt="item.product_logo"
+                      :src="item.product_logo64"
+                      :alt="index"
                     />
                   </div>
                   <div
@@ -1123,13 +1188,18 @@
                         >
                           {{ formatCurrency(item.product_price) }} x
                           {{ item.product_amount }}
+                          {{
+                            item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
+                            : item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            : null 
+                          }}
                         </p>
                       </div>
                     </div>
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency(item.product_price * item.product_amount)
+                          formatCurrency((item.product_amount * item.product_price)+item.vat_price)
                         }}.-</span
                       >
                       <div class="flex flex-row-reverse md:flex-row gap-2">
@@ -1147,65 +1217,19 @@
           </template>
         </DataView>
       </div>
-      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
-        <p>ส่วนลด</p>
-        <InputNumber
-          v-model="discount"
-          inputId="minmaxfraction"
-          :minFractionDigits="2"
-          :maxFractionDigits="5"
-        />
-      </div>
 
-      <div class="flex flex-col gap-y-2">
-        <span class="my-2" v-if="selectedCompany?.isVat">
-          Vat ใน : <InputSwitch v-model="sumVat" />
-        </span>
-        
-        <span v-if="sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(sumProductsPrice) || 0
-          }}</span></span
-        >
-        <span v-if="!sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(notSumVatsumProductsPrice) || 0
-          }}</span></span
-        >
-        <span
-          >ส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
-        >
-        <span
-          >ราคาหลังหักส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >ราคารวม VAT
-          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
-        >
-        <span v-if="isWithholding"
-          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
-          <span class="border-b px-2">{{
-            formatCurrency(withholdingPrice) || 0
-          }}</span></span
-        >
-        <span class="font-bold py-3"
-          >ราคาสุทธิ
-          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
-        >
-      </div>
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
           class="px-2 py-2 w-fit text-lg font-bold text-white"
           label="เพิ่มสินค้า/บริการ"
-          @click="openProductForm = true"
+          @click="
+            ()=>{
+              openProductForm = true
+              product.isVat = false
+              product.vat_price = 0
+            }
+          "
         />
       </div>
 
@@ -1233,9 +1257,22 @@
             <InputText v-model="product.product_name" />
           </div>
           <label>รายละเอียด</label>
-          <div class="card flex justify-content-center">
-            <Textarea v-model="product.product_text" autoResize rows="5" cols="50" />
+          <div
+            v-for="(text, textInputIndex) in product.product_text"
+            class="card flex justify-content-center"
+          >
+            <Textarea
+              v-model="product.product_text[textInputIndex]"
+              autoResize
+              rows="5"
+              cols="50"
+            />
           </div>
+          <Button
+            label="add"
+            class="bg-orange-300 px-2"
+            @click="product.product_text.push('')"
+          />
         </div>
         <div class="field grid w-full px-5">
           <div class="field grid">
@@ -1257,10 +1294,18 @@
               integeronly
             />
           </div>
+          <div class="flex items-center gap-2">
+            <p>VAT</p>
+            <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+          </div>
           <div class="field grid">
             <label for="quantity">รวม</label>
             <p class="font-semibold px-2">
-              {{ formatCurrency(product.product_amount * product.product_price) }} บาท
+              {{ 
+                sumVat
+                ? formatCurrency((product.product_amount * product.product_price)+product.vat_price) 
+                : formatCurrency((product.product_amount * product.product_price)-product.vat_price) 
+              }} บาท
             </p>
           </div>
         </div>
@@ -1281,6 +1326,58 @@
         </div>
       </div>
 
+      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
+        <p>ส่วนลด</p>
+        <InputNumber
+          v-model="discount"
+          inputId="minmaxfraction"
+          :minFractionDigits="2"
+          :maxFractionDigits="5"
+        />
+      </div>
+
+      <div class="flex flex-col gap-y-2">
+        
+        <span v-if="sumVat"
+          >ราคาสินค้า
+          <span class="border-b px-2">{{
+            formatCurrency(sumProductsPrice) || 0
+          }}</span></span
+        >
+        <span v-if="!sumVat"
+          >ราคาสินค้า
+          <span class="border-b px-2">{{
+            formatCurrency(notSumVatsumProductsPrice) || 0
+          }}</span></span
+        >
+        
+        <span
+          >ส่วนลด
+          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
+        >
+        <span
+          >ราคาหลังหักส่วนลด
+          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
+        >
+        <span v-if="selectedCompany?.isVat"
+          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
+        >
+        <span v-if="selectedCompany?.isVat"
+          >ราคารวม VAT
+          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
+        >
+        <span v-if="isWithholding"
+          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
+          <span class="border-b px-2">{{
+            formatCurrency(withholdingPrice) || 0
+          }}</span></span
+        >
+        <span class="font-bold py-3"
+          >ราคาสุทธิ
+          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
+        >
+      </div>
+      
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
         <p>หมายเหตุ</p>
         <Textarea
@@ -1289,15 +1386,14 @@
           autoResize
           rows="5"
           cols="30"
-          class="border my-2"
         />
-        <Button class="px-2 border rounded" label="เพิ่ม" @click="remark.push('')" />
+        <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
       </div>
 
       <template #footer>
-        <Button label="ยกเลิก" icon="pi pi-times" text @click="hideDialog" />
+        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
         <Button
-          label="บันทึก"
+          label="Save"
           icon="pi pi-check"
           :loading="loading"
           text
@@ -1373,7 +1469,7 @@ import { Documents } from "@/service/ProductService";
 import { Customers } from "@/service/Customer";
 import { useReceiptStore } from "@/stores/receipt";
 import { useCompanyStore } from "@/stores/company";
-import DocReceipt from "@/components/Pdf/DocReceipt.vue";
+import DocReceiptRef from "@/components/Pdf/DocReceiptRef.vue";
 
 const reStore = useReceiptStore();
 const cpStore = useCompanyStore();
@@ -1386,7 +1482,7 @@ onMounted(async () => {
   await cpStore.getMySignatures();
 });
 
-const quotations = ref([]);
+const quotations = ref([])
 const lastRefreshed = ref();
 const openReceipt = ref(false);
 const loading = ref(false);
@@ -1419,7 +1515,13 @@ const uploadfiles = ref([]);
 const receiptEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
-const refQuotation = ref();
+const refQuotation = ref()
+
+const closeHandle = () => {
+  openReceipt.value = false
+  const body = document.body;
+  body.style.backgroundColor = 'aliceblue';   
+}
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -1441,25 +1543,22 @@ const refresh = () => {
 };
 
 const referQuotation = () => {
-    if(refQuotation.value){
-      console.log('rfQT', refQuotation.value)   
-      customer.value.customer_taxnumber = refQuotation.value.customer_detail.tax_id
-      customer.value.customer_name = refQuotation.value.customer_detail.customer_name
-      customer.value.customer_lastname = refQuotation.value.customer_detail.customer_lastname
-      customer.value.customer_phone = refQuotation.value.customer_detail.customer_phone
-      customer.value.customer_email = refQuotation.value.customer_detail.customer_email
-      customer.value.customer_position = ''
-      customer.value.customer_type = refQuotation.value.customer_detail.customer_type
-      selectedCustomer.value = customer.value
-      selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
-      company.value = selectedCompany.value
-      products.value = refQuotation.value.product_detail
-      discount.value = refQuotation.value.discount
-      selectedSignature.value = refQuotation.value.signature
-      bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
-      console.log('bank', bank.value)
-      console.log('company', company.value)
-    }
+  console.log(refQuotation.value.quotation)
+  if(refQuotation.value){
+    console.log('rfQT', refQuotation.value)   
+    customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
+    selectedCustomer.value = customer.value
+    selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
+    company.value = selectedCompany.value
+    openProductForm.value = true
+    products.value = refQuotation.value.product_detail
+    discount.value = refQuotation.value.discount
+    selectedSignature.value = refQuotation.value.signature
+    bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
+    sumVat.value = refQuotation.value.sumVat
+    console.log('bank', bank.value)
+    console.log('company', company.value)
+  }
 }
 
 const seeReceipt = (data) => {
@@ -1470,10 +1569,19 @@ const seeReceipt = (data) => {
   body.style.backgroundColor = 'white';
 };
 
-const formatDateRef = (isoDateString) => {
-  if(!isoDateString || isoDateString.trim()===''){
-    return null
+const changeProductVat = () => {
+  if (product.value.isVat) {
+
+    product.value.vat_price = product.value.product_price*product.value.product_amount*0.07
+
+  } else {
+
+    product.value.vat_price = 0
+
   }
+}
+
+const formatDateRef = (isoDateString) => {
   const isoDate = new Date(isoDateString);
   
   // Convert to Buddhist Era (BE) by adding 543 years
@@ -1503,9 +1611,12 @@ const withholdingPrice = computed(() => {
 
 const addProduct = () => {
   if (product.value) {
+    product.value.product_price = 
+      sumVat.value ? product.value.product_price
+      : product.value.product_price - product.value.vat_price 
     products.value.push(product.value);
     product.value = {};
-    product.value.product_text = [];
+    product.value.product_text = [""];
     openProductForm.value = false;
   }
 };
@@ -1523,7 +1634,7 @@ const removeProduct = (index) => {
 const sumProductsPrice = computed(() => {
   if (products.value && products.value.length > 0) {
     const prices = products.value.map((pd) => {
-      const result = pd.product_price * pd.product_amount;
+      const result = (pd.product_price * pd.product_amount) + pd.vat_price
       return result;
     });
     const sumPrices = prices.reduce((a, b) => a + b);
@@ -1556,7 +1667,7 @@ const netPrices = computed(() => {
 });
 
 const vat = computed(() => {
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
+  /* if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
     const result = netPrices.value * 0.07;
     return result;
   } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
@@ -1564,7 +1675,12 @@ const vat = computed(() => {
     return result;
   } else {
     return 0;
-  }
+  } */
+  const all_vat = products.value.map(item=>{
+    return item.vat_price
+  })
+  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b ) : 0
+  return result
 });
 
 const netVat = computed(() => {
@@ -1619,12 +1735,29 @@ const formatCurrency = (value) => {
   return;
 };
 
+const resetData = () => {
+  receipt.value = {};
+  start_date.value = null;
+  end_date.value = null;
+  bank.value = {};
+  uploadfiles.value = [];
+  company.value = {};
+  selectedCompany.value = null;
+  customer.value = {};
+  selectedCustomer.value = null;
+  products.value = []
+  product.value = {}
+  remark.value = []
+  refQuotation.value = null
+}
+
 const openNew = () => {
   resetData()
   submitted.value = false;
   receiptDialog.value = true;
   product.value.product_text = [""];
 };
+
 const hideDialog = () => {
   product.value = {};
   products.value = [];
@@ -1635,8 +1768,12 @@ const hideDialog = () => {
 };
 
 const editReceipt = (prod) => {
+  resetData()
   receipt.value = { ...prod };
   console.log("re", receipt.value);
+
+  start_date.value = prod.start_date;
+  end_date.value = prod.end_date;
 
   const company = cpStore.myCompanies.find(
     (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
@@ -1654,96 +1791,118 @@ const editReceipt = (prod) => {
   discount.value = prod.discount;
   products.value = prod.product_detail;
   remark.value = prod.remark;
-  start_date.value = formatDateRef(prod.start_date)
-  bank.value = company.bank.find((item) => item.number === prod.bank.status);
+  bank.value = company ? company.bank.find((item) => item.number === prod.bank.status) : null;
   selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
-
   receiptEditDialog.value = true;
+  discount.value = 0
+  product.value = {}
+  product.value.product_text = [""]
+  sumVat.value = prod.sumVat
+  refQuotation.value = receipt.value.quotation
+  referQuotation()
 };
 
-const resetData = () => {
-  refQuotation.value = null;
-  start_date.value = null;
-  end_date.value = null;
-  bank.value = {};
-  uploadfiles.value = [];
-  company.value = {};
-  selectedCompany.value = null;
-  customer.value = {};
-  selectedCustomer.value = null;
-  products.value = []
-  product.value = {}
-  remark.value = []
+const totalPrice = (product) => {
+  const price = product.product_detail.map((item)=>{
+    return item.product_total - item.vat_price
+  })
+  const all_price = price.length > 0 ? price.reduce((a,b) => a + b) : 0
+  return all_price
+}
+
+const totalVat = (product) => {
+  const vat = product.product_detail.map((item)=>{
+    return item.vat_price
+  })
+  const result = vat.length > 0 ? vat.reduce((a,b) => a + b) : 0
+  return result
 }
 
 const confirmDeleteReceipt = (prod) => {
   receipt.value = prod;
   deleteReceiptDialog.value = true;
 };
+
 const deleteReceipt = async () => {
   const receipts_to_delete = receipt.value;
-  if (receipts_to_delete) {
-    console.log(receipts_to_delete._id);
-    await Documents.deleteReceipt(receipts_to_delete._id);
+  try {
+    if (receipts_to_delete) {
+      console.log(receipts_to_delete._id);
+      await Documents.deleteReceipt(receipts_to_delete._id);
+      Documents.getReceipts()
+      reStore.getReceipts()
+      refresh()
+      receipt.value = {};
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "ลบใบเสร็จรับเงินแล้ว",
+        life: 3000,
+      });
+    }
   }
-  await Documents.getReceipts().then(
-    (data) => (receipts.value = data.data.reverse())
-  );
-  reStore.getReceipts()
-  refresh()
-  deleteReceiptDialog.value = false;
-  receipt.value = {};
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "ลบใบเสร็จรับเงินแล้ว",
-    life: 3000,
-  });
+  catch(err){
+    console.log(err)
+    toast.add({
+      severity: "error",
+      summary: "เกิดข้อผิดพลาด",
+      detail: "ลบใบเสร็จรับเงินล้มเหลว",
+      life: 3000,
+    });
+  }
+  finally {
+    deleteReceiptDialog.value = false;
+  }
 };
 
-const closeHandle = () => {
-  openReceipt.value = false
-  const body = document.body;
-  body.style.backgroundColor = 'aliceblue';   
+const withHolding = (product) => {
+  const percent = product.vat.percen_deducted
+  const price = totalPrice(product)
+  const result = percent > 0 ? price*percent/100 : 0
+  return result
 }
 
 const exportCSV = () => {
   dt.value.exportCSV();
 };
+
 const confirmDeleteSelected = () => {
   deleteReceiptsDialog.value = true;
 };
 
 const deleteSelectedReceipts = async () => {
-  const receipts_to_delete = receipts.value.filter(
-    (val) => !selectedReceipts.value.includes(val)
-  );
-  console.log(selectedReceipts.value.length);
-  console.log(receipts_to_delete.length);
+  try {
+    const receipts_to_delete = receipts.value
+      .filter((val) => !selectedReceipts.value.includes(val))
   if (
     receipts_to_delete.length > 0 &&
     selectedReceipts.value.length !== receipts.value.length
   ) {
-    for (let qt of selectedReceipts.value) {
-      console.log(qt._id);
-      await Documents.deleteReceipt(qt._id);
-    }
-  } else if (selectedReceipts.value.length === quotations.value.length) {
+      for (let qt of selectedReceipts.value) {
+        console.log(qt._id);
+        await Documents.deleteReceipt(qt._id);
+      }
+  } else if (selectedReceipts.value.length === receipts.value.length) {
     await Documents.deleteReceipts();
   }
-  await Documents.getReceipts().then(
-    (data) => (receipts.value = data.data.reverse())
-  );
-  reStore.getReceipts()
-  refresh()
-  deleteReceiptsDialog.value = false;
-  selectedReceipts.value = null;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "ลบใบเสร็จรับเงินแล้ว",
-    life: 3000,
-  });
+    selectedReceipts.value = null;
+    toast.add({
+      severity: "success",
+      summary: "Successful",
+      detail: "ลบใบเสร็จรับเงินแล้ว",
+      life: 3000,
+    });
+  }
+  catch (err) {
+    console.log(err)
+  }
+  finally {
+    deleteReceiptsDialog.value = false
+    loading.value = false
+    Documents.getReceipts()
+    reStore.getReceipts()
+    refresh()
+  }
 };
 
 const createNewReceipt = async () => {
@@ -1753,21 +1912,11 @@ const createNewReceipt = async () => {
   products.value.forEach((product) => {
     product.product_logo64 = "";
   });
-
   const data = {
-    quotation: refQuotation.value ? refQuotation.value.quotation : null,
-    //invoice: invoice.invoice,
+    quotation: refQuotation.value.quotation,
+    //invoice: refInvoice.value.invoice,
     customer_number: customer.value.customer_number,
-    customer_branch: {
-        Branch_company_name: selectedCompany.value.Branch_company_name,
-        Branch_company_number: selectedCompany.value.Branch_company_number,
-        Branch_company_address: selectedCompany.value.Branch_company_address,
-        contact_number: selectedCompany.value.contact_number,
-        contact_name: selectedCompany.value.contact_name,
-        Branch_iden: selectedCompany.value.Branch_iden,
-        Branch_iden_number: selectedCompany.value.Branch_iden_number,
-        taxnumber: selectedCompany.value.taxnumber
-    },
+    branchId: selectedCompany.value._id,
     signatureID: selectedSignature.value ? selectedSignature.value._id : null,
     customer_detail: {
       tax_id: customer.value.customer_taxnumber,
@@ -1805,11 +1954,9 @@ const createNewReceipt = async () => {
           const formData = new FormData();
           formData.append("imgCollection", file);
           const res = await Documents.uploadFileReceipt(imgId[index], qtId, formData);
-
-          reStore
-            .getReceipts()
-            .then((data) => (receipts.value = data.data.reverse()));
-            receiptDialog.value = false;
+          reStore.getReceipts()
+          refresh()
+          receiptDialog.value = false;
           toast.add({
             severity: "success",
             summary: "Successful",
@@ -1818,9 +1965,11 @@ const createNewReceipt = async () => {
           });
           loading.value = false;
           receiptDialog.value = false;
+          refresh()
         });
       } else {
-        reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+        reStore.getReceipts()
+        refresh()
         receiptDialog.value = false;
         toast.add({
           severity: "success",
@@ -1829,9 +1978,12 @@ const createNewReceipt = async () => {
           life: 3000,
         });
         loading.value = false;
+        refresh()
       }
+      refresh()
     } else {
-      reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+      reStore.getReceipts()
+      refresh()
       receiptDialog.value = false;
       toast.add({
         severity: "error",
@@ -1841,6 +1993,7 @@ const createNewReceipt = async () => {
       });
       receiptDialog.value = false;
       loading.value = false;
+      refresh()
     }
     loading.value = false;
     toast.add({
@@ -1849,6 +2002,7 @@ const createNewReceipt = async () => {
       detail: "สร้างใบเสร็จรับเงินแล้ว",
       life: 3000,
     });
+    refresh()
   } catch (err) {
     console.log(err);
     receiptDialog.value = false;
@@ -1859,11 +2013,7 @@ const createNewReceipt = async () => {
       detail: "สร้างใบเสร็จรับเงินล้มเหลว",
       life: 3000,
     });
-  }
-  finally {
     refresh()
-    loading.value = false;
-    receiptDialog.value = false;
   }
   receiptDialog.value = false;
   loading.value = false;
@@ -1873,6 +2023,7 @@ const createNewReceipt = async () => {
     detail: "สร้างใบเสร็จรับเงินแล้ว",
     life: 3000,
   });
+  refresh()
 };
 
 const editingReceipt = async () => {
@@ -1882,8 +2033,10 @@ const editingReceipt = async () => {
   products.value.forEach((product) => {
     product.product_logo64 = "";
   });
-
+  console.log(refQuotation.value)
   const data = {
+    //quotation: refQuotation.value.quotation,
+    //invoice: refInvoice.value.invoice,
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
     signatureID: selectedSignature.value ? selectedSignature.value._id : '',
@@ -1901,6 +2054,7 @@ const editingReceipt = async () => {
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
     percen_payment: isWithholding.value ? withholdingPercent.value : null,
     start_date: start_date.value,
+    end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value.isVat,
     bank: bank.value ? {
@@ -1908,17 +2062,13 @@ const editingReceipt = async () => {
       remark_2: bank.value.remark,
       status: bank.value.number,
     } : {
-      name: '',
+      name:'',
       remark_2: '',
       status: '',
     },
   };
-
-  console.log('re',receipt.value)
-  console.log('data',data)
-  console.log('bank', bank.value)
-  console.log('date', start_date.value)
-  try{
+  console.log(data)
+  try {
     const response = await Documents.editReceipt(receipt.value._id, data);
   if (response.data) {
     img = response.data.product_detail;
@@ -1933,7 +2083,7 @@ const editingReceipt = async () => {
           reStore
             .getReceipts()
             .then((data) => (receipts.value = data.data.reverse()));
-            receiptDialog.value = false;
+          receiptDialog.value = false;
           toast.add({
             severity: "success",
             summary: "Successful",
@@ -1965,19 +2115,13 @@ const editingReceipt = async () => {
     });
     loading.value = false;
   }
-  }
-  catch(err){
-    toast.add({
-      severity: "error",
-      summary: "มีบางอย่างผิดพลาด",
-      detail: "แก้ไขใบเสร็จรับเงินล้มเหลว",
-      life: 3000,
-    });
-    console.log(err)
+  } catch(err){
+console.log(err)
   }
   finally {
-    receiptEditDialog.value = false
-    loading.value = false
+    loading.value = false;
+    receiptEditDialog.value = false;
+    refresh()
   }
 };
 
@@ -1995,4 +2139,5 @@ const getStatusLabel = (status) => {
       return null;
   }
 };
+
 </script>

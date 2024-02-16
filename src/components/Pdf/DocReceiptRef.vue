@@ -60,10 +60,6 @@
                     <span class="font-bold pr-4">อ้างอิง : </span>
                     {{ data.data.quotation }}
                   </div>
-                  <div class="flex justify-between">
-                    <span class="font-bold pr-4">อ้างอิง : </span>
-                    {{ data.data.invoice }}
-                  </div>
                   <br />
                   <hr />
                   <br />
@@ -83,70 +79,62 @@
               <table class="border-b min-h-[80px] h-full">
                 <thead>
                   <tr>
-                    <th :style="{ backgroundColor: `#${data.color}` }" class="th rounded-tl-xl pb-0 pt-2" style="text-align: center">
-                      <p>ที่</p>
-                      <small class="font-normal">No.</small>
+                    <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
+                      <p>เลขที่เอกสาร</p>
+                      <small class="font-normal">Invoice No.</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
-                      <p>รายละเอียด</p>
-                      <small class="font-normal">Description</small>
+                      <p>เอกสารวันที่</p>
+                      <small class="font-normal">Date</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
-                      <p>จำนวน</p>
-                      <small class="font-normal">Quantity</small>
+                      <p>วันครบกำหนด</p>
+                      <small class="font-normal">Date Due</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
-                      <p>ราคา/หน่วย</p>
-                      <small class="font-normal">Unit Price</small>
+                      <p>งวดที่</p>
+                      <small class="font-normal">Period</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
-                      <p>VAT 7%</p>
-                      <small class="font-normal"></small>
+                      <p>ยอดคงค้าง</p>
+                      <small class="font-normal">Balance Price</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2 rounded-tr-xl" style="text-align: center">
-                      <p>จำนวนเงิน</p>
+                      <p>ยอดชำระ</p>
                       <small class="font-normal">Amount Price</small>
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="border py-2" v-for="(product, index) in data.data.product_detail" :key="index">
-                    <td class=".td flex justify-center" style="text-align: center">
-                      {{ index + 1 }}
+                  <tr class="border py-2">
+                    <td class=".td border" style="text-align: right">
+                      <div class="flex justify-center h-full py-2">
+                        INV0000000000
+                      </div>
                     </td>
-                    <td class=".td border">
-                      <div class="flex">
-                        <img v-if="product.product_logo && product.product_logo.trim()!==''" class="w-[150px] pr-3" :src="`https://drive.google.com/thumbnail?id=${product.product_logo}`" :alt="index" />
-                        <article class="text-wrap w-[200px]">
-                            <strong>{{ product.product_name }}</strong>
-                            <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
-                                {{ p }}
-                            </p>
-                        </article>
+                    <td class=".td border" style="text-align: right">
+                      <div class="flex justify-center h-full py-2">
+                        16/2/2567
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: right">
+                      <div class="flex justify-center h-full py-2">
+                        20/2/2567
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_amount) }}
+                        1/2
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: center">
+                      <div class="flex justify-center h-full py-2">
+                        1,000
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_price) }}
-                      </div>
-                    </td>
-                    <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
-                        {{ 
-                          product.vat_price > 0
-                          ? formatCurrency(product.vat_price) 
-                          : 0
-                        }}
-                      </div>
-                    </td>
-                    <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_total) }}
+                        500
                       </div>
                     </td>
                   </tr>
@@ -172,7 +160,7 @@
                     </div>
                 
                 </div>
-                <table v-if="data.data.sumVat">
+                <table>
                     <tbody>
                       <tr class="flex justify-between w-full">
                         <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5">ราคาสินค้า/บริการ</span></td>
@@ -206,44 +194,13 @@
                         <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
                         <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
                       </tr>
+                      <tr class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
+                        <td style="text-align: left"><strong class="pl-5">ยอดคงค้าง</strong></td>
+                        <td style="text-align: right"><strong class="pr-3">500</strong>บาท</td>
+                      </tr>
                     </tbody>
                 </table>
-                <table v-if="!data.data.sumVat">
-                  <tbody>
-                    <tr class="flex justify-between w-full">
-                      <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5">ราคาสินค้า/บริการ</span></td>
-                      <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
-                    </tr>
-                    <tr class="flex justify-between w-full">
-                      <td style="text-align: left"><span class="pl-5">ส่วนลด</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount) || 0 }}</span>บาท</td>
-                    </tr>
-                    <tr class="flex justify-between w-full">
-                      <td style="text-align: left"><span class="pl-5">ราคาหลังหักส่วนลด</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
-                    </tr>
-                    <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
-                      <td style="text-align: left"><span class="pl-5">VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
-                    </tr>
-                    <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
-                      <td style="text-align: left"><span class="pl-5">ราคารวม VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
-                    </tr>
-                    <tr v-if="data.data.vat.percen_deducted" class="flex justify-between w-full">
-                      <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย {{ data.data.vat.percen_deducted }}%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(withHolding) }}</span>บาท</td>
-                    </tr>
-                    <tr v-if="data.data.vat.percen_deducted" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
-                      <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat-withHolding) }}</strong>บาท</td>
-                    </tr>
-                    <tr v-if="!data.data.vat.percen_deducted" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
-                      <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
-                    </tr>
-                  </tbody>
-              </table>
+                
               </div>
             </div>
           </div>
@@ -252,34 +209,20 @@
             <table>
                 <tbody>
                   <tr>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้เสนอราคา</td>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้สั่งซื้อ / customer</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเงิน</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้จ่ายเงิน</td>
                   </tr>
                   <tr>
                     <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
                       <div class="text-center w-fit text-sm pt-5 flex flex-col items-center justify-end">
-                        <!-- <img class="w-[75px] border-b pb-1 mb-1" 
-                        v-if="data.data.signature?.image_signature 
-                        && data.data.signature?.image_signature.trim()!==''
-                        && data.data.signature?.image_signature.trim()!=='-'
-                        " 
-                        :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" /> -->
-                        <!-- <p 
-                        v-if="!data.data.signature?.image_signature 
-                        || data.data.signature?.image_signature.trim()===''
-                        || data.data.signature?.image_signature.trim()==='-'
-                        ">________________</p> -->
-                       <!--  <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
+                        <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
                         ">
                           ( {{ data.data.signature.name }} )
-                        </p>
-                        <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                          {{`(.................................)`}}
                         </p>
                         <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
                         ">
                           {{ data.data.signature.position }}
-                        </p> -->
+                        </p>
                         <img class="w-[130px]" 
                         :src="ssn_2" alt="..." />
                         <p>( เตชิตา รัตนกิตติกร )</p>
@@ -289,28 +232,14 @@
                       </div>
 
                         <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
-                          <!-- <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" /> -->
-                          <!-- <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">________________</p> -->
-                         <!--  <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
+                          <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
                           ">
                             ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
                           </p>
                           <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
                           ">
                             {{ data.data.signature.position }}
-                          </p> -->
+                          </p>
                           <img class="w-[180px]" 
                           :src="ssn_1" alt="..." />
                           <p>( เพชรลดา หงษ์สี )</p>

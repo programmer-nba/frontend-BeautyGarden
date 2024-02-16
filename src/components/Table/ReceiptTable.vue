@@ -1520,3 +1520,38 @@ const getStatusLabel = (status) => {
   }
 };
 </script>
+
+
+<div class="card flex flex-col gap-y-2 justify-content-center">
+  <Dropdown
+    v-model="refQuotation"
+    editable
+    :options="quotations"
+    optionLabel="quotation"
+    placeholder="เลือกใบเสนอราคา"
+    class="w-full md:w-14rem"
+    @change="referQuotation"
+  />
+</div>
+
+const referQuotation = () => {
+  if(refQuotation.value){
+    console.log('rfQT', refQuotation.value)   
+    customer.value.customer_taxnumber = refQuotation.value.customer_detail.tax_id
+    customer.value.customer_name = refQuotation.value.customer_detail.customer_name
+    customer.value.customer_lastname = refQuotation.value.customer_detail.customer_lastname
+    customer.value.customer_phone = refQuotation.value.customer_detail.customer_phone
+    customer.value.customer_email = refQuotation.value.customer_detail.customer_email
+    customer.value.customer_position = ''
+    customer.value.customer_type = refQuotation.value.customer_detail.customer_type
+    selectedCustomer.value = customer.value
+    selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
+    company.value = selectedCompany.value
+    products.value = refQuotation.value.product_detail
+    discount.value = refQuotation.value.discount
+    selectedSignature.value = refQuotation.value.signature
+    bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
+    console.log('bank', bank.value)
+    console.log('company', company.value)
+  }
+}
