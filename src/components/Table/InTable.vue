@@ -94,6 +94,17 @@
           style="min-width: 12rem"
           class="border-b"
         >
+        <template #body="slotProps">
+          <span>
+            {{ slotProps.data.invoice }}
+            <i 
+              @click="copyToClipboard(slotProps.data.invoice)" 
+              class="pi pi-copy cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
+              v-tooltip.top="'คัดลอก'"
+              >
+            </i>
+          </span>
+        </template>
         </Column>
         <Column
           field="customer_detail.customer_name"
@@ -110,7 +121,7 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            {{ formatDateRef(slotProps.data.start_date) }}
+            {{ formatThaiDate(slotProps.data.start_date) }}
           </template>
         </Column>
         <Column
@@ -121,7 +132,7 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            {{ formatDateRef(slotProps.data.end_date) }}
+            {{ formatThaiDate(slotProps.data.end_date) }}
           </template>
         </Column>
         <Column
@@ -178,49 +189,20 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{ 
-              slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
-            }}
+            <span
+              :class="
+              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)-(slotProps.data.paid || 0) < 0
+              ? 'text-green-700 font-bold bg-green-100 rounded px-2 py-0.5'
+              : ''
+              "
+            >{{ 
+              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)-(slotProps.data.paid || 0) < 0
+              ? 'ครบแล้ว'
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)-(slotProps.data.paid || 0)) 
+            }}</span>
           </template>
         </Column>
-        <!-- <Column
-          field="total_products"
-          header="VAT 7%"
-          sortable
-          style="min-width: 8rem"
-          class="border-b"
-        >
-          <template #body="slotProps">
-            <div class="grid place-items-center w-full">
-              <span class="text-sm text-center" 
-              :class="slotProps.data.customer_branch.isVat 
-              ? 'bg-yellow-200 rounded p-1' : ''">
-                {{ 
-                  slotProps.data.customer_branch.isVat && slotProps.data.sumVat ? "VAT นอก" 
-                  : slotProps.data.customer_branch.isVat && !slotProps.data.sumVat ? "VAT ใน"
-                  : "-" 
-              }}
-              </span>
-            </div>
-          </template>
-        </Column>
-        <Column
-          field="vat.percen_deducted"
-          header="หัก ณ ที่จ่าย"
-          class="border-b"
-          sortable
-          style="min-width: 10rem"
-        >
-          <template #body="slotProps">
-            <div class="grid place-items-center w-full">
-              <span class="text-sm text-center" :class="slotProps.data.vat?.percen_deducted ? 'text-orange-500' : ''">
-                {{ slotProps.data.vat?.percen_deducted ? "หัก ณ ที่จ่าย" : "-" }}
-              </span>
-            </div>
-          </template>
-        </Column> -->
+        
         <Column
           field="status[0]"
           header="สถานะ"
@@ -287,6 +269,7 @@
         optionLabel="quotation"
         placeholder="เลือกใบเสนอราคา"
         class="w-full md:w-14rem"
+        @input="referQuotationInput"
         @change="referQuotation"
       />
     </div>
@@ -303,7 +286,7 @@
         </div>
         <div class="card flex gap-2 justify-start items-center pt-3">
           <p>วันครบกำหนด</p>
-          <Calendar class="border rounded" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" @change="calCredit(start_date, end_date)" />
+          <Calendar class="border rounded" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
         </div>
         <div class="card py-2 justify-start items-center">
           <p class="min-w-fit" for="credit">เครดิต <span class="px-2 text-bold text-green-700">{{ credit }}</span>วัน</p>
@@ -363,42 +346,6 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <!-- <div>
-              <h1>เลือกลายเซ็น</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="selectedSignature"
-                  :options="cpStore.mySignatures"
-                  optionLabel="name"
-                  placeholder="เลือกลายเซ็น"
-                  class="w-full md:w-14rem"
-                >
-                  <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.value"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.value?.name }}</div>
-                    </div>
-                    <span v-else>
-                      {{ slotProps.placeholder }}
-                    </span>
-                  </template>
-                  <template #option="slotProps">
-                    <div class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.option"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.option?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.option?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.option?.name }}</div>
-                    </div>
-                  </template>
-                </Dropdown>
-              </div>
-            </div> -->
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -460,9 +407,9 @@
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
-            :class="{ 'p-invalid': submitted && !customer.customer_name }"
+            :class="{ 'p-invalid': !customer.customer_name }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_name"
+          <small class="p-error" v-if="!customer.customer_name"
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
@@ -474,9 +421,9 @@
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
-            :class="{ 'p-invalid': submitted && !customer.customer_number }"
+            :class="{ 'p-invalid': !customer.customer_number }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_number"
+          <small class="p-error" v-if="!customer.customer_number"
             >กรุณาเพิ่มรหัสลูกค้า</small
           >
         </div>
@@ -487,12 +434,8 @@
             class="p-2"
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
-            required="true"
-            :class="{ 'p-invalid': submitted && !customer.customer_taxnumber }"
+            required="false"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_taxnumber"
-            >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
-          >
         </div>
         <div class="field">
           <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
@@ -504,7 +447,7 @@
             :class="{ 'p-invalid': !customer.customer_phone }"
           />
           <small class="p-error" v-if="!customer.customer_phone"
-            >เบอร์ติดต่อลูกค้า</small
+            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
           >
         </div>
         <div class="field">
@@ -513,8 +456,7 @@
             class="p-2"
             id="customer_lastname"
             v-model.trim="customer.customer_lastname"
-            required="true"
-            :class="{ 'p-invalid': !customer.customer_lastname }"
+            required="false"
           />
         </div>
         <div class="field">
@@ -526,6 +468,9 @@
             required="true"
             :class="{ 'p-invalid': !customer.customer_position }"
           />
+          <small class="p-error" v-if="!customer.customer_position"
+            >กรุณาเพิ่มที่อยู่ลูกค้า</small
+          >
         </div>
         <div class="field">
           <label for="customer_email">อีเมล์ลูกค้า</label>
@@ -878,8 +823,9 @@
           editable
           :options="quotations"
           optionLabel="quotation"
-          placeholder="เลือกใบแจ้งหนี้"
+          placeholder="เลือกใบเสนอราคา"
           class="w-full md:w-14rem"
+          @input="referQuotationInput"
           @change="referQuotation"
         />
     </div>
@@ -893,6 +839,17 @@
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
           <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
+        </div>
+        <div class="card flex gap-2 justify-start items-center pt-3">
+          <p>วันครบกำหนด</p>
+          <Calendar class="border rounded" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
+        </div>
+        <div class="card py-2 justify-start items-center">
+          <p class="min-w-fit" for="credit">เครดิต <span class="px-2 text-bold text-green-700">{{ credit }}</span>วัน</p>
+        </div>
+        <div class="card py-2 flex gap-2 justify-start items-center pb-5">
+          <p class="min-w-fit" for="credit">จำนวนงวดชำระ</p>
+          <input type="number" min="1" v-model="end_period" class="border rounded max-w-[4rem] text-center" />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -945,42 +902,6 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <!-- <div>
-              <h1>เลือกลายเซ็น</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="selectedSignature"
-                  :options="cpStore.mySignatures"
-                  optionLabel="name"
-                  placeholder="เลือกลายเซ็น"
-                  class="w-full md:w-14rem"
-                >
-                  <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.value"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.value?.name }}</div>
-                    </div>
-                    <span v-else>
-                      {{ slotProps.placeholder }}
-                    </span>
-                  </template>
-                  <template #option="slotProps">
-                    <div class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.option"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.option?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.option?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.option?.name }}</div>
-                    </div>
-                  </template>
-                </Dropdown>
-              </div>
-            </div> -->
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -1070,11 +991,7 @@
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
             required="true"
-            :class="{ 'p-invalid': !customer.customer_taxnumber }"
           />
-          <small class="p-error" v-if="!customer.customer_taxnumber"
-            >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
-          >
         </div>
         <div class="field">
           <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
@@ -1086,7 +1003,7 @@
             :class="{ 'p-invalid': !customer.customer_phone }"
           />
           <small class="p-error" v-if="!customer.customer_phone"
-            >เบอร์ติดต่อลูกค้า</small
+            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
           >
         </div>
         <div class="field">
@@ -1095,8 +1012,6 @@
             class="p-2"
             id="customer_lastname"
             v-model.trim="customer.customer_lastname"
-            required="true"
-            :class="{ 'p-invalid': !customer.customer_lastname }"
           />
         </div>
         <div class="field">
@@ -1106,8 +1021,11 @@
             id="customer_position"
             v-model.trim="customer.customer_position"
             required="true"
-            :class="{ 'p-invalid': !customer.customer_position }"
+            :class="[{ 'p-invalid': !customer.customer_position }, { 'p-invalid': !customer.customer_position }]"
           />
+          <small class="p-error" v-if="!customer.customer_position"
+            >กรุณาเพิ่มที่อยู่ลูกค้า</small
+          >
         </div>
         <div class="field">
           <label for="customer_email">อีเมล์ลูกค้า</label>
@@ -1116,7 +1034,6 @@
             id="customer_email"
             v-model.trim="customer.customer_email"
             required="false"
-            :class="{ 'p-invalid': !customer.customer_email }"
           />
         </div>
         <div class="field">
@@ -1522,9 +1439,8 @@ import { useInvoiceStore } from "@/stores/invoice";
 import { useCompanyStore } from "@/stores/company";
 import DocInvoice from "@/components/Pdf/DocInvoice.vue";
 import RefReceipt from '@/components/Dialog/RefReceipt.vue';
-
-const reStore = useInvoiceStore();
-const cpStore = useCompanyStore();
+import { formatThaiDate } from '@/functions/DateTime'
+import { copyToClipboard } from "@/functions/Coppy"
 
 onMounted(async () => {
   Documents.getInvoices().then((data) => (invoices.value = data.data.reverse()));
@@ -1532,7 +1448,7 @@ onMounted(async () => {
   Customers.getCustomers().then((data) => (customers.value = data.data));
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
-});
+})
 
 const quotations = ref([])
 const lastRefreshed = ref();
@@ -1571,27 +1487,17 @@ const refQuotation = ref()
 const end_period = ref(1)
 const cur_period = ref(0)
 
+const reStore = useInvoiceStore();
+const cpStore = useCompanyStore();
+
 // open reference receipts list
 const selected_invoice = ref()
 const openRefReceiptDialog = ref(false);
-const openRefReceipt = (invoice) => {
-  selected_invoice.value = invoice
-  openRefReceiptDialog.value = true
-  console.log(openRefReceiptDialog.value)
-}
-
-const closeHandle = () => {
-  openInvoice.value = false
-  const body = document.body;
-  body.style.backgroundColor = 'aliceblue';   
-}
-
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
+})
 const submitted = ref(false);
 const statuses = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
-
 const percents = ref([3, 5]);
 
 function countdownToEndDate(end_date) {
@@ -1618,6 +1524,18 @@ function countdownToEndDate(end_date) {
   };
 }
 
+const openRefReceipt = (invoice) => {
+  selected_invoice.value = invoice
+  openRefReceiptDialog.value = true
+  console.log(openRefReceiptDialog.value)
+}
+
+const closeHandle = () => {
+  openInvoice.value = false
+  const body = document.body;
+  body.style.backgroundColor = 'aliceblue';   
+}
+
 const refresh = () => {
   Documents.getInvoices().then((data) => (invoices.value = data.data.reverse()));
 
@@ -1627,12 +1545,10 @@ const refresh = () => {
     new Date(currentTimestamp)
   );
   lastRefreshed.value = formattedTime;
-};
+}
 
-const referQuotation = () => {
-  if(refQuotation.value){
-    console.log('rfQT', refQuotation.value)   
-    console.log('custoers.value-1613', customers.value)
+const referQuotation = async () => {
+  if ( refQuotation.value && refQuotation.value.customer_detail ) {
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
     selectedCustomer.value = customer.value
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
@@ -1643,8 +1559,26 @@ const referQuotation = () => {
     selectedSignature.value = refQuotation.value.signature
     bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
     sumVat.value = refQuotation.value.sumVat
-    console.log('bank', bank.value)
-    console.log('company', company.value)
+    isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
+  } 
+}
+
+const referQuotationInput = async () => {
+  if ( refQuotation.value && !refQuotation.value.customer_detail ) {
+    refQuotation.value = quotations.value.find(item=>item.quotation===refQuotation.value)
+    console.log('rfQT', refQuotation.value)   
+    console.log('customers', customers.value)
+    customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
+    selectedCustomer.value = customer.value
+    selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
+    company.value = selectedCompany.value
+    openProductForm.value = false
+    products.value = refQuotation.value.product_detail
+    discount.value = refQuotation.value.discount
+    selectedSignature.value = refQuotation.value.signature
+    bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
+    sumVat.value = refQuotation.value.sumVat
+    isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
   }
 }
 
@@ -1658,7 +1592,7 @@ const seeInvoice = (data) => {
   console.log("data", selectedInvoice.value);
   const body = document.body;
   body.style.backgroundColor = 'white';
-};
+}
 
 const changeProductVat = () => {
   if (product.value.isVat) {
@@ -1689,25 +1623,6 @@ function countDistinctDays(start_date, end_date) {
   return distinctDays;
 }
 
-const formatDateRef = (isoDateString) => {
-  const isoDate = new Date(isoDateString);
-  
-  // Convert to Buddhist Era (BE) by adding 543 years
-  const thaiYear = isoDate.getFullYear() + 543;
-  
-  const formattedDate = isoDate.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
-
-  // Construct the final formatted date in "dd/mm/yyyy" format
-  const [month, day, year] = formattedDate.split('/');
-  const formattedThaiDate = `${day}/${month}/${thaiYear}`;
-
-  return formattedThaiDate;
-};
-
 const withholdingPrice = computed(() => {
   if (isWithholding.value && sumVat) {
     const result = (netVat.value * withholdingPercent.value) / 100;
@@ -1715,7 +1630,7 @@ const withholdingPrice = computed(() => {
   } else {
     return 0;
   }
-});
+})
 
 const addProduct = () => {
   if (product.value) {
@@ -1727,17 +1642,17 @@ const addProduct = () => {
     product.value.product_text = [""];
     openProductForm.value = false;
   }
-};
+}
 
 const allEnd = computed(() => {
   return netVat.value - withholdingPrice.value;
-});
+})
 
 const removeProduct = (index) => {
   if (products.value && products.value.length > 0) {
     products.value.splice(index, 1);
   }
-};
+}
 
 const sumProductsPrice = computed(() => {
   if (products.value && products.value.length > 0) {
@@ -1750,7 +1665,7 @@ const sumProductsPrice = computed(() => {
   } else {
     return 0;
   }
-});
+})
 
 const notSumVatsumProductsPrice = computed(()=>{
   if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
@@ -1772,7 +1687,7 @@ const netPrices = computed(() => {
   } else {
     return sumProductsPrice.value - discount.value;
   }
-});
+})
 
 const vat = computed(() => {
   const all_vat = products.value.map(item=>{
@@ -1780,7 +1695,7 @@ const vat = computed(() => {
   })
   const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b ) : 0
   return result
-});
+})
 
 const netVat = computed(() => {
   if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
@@ -1792,14 +1707,14 @@ const netVat = computed(() => {
   } else {
     return netPrices.value;
   }
-});
+})
 
 const cancleProduct = () => {
   if (product.value) {
     product.value = {};
     openProductForm.value = false;
   }
-};
+}
 
 const customBase64Uploader = async (event) => {
   const file = event.files[0];
@@ -1815,24 +1730,24 @@ const customBase64Uploader = async (event) => {
 
   uploadfiles.value.push(file)
   console.log(uploadfiles.value)
-};
+}
 
 const refCustomer = () => {
   if (selectedCustomer.value) {
     customer.value = selectedCustomer.value;
   }
-};
+}
 
 const refCompany = () => {
   if (selectedCompany.value) {
     company.value = selectedCompany.value;
   }
-};
+}
 
 const formatCurrency = (value) => {
   if (value) return value.toLocaleString({ style: "currency", currency: "THB" });
   return;
-};
+}
 
 const resetData = () => {
   invoice.value = {};
@@ -1855,7 +1770,7 @@ const openNew = () => {
   submitted.value = false;
   invoiceDialog.value = true;
   product.value.product_text = [];
-};
+}
 
 const hideDialog = () => {
   product.value = {};
@@ -1864,7 +1779,7 @@ const hideDialog = () => {
   invoiceDialog.value = false;
   invoiceEditDialog.value = false;
   submitted.value = false;
-};
+}
 
 const editInvoice = (prod) => {
   resetData()
@@ -1898,7 +1813,7 @@ const editInvoice = (prod) => {
   product.value.product_text = [""]
   sumVat.value = prod.sumVat
   refQuotation.value = quotations.value.find(qt=>qt.quotation===invoice.value.quotation)
-};
+}
 
 const totalPrice = (product) => {
   const price = product.product_detail.map((item)=>{
@@ -1919,7 +1834,7 @@ const totalVat = (product) => {
 const confirmDeleteInvoice = (prod) => {
   invoice.value = prod;
   deleteInvoiceDialog.value = true;
-};
+}
 
 const deleteInvoice = async () => {
   const invoices_to_delete = invoice.value;
@@ -1951,7 +1866,7 @@ const deleteInvoice = async () => {
   finally {
     deleteInvoiceDialog.value = false;
   }
-};
+}
 
 const withHolding = (product) => {
   if(product){
@@ -1964,11 +1879,11 @@ const withHolding = (product) => {
 
 const exportCSV = () => {
   dt.value.exportCSV();
-};
+}
 
 const confirmDeleteSelected = () => {
   deleteInvoicesDialog.value = true;
-};
+}
 
 const deleteSelectedInvoices = async () => {
   try {
@@ -2003,7 +1918,7 @@ const deleteSelectedInvoices = async () => {
     reStore.getInvoices()
     refresh()
   }
-};
+}
 
 const createNewInvoice = async () => {
   loading.value = true;
@@ -2013,7 +1928,7 @@ const createNewInvoice = async () => {
     product.product_logo64 = "";
   });
   const data = {
-    quotation: refQuotation.value.quotation,
+    quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
@@ -2127,7 +2042,7 @@ const createNewInvoice = async () => {
     life: 3000,
   });
   refresh()
-};
+}
 
 const editingInvoice = async () => {
   loading.value = true;
@@ -2139,7 +2054,6 @@ const editingInvoice = async () => {
   console.log(refQuotation.value)
   const data = {
     quotation: refQuotation.value.quotation,
-    //invoice: refInvoice.value.invoice,
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
     signatureID: selectedSignature.value ? selectedSignature.value._id : '',
@@ -2228,7 +2142,7 @@ console.log(err)
     invoiceEditDialog.value = false;
     refresh()
   }
-};
+}
 
 const getStatusLabel = (status) => {
   switch (status) {
@@ -2243,6 +2157,6 @@ const getStatusLabel = (status) => {
     default:
       return null;
   }
-};
+}
 
 </script>

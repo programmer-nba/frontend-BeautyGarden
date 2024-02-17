@@ -1,6 +1,6 @@
 <template>
    
-    <Dialog v-model:visible="open" modal :header="invoice.invoice" :style="[{ width: 'auto' }, { height: 'auto' }]">
+    <Dialog v-model:visible="open" modal :header="`${invoice.invoice} จ่ายแล้ว ${invoice.paid}`" :style="[{ width: 'auto' }, { height: 'auto' }]">
         <div class="w-full border">
             <table class="border w-full">
                 <thead>
@@ -26,18 +26,18 @@
                     </th>
                 </thead>
                 <tbody>
-                    <tr v-for="rep in invoice.end_period" :key="rep">
+                    <tr v-for="rep in invoice.status" :key="rep.receipt">
                         <td>
-                            RE20240217000{{ rep }}
+                            {{ rep.receipt }}
                         </td>
                         <td>
-                            17/02/2567
+                            {{ formatThaiDate(rep.createdAt) }}
                         </td>
                         <td>
-                            5,000
+                            {{ formatCurrency(rep.paid) || 0 }}
                         </td>
                         <td>
-                            งวดที่ {{ rep }}
+                            งวดที่ {{ rep.period }}
                         </td>
                     </tr>
                 </tbody>
@@ -48,8 +48,9 @@
 </template>
 
 <script setup>
-import axios from "axios"
 import { ref, watchEffect } from "vue"
+import { formatThaiDate } from "@/functions/DateTime"
+import { formatCurrency } from "@/functions/Currency"
 
 const { invoice } = defineProps(["invoice"])
 const open = ref(true)

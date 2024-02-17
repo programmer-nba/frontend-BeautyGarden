@@ -53,12 +53,12 @@
                     {{ formatDate(data.data.start_date) }}
                   </div>
                   <div class="flex justify-between">
-                    <span class="font-bold pr-4">วันที่สิ้นสุด Date due : </span>
-                    {{ formatDate(data.data.end_date) }}
+                    <span class="font-bold pr-4">อ้างอิง : </span>
+                    {{ data.data.quotation }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง : </span>
-                    {{ data.data.quotation }}
+                    {{ data.data.invoice }}
                   </div>
                   <br />
                   <hr />
@@ -109,7 +109,7 @@
                   <tr class="border py-2">
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        INV0000000000
+                        {{ data.data.invoice }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">

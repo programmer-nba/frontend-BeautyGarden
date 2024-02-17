@@ -23,6 +23,13 @@
             @click="openNew"
           />
           <Button
+            label="เพิ่มจากใบแจ้งหนี้"
+            icon="pi pi-plus"
+            severity="success"
+            class="mr-4"
+            @click="openNewRef"
+          />
+          <Button
             label="ลบ"
             icon="pi pi-trash"
             severity="danger"
@@ -96,6 +103,18 @@
         >
         </Column>
         <Column
+          field="invoice"
+          header="อ้างอิง"
+          sortable
+          style="min-width: 12rem"
+          class="border-b"
+        >
+        <template #body="slotProps">
+          {{ slotProps.data.invoice }}
+          {{ slotProps.data.invoiceRef_detail && slotProps.data.invoiceRef_detail?.period_text ? `(${slotProps.data.invoiceRef_detail?.period_text})` : null }}
+        </template>
+        </Column>
+        <Column
           field="customer_detail.customer_name"
           header="ชื่อลูกค้า"
           sortable
@@ -104,24 +123,13 @@
         ></Column>
         <Column
           field="start_date"
-          header="วันที่เริ่ม"
+          header="วันที่ออกเอกสาร"
           class="border-b"
           sortable
           style="min-width: 10rem"
         >
           <template #body="slotProps">
             {{ formatDateRef(slotProps.data.start_date) }}
-          </template>
-        </Column>
-        <Column
-          field="end_date"
-          header="วันที่สิ้นสุด"
-          class="border-b"
-          sortable
-          style="min-width: 10rem"
-        >
-          <template #body="slotProps">
-            {{ formatDateRef(slotProps.data.end_date) }}
           </template>
         </Column>
 
@@ -133,17 +141,16 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            <!-- <div class="flex flex-col gap-y-2">
-              <p>totalPrice : {{ totalPrice(slotProps.data) }}</p>
-              <p>discount : {{ slotProps.data.discount }}</p>
-              <p>vat : {{ totalVat(slotProps.data) }}</p>
-              <p>ณ ที่จ่าย : {{ withHolding(slotProps.data) }}</p>
-            </div> -->
-            {{ 
-              slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
-            }}
+            <span v-if="slotProps.data.amount_price>=0 && slotProps.data.invoice">
+              {{ formatCurrency(slotProps.data.amount_price) }}
+            </span>
+            <span v-else>
+              {{ 
+                slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+                : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+              }}
+            </span>
           </template>
         </Column>
         <Column
@@ -181,17 +188,6 @@
               </span>
             </div>
           </template>
-        </Column>
-        <Column
-          field="status[0]"
-          header="สถานะ"
-          sortable
-          style="min-width: 6rem"
-          class="border-b"
-        >
-          <!-- <template #body="slotProps">
-                        <Tag :value="slotProps.data.staus" :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
-                    </template> -->
         </Column>
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">
@@ -235,17 +231,12 @@
         editable
         :options="quotations"
         optionLabel="quotation"
-        placeholder="เลือกใบเสร็จรับเงิน"
+        placeholder="เลือกใบเสนอราคา (ถ้ามี)"
         class="w-full md:w-14rem"
+        @input="referQuotationInput"
         @change="referQuotation"
       />
     </div>
-      <div
-        v-if="loading"
-        class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
-      >
-        <img src="@/assets/spinner.svg" alt="Spinner" />
-      </div>
       <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
@@ -825,8 +816,9 @@
           editable
           :options="quotations"
           optionLabel="quotation"
-          placeholder="เลือกใบเสร็จรับเงิน"
+          placeholder="เลือกใบเสนอราคา (ถ้ามี)"
           class="w-full md:w-14rem"
+          @input="referQuotationInput"
           @change="referQuotation"
         />
     </div>
@@ -1458,6 +1450,77 @@
         />
       </template>
     </Dialog>
+
+    <Dialog
+      v-model:visible="receiptRefInvoiceDialog"
+      :style="{ width: '500px' }"
+      header="Receipt Details"
+      :modal="true"
+      class="p-fluid"
+    >
+      <div class="card flex flex-col gap-y-2 justify-content-center">
+        <Dropdown
+          v-model="refInvoice"
+          editable
+          :options="invoices"
+          optionLabel="invoice"
+          placeholder="เลือกใบแจ้งหนี้"
+          class="w-full md:w-14rem"
+        />
+      </div>
+      <div class="card">
+        <div class="card flex flex-col gap-y-2 justify-center items-center">
+          <p>วันที่เริ่มต้น</p>
+          <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
+        </div>
+        <div>
+          {{ refInvoice?.customer_branch?.Branch_company_name }}
+          {{ refInvoice?.customer_detail?.customer_name }}
+        </div>
+        <div>
+          <p>จำนวนเงิน</p>
+          <InputNumber
+            v-model="amount_price"
+            :minFractionDigits="2"
+            :maxFractionDigits="2"
+          />
+        </div>
+        <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
+          <p>หมายเหตุ</p>
+          <Textarea
+            v-for="(mark, mIndex) in remark"
+            v-model="remark[mIndex]"
+            autoResize
+            rows="5"
+            cols="30"
+            class="my-2 border"
+          />
+          <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex gap-3">
+          <Button 
+            label="ยกเลิก" 
+            icon="pi pi-times" 
+            text 
+            @click="hideDialog" 
+            class="text-bold text-red-500 border border-red-500 hover:bg-red-100"
+            :loading="loading"
+          />
+          <Button
+            label="บันทึก"
+            icon="pi pi-check"
+            :loading="loading"
+            text
+            rounded
+            @click="createNewReceiptRefInvoice"
+            class="text-bold text-green-500 hover:bg-green-100"
+          />
+        </div>
+      </template>
+    </Dialog>
+
   </div>
 </template>
 
@@ -1480,6 +1543,7 @@ onMounted(async () => {
   Customers.getCustomers().then((data) => (customers.value = data.data));
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
+  await fetchInvoices()
 });
 
 const quotations = ref([])
@@ -1517,6 +1581,76 @@ const color = ref();
 const bank = ref({});
 const refQuotation = ref()
 
+// Create with reference invoice
+const amount_price = ref()
+const invoices = ref([])
+const refInvoice = ref()
+const receiptRefInvoiceDialog = ref(false)
+
+function openNewRef () {
+  resetRefInvoice()
+  receiptRefInvoiceDialog.value = true
+}
+
+function resetRefInvoice () {
+  refInvoice.value = null
+}
+
+async function fetchInvoices () {
+  try {
+    const response = await Documents.getInvoices()
+    invoices.value = response.data
+  }
+  catch ( error ) {
+    invoices.value = []
+    toast.add({
+        severity: "error",
+        summary: "เกิดข้อผิดพลาด !",
+        detail: "ไม่สามารถรับข้อมูลใบแจ้งหนี้ได้",
+        life: 3000,
+    })
+    console.log( error )
+  }
+}
+
+async function createNewReceiptRefInvoice () {
+  loading.value = true
+  const data = {
+    invoiceId: refInvoice.value ? refInvoice.value.invoice : null,
+    start_date: start_date.value || new Date(),
+    amount_price: amount_price.value || 0,
+    remark: remark.value || []
+  }
+  console.log('data_refInv : ', data)
+  try {
+    const response = await Documents.createNewReceiptRefInvoice(data)
+    if ( response.status ) {
+      toast.add({
+        severity: "success",
+        summary: "สำเร็จ",
+        detail: "สร้างใบเสร็จรับเงินแล้ว",
+        life: 3000,
+      })
+    }
+    console.log('res_receipt : ', response)
+  }
+  catch ( error ) {
+    toast.add({
+        severity: "error",
+        summary: "เกิดข้อผิดพลาด !",
+        detail: "ไม่สามารถสร้างใบเสร็จรับเงินได้",
+        life: 3000,
+    })
+    console.log('error : ', error )
+  }
+  finally {
+    loading.value = false
+    receiptRefInvoiceDialog.value = false
+    refresh()
+  }
+}
+// -----------------------------
+
 const closeHandle = () => {
   openReceipt.value = false
   const body = document.body;
@@ -1543,9 +1677,26 @@ const refresh = () => {
 };
 
 const referQuotation = () => {
-  console.log(refQuotation.value.quotation)
-  if(refQuotation.value){
+  if(refQuotation.value && refQuotation.value.customer_detail){
     console.log('rfQT', refQuotation.value)   
+    customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
+    selectedCustomer.value = customer.value
+    selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
+    company.value = selectedCompany.value
+    openProductForm.value = true
+    products.value = refQuotation.value.product_detail
+    discount.value = refQuotation.value.discount
+    selectedSignature.value = refQuotation.value.signature
+    bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
+    sumVat.value = refQuotation.value.sumVat
+    console.log('bank', bank.value)
+    console.log('company', company.value)
+  }
+}
+
+const referQuotationInput = () => {
+  if(refQuotation.value && !refQuotation.value.customer_detail){
+    refQuotation.value = quotations.value.find(item=>item.quotation===refQuotation.value)
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
     selectedCustomer.value = customer.value
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
@@ -1749,6 +1900,8 @@ const resetData = () => {
   product.value = {}
   remark.value = []
   refQuotation.value = null
+  refInvoice.value = null
+  amount_price.value = null
 }
 
 const openNew = () => {
@@ -1764,7 +1917,9 @@ const hideDialog = () => {
   customer.value = {};
   receiptDialog.value = false;
   receiptEditDialog.value = false;
+  receiptRefInvoiceDialog.value = false;
   submitted.value = false;
+  resetData()
 };
 
 const editReceipt = (prod) => {

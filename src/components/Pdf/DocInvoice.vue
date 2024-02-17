@@ -160,7 +160,7 @@
                     <pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
                     >{{ mark }}</pre>
                   </article>
-                    <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-orange-200 text-center border-t border-l border-r flex justify-center items-center"
+                    <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-sky-200 text-center border-t border-l border-r flex justify-center items-center"
                       :style="{ backgroundColor: `#${data.color}` }">
                       <p class="font-bold">
                         ( {{ 
@@ -525,7 +525,8 @@ th,
   border-top: 1px solid #353434;
 }
 .th {
-  background-color: #ffd89d
+  --tw-bg-opacity: 1;
+  background-color: rgb(186 230 253 / var(--tw-bg-opacity));
 }
 
 .total {

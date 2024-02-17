@@ -94,6 +94,17 @@
           style="min-width: 12rem"
           class="border-b"
         >
+        <template #body="slotProps">
+          <span>
+            {{ slotProps.data.quotation }}
+            <i 
+              @click="copyToClipboard(slotProps.data.quotation)" 
+              class="pi pi-copy cursor-pointer hover:text-yellow-500 hover:bg-yellow-100 duration-300 ease-in-out p-2 rounded-full" 
+              v-tooltip.top="'คัดลอก'"
+              >
+            </i>
+          </span>
+        </template>
         </Column>
         <Column
           field="customer_detail.customer_name"
@@ -1456,6 +1467,7 @@ import { Customers } from "@/service/Customer";
 import { useQuotationStore } from "@/stores/quotation";
 import { useCompanyStore } from "@/stores/company";
 import DocQuotation from "@/components/Pdf/DocQuotation.vue";
+import { copyToClipboard } from "@/functions/Coppy"
 
 const qtStore = useQuotationStore();
 const cpStore = useCompanyStore();
@@ -1758,7 +1770,6 @@ const editQuotation = (prod) => {
   console.log(cpStore.mySignatures)
   console.log(prod.signature)
   quotationEditDialog.value = true;
-  discount.value = 0
   product.value = {}
   product.value.product_text = [""]
   sumVat.value = prod.sumVat

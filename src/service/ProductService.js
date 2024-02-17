@@ -1435,6 +1435,24 @@ export const Documents = {
             return err
         }
     },
+    async createNewReceiptRefInvoice(formData) {
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/receiptVat/ReceiptRefInvoice`,
+                formData,
+                {
+                    headers: {
+                        'auth-token': import.meta.env.VITE_TOKEN
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
 
     async getInvoices() {
         try {
@@ -1526,7 +1544,7 @@ export const Documents = {
     },
     async editInvoice(id, formData) {
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/invoice/EditInvoiceVat/${id}`,
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/invoice/EditInvoice/${id}`,
                 formData,
                 {
                     headers: {
