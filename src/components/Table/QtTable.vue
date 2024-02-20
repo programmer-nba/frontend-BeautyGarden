@@ -306,42 +306,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <!-- <div>
-              <h1>เลือกลายเซ็น</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="selectedSignature"
-                  :options="cpStore.mySignatures"
-                  optionLabel="name"
-                  placeholder="เลือกลายเซ็น"
-                  class="w-full md:w-14rem"
-                >
-                  <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.value"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.value?.name }}</div>
-                    </div>
-                    <span v-else>
-                      {{ slotProps.placeholder }}
-                    </span>
-                  </template>
-                  <template #option="slotProps">
-                    <div class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.option"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.option?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.option?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.option?.name }}</div>
-                    </div>
-                  </template>
-                </Dropdown>
-              </div>
-            </div> -->
+            
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -1557,6 +1522,42 @@ const changeProductVat = () => {
   }
 }
 
+const createNewCustomer = async () => {
+  loading.value = true;
+  const formData = new FormData();
+  formData.append("customer_name", customer.value.customer_name);
+  formData.append("customer_lastname", customer.value.customer_lastname);
+  formData.append("customer_phone", customer.value.customer_phone);
+  formData.append("customer_position", customer.value.customer_position);
+  formData.append("customer_email", customer.value.customer_email);
+  formData.append("customer_type", customer.value.customer_type);
+  formData.append("customer_taxnumber", customer.value.customer_taxnumber);
+  formData.append("customer_contact", customer.value.customer_contact);
+  formData.append("customer_contact_number", customer.value.customer_contact_number);
+
+  const response = await Customers.createNewCustomer(formData);
+  if (response.data) {
+    toast.add({
+      severity: "success",
+      summary: "สำเร็จ",
+      detail: "เพิ่มลูกค้าใหม่แล้ว",
+      life: 3000,
+    });
+    loading.value = false;
+    customerDialog.value = false;
+    await Customers.getCustomers().then((data) => (customers.value = data.data));
+  } else {
+    customerDialog.value = false;
+    toast.add({
+      severity: "error",
+      summary: "มีบางอย่างผิดพลาด",
+      detail: "เพิ่มลูกค้าใหม่ล้มเหลว",
+      life: 3000,
+    });
+    loading.value = false;
+  }
+};
+
 const formatDateRef = (isoDateString) => {
   const isoDate = new Date(isoDateString);
   
@@ -1643,15 +1644,6 @@ const netPrices = computed(() => {
 });
 
 const vat = computed(() => {
-  /* if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
-    const result = netPrices.value * 0.07;
-    return result;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = sumProductsPrice.value * 7/107;
-    return result;
-  } else {
-    return 0;
-  } */
   const all_vat = products.value.map(item=>{
     return item.vat_price
   })

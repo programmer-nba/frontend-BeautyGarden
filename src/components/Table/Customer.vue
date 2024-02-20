@@ -537,7 +537,7 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const submitted = ref(false);
-const statuses = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
+const statuses = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "ลูกค้ารายเดือน", "VIP"]);
 
 const changeMain = () => {
   if(isMain.value && customer.value){
@@ -653,7 +653,6 @@ const deleteSelectedCustomers = async () => {
 
 const createNewCustomer = async () => {
   loading.value = true;
-
   const formData = new FormData();
   formData.append("customer_name", customer.value.customer_name);
   formData.append("customer_lastname", customer.value.customer_lastname);
@@ -743,6 +742,9 @@ const getStatusLabel = (status) => {
   switch (status) {
     case "ทั่วไป":
       return "success";
+
+    case "ลูกค้ารายเดือน":
+    return "success";
 
     case "องค์กร":
       return "warning";
