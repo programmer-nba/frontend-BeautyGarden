@@ -786,7 +786,7 @@
       :style="{ width: '450px' }"
       header="Quotation Details"
       :modal="true"
-      class="p-fluid"
+      class="p-fluid bg-slate-100"
     >
       <div
         v-if="loading"
@@ -794,7 +794,7 @@
       >
         <img src="@/assets/spinner.svg" alt="Spinner" />
       </div>
-      <div class="card">
+      <div class="card bg-slate-100 px-2">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
           <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
@@ -854,42 +854,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <!-- <div>
-              <h1>เลือกลายเซ็น</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="selectedSignature"
-                  :options="cpStore.mySignatures"
-                  optionLabel="name"
-                  placeholder="เลือกลายเซ็น"
-                  class="w-full md:w-14rem"
-                >
-                  <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.value"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.value?.name }}</div>
-                    </div>
-                    <span v-else>
-                      {{ slotProps.placeholder }}
-                    </span>
-                  </template>
-                  <template #option="slotProps">
-                    <div class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.option"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.option?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.option?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.option?.name }}</div>
-                    </div>
-                  </template>
-                </Dropdown>
-              </div>
-            </div> -->
+            
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -911,7 +876,7 @@
       <hr />
       <br />
 
-      <div class="card">
+      <div class="card bg-slate-100 px-2">
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
           <div class="card flex justify-content-center">
@@ -1093,7 +1058,7 @@
             :class="{ 'p-invalid': submitted && !customer.customer_contact }"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
           <InputText
             class="p-2"
@@ -1111,7 +1076,7 @@
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
 
-      <div class="card">
+      <div class="card bg-slate-100 px-2">
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -1125,6 +1090,12 @@
                       v-if="item.product_logo64"
                       class="object-contain block xl:block mx-auto border-round w-full"
                       :src="item.product_logo64"
+                      :alt="index"
+                    />
+                    <img
+                      v-if="item.product_logo"
+                      class="object-contain block xl:block mx-auto border-round w-full"
+                      :src="`https://drive.google.com/thumbnail?id=${item.product_logo}`"
                       :alt="index"
                     />
                   </div>
@@ -1298,7 +1269,7 @@
         />
       </div>
 
-      <div class="flex flex-col gap-y-2">
+      <div class="flex flex-col gap-y-2 bg-slate-100 px-2">
         
         <span v-if="sumVat"
           >ราคาสินค้า
@@ -1340,8 +1311,8 @@
         >
       </div>
       
-      <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
-        <p>หมายเหตุ</p>
+      <div class="card flex flex-col gap-y-2 py-5 justify-center items-center bg-slate-100 px-2">
+        <p v-tooltip.top="'เพิ่มหมายเหตุ'" @click="remark.push('')" class="cursor-pointer border border-orange-300 px-2 rounded">หมายเหตุ</p>
         <Textarea
           v-for="(mark, mIndex) in remark"
           v-model="remark[mIndex]"
@@ -1349,14 +1320,15 @@
           rows="5"
           cols="30"
         />
-        <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
+        <p v-tooltip.bottom="'ลบหมายเหตุ'" v-if="remark.length>0" @click="remark.pop()" class="text-red-500 cursor-pointer">ลบ</p>
       </div>
 
       <template #footer>
-        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+        <Button label="ยกเลิก" icon="pi pi-times" text @click="hideDialog" />
         <Button
-          label="Save"
+          label="บันทึก"
           icon="pi pi-check"
+          class="px-2 border border-green-500 text-green-700"
           :loading="loading"
           text
           @click="editingQuotation"
@@ -1746,7 +1718,7 @@ const editQuotation = (prod) => {
   selectedCompany.value = company;
 
   const customered = customers.value.find(
-    (item) => item.customer_taxnumber === prod.customer_detail.tax_id
+    (item) => item.customer_name === prod.customer_detail.customer_name
   );
   selectedCustomer.value = customered;
   refCustomer();
@@ -1756,11 +1728,9 @@ const editQuotation = (prod) => {
   discount.value = prod.discount;
   products.value = prod.product_detail;
   remark.value = prod.remark;
-  bank.value = company.bank.find((item) => item.number === prod.bank.status);
+  bank.value = prod.bank ? company.bank.find((item) => item.number === prod.bank.status) : null;
   selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
-  console.log(selectedSignature.value)
-  console.log(cpStore.mySignatures)
-  console.log(prod.signature)
+  
   quotationEditDialog.value = true;
   product.value = {}
   product.value.product_text = [""]
