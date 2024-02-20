@@ -127,7 +127,7 @@
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_amount) }}
+                        {{ formatCurrency(product.product_amount) }} {{ product.unit }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">

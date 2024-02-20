@@ -585,7 +585,7 @@
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
                           {{ formatCurrency(item.product_price) }} x
-                          {{ item.product_amount }}
+                          {{ item.product_amount }} {{ item.unit }}
                           {{
                             item.vat_price > 0 && sumVat
                               ? " (" + "VATนอก" + ")"
@@ -694,6 +694,14 @@
               id="quantity"
               v-model="product.product_amount"
               integeronly
+            />
+          </div>
+          <div class="field grid">
+            <label for="unit">หน่วย</label>
+            <InputText
+              class="p-2"
+              id="unit"
+              v-model="product.unit"
             />
           </div>
           <div class="flex items-center gap-2">
@@ -1170,7 +1178,7 @@
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
                           {{ formatCurrency(item.product_price) }} x
-                          {{ item.product_amount }}
+                          {{ item.product_amount }} {{ item.unit }}
                           {{
                             item.vat_price > 0 && sumVat
                               ? " (" + "VATนอก" + ")"
@@ -1279,6 +1287,14 @@
               id="quantity"
               v-model="product.product_amount"
               integeronly
+            />
+          </div>
+          <div class="field grid">
+            <label for="unit">หน่วย</label>
+            <InputText
+              class="p-2"
+              id="unit"
+              v-model="product.unit"
             />
           </div>
           <div class="flex items-center gap-2">

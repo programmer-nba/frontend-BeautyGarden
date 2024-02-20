@@ -510,7 +510,7 @@
                         class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                       >
                         {{ formatCurrency(item.product_price) }} x
-                        {{ item.product_amount }}
+                        {{ item.product_amount }} {{ item.unit }}
                       </p>
                     </div>
                   </div>
