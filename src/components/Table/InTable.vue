@@ -625,7 +625,10 @@
           </template>
         </DataView>
       </div>
-
+      <div class="py-4 border">
+        <label for="product_head"></label>
+        <InputText id="product_head" v-model="product_head" />
+      </div>
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1186,7 +1189,10 @@
           </template>
         </DataView>
       </div>
-
+      <div class="py-4 border">
+        <label for="product_head"></label>
+        <InputText id="product_head" v-model="product_head" />
+      </div>
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"

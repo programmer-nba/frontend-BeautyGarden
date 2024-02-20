@@ -518,7 +518,10 @@
       <span class="my-2" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
-
+      <div class="py-4 bg-slate-100 px-2 rounded">
+        <label for="product_head">หัวข้อสินค้า/บริการ</label>
+        <InputText id="product_head" v-model="product_head" />
+      </div>
       <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
@@ -587,7 +590,7 @@
           </template>
         </DataView>
       </div>
-
+      
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -622,7 +625,7 @@
           />
         </div>
         <div class="field">
-          <label>หัวข้อ</label>
+          <label>หัวข้อย่อย</label>
           <div class="card flex justify-content-center">
             <InputText v-model="product.product_name" />
           </div>
@@ -1074,7 +1077,10 @@
       <span class="my-2" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
-
+      <div class="py-4 bg-slate-100 px-2 rounded">
+        <label for="product_head">หัวข้อหลัก</label>
+        <InputText id="product_head" v-model="product_head" />
+      </div>
       <div class="card bg-slate-100 px-2">
         <DataView :value="products">
           <template #list="slotProps">
@@ -1149,7 +1155,7 @@
           </template>
         </DataView>
       </div>
-
+      
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1184,7 +1190,7 @@
           />
         </div>
         <div class="field">
-          <label>หัวข้อ</label>
+          <label>หัวข้อย่อย</label>
           <div class="card flex justify-content-center">
             <InputText v-model="product.product_name" />
           </div>
@@ -1460,6 +1466,7 @@ const uploadfiles = ref([]);
 const quotationEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
+const product_head = ref('')
 
 const closeHandle = () => {
   openQuotation.value = false
@@ -1742,8 +1749,8 @@ const editQuotation = (prod) => {
   remark.value = prod.remark;
   bank.value = prod.bank ? company.bank.find((item) => item.number === prod.bank.status) : null;
   selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
-  
-  quotationEditDialog.value = true;
+  product_head.value = prod.product_head
+  quotationEditDialog.value = true
   product.value = {}
   product.value.product_text = [""]
   sumVat.value = prod.sumVat
@@ -1871,6 +1878,7 @@ const createNewQuotation = async () => {
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
     },
+    product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
@@ -1974,6 +1982,7 @@ const editingQuotation = async () => {
   loading.value = true;
   let img = [];
   let qtId = null;
+  console.log(products.value)
   products.value.forEach((product) => {
     product.product_logo64 = "";
   });
@@ -1991,6 +2000,7 @@ const editingQuotation = async () => {
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
     },
+    product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
