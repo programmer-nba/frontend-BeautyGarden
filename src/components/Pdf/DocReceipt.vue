@@ -155,22 +155,30 @@
 
               <div class="flex w-full justify-between total border-r border-l border-b">
                 <div class="flex flex-col border-r">
-                  <article class="text-wrap w-[413px] min-h-[50px] text-start pr-5">
+                  <article class="text-wrap w-[413px] h-full min-h-[50px] text-start pr-5">
                     <strong>หมายเหตุ :</strong>
                     <pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
                     >{{ mark }}</pre>
                   </article>
-                    <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-green-200 text-center border-t border-l border-r flex justify-center items-center"
-                      :style="{ backgroundColor: `#${data.color}` }">
-                      <p class="font-bold">
-                        ( {{ 
-                          data.data.vat.percen_deducted
-                          ? formatNumberToText((totalPrice-data.data.discount+vat-withHolding)) + 'ถ้วน' 
-                          : formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน'
-                        }} )
-                      </p>
+                  <div class="h-full border-t flex items-end py-3 pl-2">
+                    <div class="flex gap-3">
+                      <strong>ชำระผ่าน : </strong>
+                      <span v-if="data.data.transfer ==='cash'">เงินสด</span>
+                      <span v-else>
+                        บัญชีธนาคาร {{ data.data.bank.remark_2 }} หมายเลข {{ data.data.bank?.status[0] }}
+                      </span>
                     </div>
-                
+                  </div>
+                  <div class="w-full min-w-[100px] h-fit min-h-[30px] bg-green-200 text-center border-t flex justify-center items-center"
+                    :style="{ backgroundColor: `#${data.color}` }">
+                    <p class="font-bold">
+                      ( {{ 
+                        data.data.vat.percen_deducted
+                        ? formatNumberToText((totalPrice-data.data.discount+vat-withHolding)) + 'ถ้วน' 
+                        : formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน'
+                      }} )
+                    </p>
+                  </div>
                 </div>
                 <table v-if="data.data.sumVat">
                     <tbody>
@@ -252,34 +260,13 @@
             <table>
                 <tbody>
                   <tr>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้เสนอราคา</td>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้สั่งซื้อ / customer</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเงิน</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้จ่ายเงิน / ลูกค้า</td>
                   </tr>
                   <tr>
                     <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
                       <div class="text-center w-fit text-sm pt-5 flex flex-col items-center justify-end">
-                        <!-- <img class="w-[75px] border-b pb-1 mb-1" 
-                        v-if="data.data.signature?.image_signature 
-                        && data.data.signature?.image_signature.trim()!==''
-                        && data.data.signature?.image_signature.trim()!=='-'
-                        " 
-                        :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" /> -->
-                        <!-- <p 
-                        v-if="!data.data.signature?.image_signature 
-                        || data.data.signature?.image_signature.trim()===''
-                        || data.data.signature?.image_signature.trim()==='-'
-                        ">________________</p> -->
-                       <!--  <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                        ">
-                          ( {{ data.data.signature.name }} )
-                        </p>
-                        <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                          {{`(.................................)`}}
-                        </p>
-                        <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                        ">
-                          {{ data.data.signature.position }}
-                        </p> -->
+                        
                         <img class="w-[130px]" 
                         :src="ssn_2" alt="..." />
                         <p>( เตชิตา รัตนกิตติกร )</p>
@@ -289,28 +276,7 @@
                       </div>
 
                         <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
-                          <!-- <img class="w-[75px] border-b pb-1 mb-1" 
-                          v-if="data.data.signature?.image_signature 
-                          && data.data.signature?.image_signature.trim()!==''
-                          && data.data.signature?.image_signature.trim()!=='-'
-                          " 
-                          :src="`https://drive.google.com/thumbnail?id=${data.data.signature?.image_signature}`" /> -->
-                          <!-- <p 
-                          v-if="!data.data.signature?.image_signature 
-                          || data.data.signature?.image_signature.trim()===''
-                          || data.data.signature?.image_signature.trim()==='-'
-                          ">________________</p> -->
-                         <!--  <p v-if="data.data.signature && data.data.signature?.name && data.data.signature?.name.trim() !==''
-                          ">
-                            ( {{ data.data.signature.name }} )
-                          </p>
-                          <p v-if="!data.data.signature || !data.data.signature?.name || data.data.signature?.name.trim() ===''">
-                            {{`(.................................)`}}
-                          </p>
-                          <p v-if="data.data.signature && data.data.signature?.position && data.data.signature?.position.trim() !==''
-                          ">
-                            {{ data.data.signature.position }}
-                          </p> -->
+                          
                           <img class="w-[180px]" 
                           :src="ssn_1" alt="..." />
                           <p>( เพชรลดา หงษ์สี )</p>

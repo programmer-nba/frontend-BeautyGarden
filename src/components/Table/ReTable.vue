@@ -5,7 +5,8 @@
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openReceipt"
     >
-      <DocReceiptRef :color="color" :data="selectedReceipt" @close="closeHandle" />
+      <DocReceiptRef v-if="selectedReceipt.invoice && selectedReceipt.amount_price" :color="color" :data="selectedReceipt" @close="closeHandle" />
+      <DocReceipt v-else :color="color" :data="selectedReceipt" @close="closeHandle" />
     </div>
 
     <div v-if="!openReceipt" class="card">
@@ -259,7 +260,7 @@
       </div>
       <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
-          <p>วันที่เริ่มต้น</p>
+          <p>วันที่</p>
           <Calendar
             class="border"
             v-model="start_date"
@@ -318,42 +319,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <!-- <div>
-              <h1>เลือกลายเซ็น</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="selectedSignature"
-                  :options="cpStore.mySignatures"
-                  optionLabel="name"
-                  placeholder="เลือกลายเซ็น"
-                  class="w-full md:w-14rem"
-                >
-                  <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.value"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.value?.name }}</div>
-                    </div>
-                    <span v-else>
-                      {{ slotProps.placeholder }}
-                    </span>
-                  </template>
-                  <template #option="slotProps">
-                    <div class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.option"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.option?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.option?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.option?.name }}</div>
-                    </div>
-                  </template>
-                </Dropdown>
-              </div>
-            </div> -->
+            
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -591,6 +557,12 @@
                       :src="item.product_logo64"
                       :alt="index"
                     />
+                    <img
+                      v-if="item.product_logo"
+                      class="object-contain block xl:block mx-auto border-round w-full"
+                      :src="`https://drive.google.com/thumbnail?id=${item.product_logo}`"
+                      :alt="index"
+                    />
                   </div>
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
@@ -812,22 +784,38 @@
         >
       </div>
 
+      <div>
+        <span>ลูกค้าชำระเงินผ่าน</span>
+        <div class="flex flex-wrap items-center gap-3 py-4">
+          <div class="flex align-items-center">
+              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="cash" name="cash" value="cash" />
+              <label for="ingredient1" class="ml-2">เงินสด</label>
+          </div>
+          <div class="flex align-items-center">
+              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="bank" name="bank" value="bank" />
+              <label for="ingredient2" class="ml-2">โอนผ่านบัญชีธนาคาร</label>
+          </div>
+        </div>
+      </div>
+
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
-        <p>หมายเหตุ</p>
+        <p v-tooltip.top="'เพิ่มหมายเหตุ'" @click="remark.push('')" class="cursor-pointer hover:text-orange-500 duration-300 px-2 border border-orange-300 rounded">หมายเหตุ</p>
         <Textarea
           v-for="(mark, mIndex) in remark"
           v-model="remark[mIndex]"
           autoResize
+          class="border border-orange-400"
           rows="5"
           cols="30"
         />
-        <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
+        <p v-if="remark.length>0" class="text-red-500 cursor-pointer" @click="remark.pop()">ลบ</p>
       </div>
 
       <template #footer>
-        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+        <Button label="ยกเลิก" text @click="hideDialog" />
         <Button
-          label="Save"
+          label="บันทึก"
+          class="text-green-700 px-2 border border-green-700 hover:bg-green-100 duration-300"
           icon="pi pi-check"
           :loading="loading"
           text
@@ -863,7 +851,7 @@
       </div>
       <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
-          <p>วันที่เริ่มต้น</p>
+          <p>วันที่</p>
           <Calendar
             class="border"
             v-model="start_date"
@@ -922,42 +910,7 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            <!-- <div>
-              <h1>เลือกลายเซ็น</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="selectedSignature"
-                  :options="cpStore.mySignatures"
-                  optionLabel="name"
-                  placeholder="เลือกลายเซ็น"
-                  class="w-full md:w-14rem"
-                >
-                  <template #value="slotProps">
-                    <div v-if="slotProps.value" class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.value"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.value?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.value?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.value?.name }}</div>
-                    </div>
-                    <span v-else>
-                      {{ slotProps.placeholder }}
-                    </span>
-                  </template>
-                  <template #option="slotProps">
-                    <div class="flex items-center w-[50px]">
-                      <img
-                        :alt="slotProps.option"
-                        :src="`https://drive.google.com/thumbnail?id=${slotProps.option?.image_signature}`"
-                        :class="`object-contain mr-4 flag flag-${slotProps.option?.name.toLowerCase()}`"
-                      />
-                      <div>{{ slotProps.option?.name }}</div>
-                    </div>
-                  </template>
-                </Dropdown>
-              </div>
-            </div> -->
+            
             <div>
               <h1>เลือกบัญชีธนาคาร</h1>
               <div class="card flex justify-content-center">
@@ -1414,6 +1367,20 @@
           >ราคาสุทธิ
           <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
         >
+      </div>
+
+      <div>
+        <span>ลูกค้าชำระเงินผ่าน</span>
+        <div class="flex flex-wrap items-center gap-3 py-4">
+          <div class="flex align-items-center">
+              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="cash" name="cash" value="cash" />
+              <label for="ingredient1" class="ml-2">เงินสด</label>
+          </div>
+          <div class="flex align-items-center">
+              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="bank" name="bank" value="bank" />
+              <label for="ingredient2" class="ml-2">โอนผ่านบัญชีธนาคาร</label>
+          </div>
+        </div>
       </div>
 
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
@@ -1538,9 +1505,9 @@
               <label for="ingredient2" class="ml-2">โอนผ่านบัญชีธนาคาร</label>
           </div>
         </div>
-        <div class="flex gap-3 justify-start items-center" v-if="transfer==='bank' && refInvoice && refInvoice.bank.name">
-          <small>{{ refInvoice?.bank.name }} ({{ refInvoice?.bank.remark_2 }})</small>
-          <small>{{ refInvoice?.bank.status }}</small>
+        <div class="flex gap-3 justify-start items-center" v-if="transfer==='bank' && refInvoice">
+          <small>{{ refInvoice?.bank?.name }} ({{ refInvoice?.bank?.remark_2 }})</small>
+          <small>{{ refInvoice?.bank?.status }}</small>
         </div>
         <div class="py-3">
           <strong>จำนวนเงิน</strong>
@@ -1597,6 +1564,7 @@ import { Customers } from "@/service/Customer";
 import { useReceiptStore } from "@/stores/receipt";
 import { useCompanyStore } from "@/stores/company";
 import DocReceiptRef from "@/components/Pdf/DocReceiptRef.vue";
+import DocReceipt from "@/components/Pdf/DocReceipt.vue";
 
 const reStore = useReceiptStore();
 const cpStore = useCompanyStore();
@@ -1752,7 +1720,7 @@ const referQuotation = () => {
         refQuotation.value.customer_branch.Branch_company_name
     );
     company.value = selectedCompany.value;
-    openProductForm.value = true;
+    openProductForm.value = false;
     products.value = refQuotation.value.product_detail;
     discount.value = refQuotation.value.discount;
     selectedSignature.value = refQuotation.value.signature;
@@ -1780,7 +1748,7 @@ const referQuotationInput = () => {
         refQuotation.value.customer_branch.Branch_company_name
     );
     company.value = selectedCompany.value;
-    openProductForm.value = true;
+    openProductForm.value = false;
     products.value = refQuotation.value.product_detail;
     discount.value = refQuotation.value.discount;
     selectedSignature.value = refQuotation.value.signature;
@@ -1986,7 +1954,8 @@ const openNew = () => {
   resetData();
   submitted.value = false;
   receiptDialog.value = true;
-  product.value.product_text = [""];
+  product.value.product_text = [""]
+  discount.value = 0
 };
 
 const hideDialog = () => {
@@ -2036,6 +2005,46 @@ const editReceipt = (prod) => {
   product.value.product_text = [""];
   sumVat.value = prod.sumVat;
   refQuotation.value = receipt.value.quotation;
+  transfer.value = receipt.value.transfer;
+  referQuotation();
+};
+
+const editReceiptRefInvoice = (prod) => {
+  resetData();
+  receipt.value = { ...prod };
+
+  start_date.value = prod.start_date;
+  end_date.value = prod.end_date;
+
+  const company = cpStore.myCompanies.find(
+    (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
+  );
+  selectedCompany.value = company;
+
+  const customered = customers.value.find(
+    (item) => item.customer_taxnumber === prod.customer_detail.tax_id
+  );
+  selectedCustomer.value = customered;
+  refCustomer();
+
+  isWithholding.value = prod.vat.percen_deducted ? true : false;
+  withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
+  discount.value = prod.discount;
+  products.value = prod.product_detail;
+  remark.value = prod.remark;
+  bank.value = company
+    ? company.bank.find((item) => item.number === prod.bank.status)
+    : null;
+  selectedSignature.value = cpStore.mySignatures.find(
+    (item) => item.name === prod.signature.name
+  );
+  receiptEditDialog.value = true;
+  discount.value = 0;
+  product.value = {};
+  product.value.product_text = [""];
+  sumVat.value = prod.sumVat;
+  refQuotation.value = receipt.value.quotation;
+  transfer.value = receipt.value.transfer;
   referQuotation();
 };
 
@@ -2175,6 +2184,7 @@ const createNewReceipt = async () => {
     },
     isVat: selectedCompany.value.isVat,
     sumVat: sumVat.value,
+    transfer: transfer.value
   };
   console.log(data);
   try {
@@ -2269,7 +2279,7 @@ const editingReceipt = async () => {
   });
   console.log(refQuotation.value);
   const data = {
-    //quotation: refQuotation.value.quotation,
+    quotation: refQuotation.value.quotation,
     //invoice: refInvoice.value.invoice,
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
@@ -2291,6 +2301,7 @@ const editingReceipt = async () => {
     end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value.isVat,
+    transfer: transfer.value,
     bank: bank.value
       ? {
           name: bank.value.name,
