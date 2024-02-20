@@ -1602,7 +1602,7 @@ const removeProduct = (index) => {
 const sumProductsPrice = computed(() => {
   if (products.value && products.value.length > 0) {
     const prices = products.value.map((pd) => {
-      const result = (pd.product_price * pd.product_amount) + pd.vat_price
+      const result = (pd.product_price * pd.product_amount)
       return result;
     });
     const sumPrices = prices.reduce((a, b) => a + b);

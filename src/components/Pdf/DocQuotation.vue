@@ -91,7 +91,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.customer_branch.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
                       <p>VAT 7%</p>
                       <small class="font-normal"></small>
                     </th>
@@ -108,7 +108,7 @@
                     </td>
                     <td class="py-2">
                       <strong class="text-md">
-                        (ตัวอย่าง หัวข้อหลัก) งานรับเหมาจัดสวนบนอาคาร
+                        {{ data.data.product_head }}
                       </strong>
                     </td>
                     <td>
@@ -117,7 +117,7 @@
                     <td>
                       
                     </td>
-                    <td v-if="data.data.isVat">
+                    <td v-if="data.data.customer_branch.isVat">
                       
                     </td>
                     <td>
@@ -149,7 +149,7 @@
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
-                    <td v-if="data.data.isVat" class=".td border" style="text-align: right">
+                    <td v-if="data.data.customer_branch.isVat" class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
                         {{ 
                           product.vat_price > 0
