@@ -129,7 +129,11 @@
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(data.data.invoiceRef_detail?.paid) }}
+                        {{ 
+                          data.data.vat.percen_deducted 
+                          ? formatCurrency((totalPrice-data.data.discount+vat-withHolding)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          : formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                        }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">

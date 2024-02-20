@@ -99,7 +99,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
                       <p>VAT 7%</p>
                       <small class="font-normal"></small>
                     </th>
@@ -135,7 +135,7 @@
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
-                    <td class=".td border" style="text-align: right">
+                    <td v-if="data.data.isVat" class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
                         {{ 
                           product.vat_price > 0
