@@ -144,12 +144,6 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            <!-- <div class="flex flex-col gap-y-2">
-              <p>totalPrice : {{ totalPrice(slotProps.data) }}</p>
-              <p>discount : {{ slotProps.data.discount }}</p>
-              <p>vat : {{ totalVat(slotProps.data) }}</p>
-              <p>ณ ที่จ่าย : {{ withHolding(slotProps.data) }}</p>
-            </div> -->
             {{ 
               slotProps.data.sumVat
               ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
@@ -200,9 +194,6 @@
           style="min-width: 6rem"
           class="border-b"
         >
-          <!-- <template #body="slotProps">
-                        <Tag :value="slotProps.data.staus" :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
-                    </template> -->
         </Column>
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">
