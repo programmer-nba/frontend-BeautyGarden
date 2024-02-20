@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy:test": "scp -r dist/* root@143.198.204.72:/var/www/beautygarden.nbadigital.tech"
+    "deploy:test": "scp -r dist/* root@143.198.204.72:/var/www/beautygarden.nbadigitalsuccessmore.com"
   },
   "dependencies": {
     "@types/googlemaps": "^3.43.3",
