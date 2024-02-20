@@ -114,27 +114,27 @@
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        16/2/2567
+                        {{ formatDate(data.data.invoiceRef_detail?.start_date) }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        20/2/2567
+                        {{ formatDate(data.data.invoiceRef_detail?.end_date) }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
-                        1/2
+                        {{ data.data.invoiceRef_detail?.period_text }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
-                        1,000
+                        {{ formatCurrency(data.data.invoiceRef_detail?.paid) }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        500
+                        {{ formatCurrency(data.data.amount_price) }}
                       </div>
                     </td>
                   </tr>
@@ -148,17 +148,21 @@
                     <pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
                     >{{ mark }}</pre>
                   </article>
-                    <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-green-200 text-center border-t border-l border-r flex justify-center items-center"
-                      :style="{ backgroundColor: `#${data.color}` }">
-                      <p class="font-bold">
-                        ( {{ 
-                          data.data.vat.percen_deducted
-                          ? formatNumberToText((totalPrice-data.data.discount+vat-withHolding)) + 'ถ้วน' 
-                          : formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน'
-                        }} )
-                      </p>
+                  <div class="w-full min-w-[100px] h-fit min-h-[30px] mt-6 bg-green-200 text-center border flex justify-center items-center"
+                    :style="{ backgroundColor: `#${data.color}` }">
+                    <p class="font-bold">
+                      ( {{ formatNumberToText(data.data.amount_price) + 'ถ้วน' }} )
+                    </p>
+                  </div>
+                  <div class="h-full flex items-end pb-3 pl-2">
+                    <div class="flex gap-3">
+                      <strong>ชำระผ่าน : </strong>
+                      <span v-if="data.data.transfer ==='cash'">เงินสด</span>
+                      <span v-else>
+                        บัญชีธนาคาร {{ data.data.bank.remark_2 }} หมายเลข {{ data.data.bank?.status[0] }}
+                      </span>
                     </div>
-                
+                  </div>
                 </div>
                 <table>
                     <tbody>
@@ -186,17 +190,25 @@
                         <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย {{ data.data.vat.percen_deducted }}%</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(withHolding) }}</span>บาท</td>
                       </tr>
-                      <tr v-if="data.data.vat.percen_deducted" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
-                        <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat-withHolding) }}</strong>บาท</td>
+                      <tr v-if="data.data.vat.percen_deducted" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
+                        <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat-withHolding) }}</span>บาท</td>
                       </tr>
-                      <tr v-if="!data.data.vat.percen_deducted" class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
-                        <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
+                      <tr v-if="!data.data.vat.percen_deducted" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
+                        <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                       </tr>
-                      <tr class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
-                        <td style="text-align: left"><strong class="pl-5">ยอดคงค้าง</strong></td>
-                        <td style="text-align: right"><strong class="pr-3">500</strong>บาท</td>
+                      <tr class="flex justify-between w-full pt-2 pb-2 border-t" :style="{ backgroundColor: `#${data.color}` }">
+                        <td style="text-align: left"><strong class="pl-5">ยอดชำระ</strong></td>
+                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.amount_price) }}</strong>บาท</td>
+                      </tr>
+                      <tr class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
+                        <td style="text-align: left"><span class="pl-5">ยอดคงค้าง</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ 
+                          data.data.vat.percen_deducted 
+                          ? formatCurrency((totalPrice-data.data.discount+vat-withHolding)-data.data.invoiceRef_detail?.paid)
+                          : formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid)
+                        }}</span>บาท</td>
                       </tr>
                     </tbody>
                 </table>

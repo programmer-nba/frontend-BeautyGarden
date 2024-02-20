@@ -42,6 +42,8 @@ import InputSwitch from 'primevue/inputswitch';
 import ConfirmPopup from 'primevue/confirmpopup';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
+import InputGroup from 'primevue/inputgroup';
+import InputGroupAddon from 'primevue/inputgroupaddon';
 
 import App from './App.vue'
 import router from './router'
@@ -96,6 +98,8 @@ app.component('Sidebar', Sidebar);
 app.component('ColorPicker', ColorPicker);
 app.component('InputSwitch', InputSwitch)
 app.component('ConfirmPopup', ConfirmPopup)
+app.component('InputGroup', InputGroup)
+app.component('InputGroupAddon', InputGroupAddon)
 
 app.mount('#app')
 
