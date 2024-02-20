@@ -1692,7 +1692,7 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const submitted = ref(false);
-const statuses = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
+const statuses = ref(["Normal", "องค์กร", "หน่วยงานราชการ", "ลูกค้ารายเดือน", "VIP"]);
 
 const percents = ref([3, 5]);
 

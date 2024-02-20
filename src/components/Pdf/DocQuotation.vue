@@ -32,7 +32,7 @@
                   <br />
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
-                  {{ data.data.customer_detail?.customer_email }}<br />
+                  {{ data.data.customer_detail?.customer_email !== 'undefined' ? data.data.customer_detail?.customer_email : null }}<br />
                   เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}<br /><br />
                 </div>
                 <div class="from">
@@ -91,7 +91,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th pb-0 pt-2" style="text-align: center">
                       <p>VAT 7%</p>
                       <small class="font-normal"></small>
                     </th>
@@ -127,7 +127,7 @@
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
-                    <td class=".td border" style="text-align: right">
+                    <td v-if="data.data.isVat" class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
                         {{ 
                           product.vat_price > 0

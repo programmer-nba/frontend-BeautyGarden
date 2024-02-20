@@ -96,9 +96,9 @@
         >
         <template #body="slotProps">
           <span>
-            {{ slotProps.data.quotation }}
+            {{ slotProps.data?.quotation }}
             <i 
-              @click="copyToClipboard(slotProps.data.quotation)" 
+              @click="onCoppy(slotProps.data?.quotation)" 
               class="pi pi-copy cursor-pointer hover:text-yellow-500 hover:bg-yellow-100 duration-300 ease-in-out p-2 rounded-full" 
               v-tooltip.top="'คัดลอก'"
               >
@@ -1407,6 +1407,11 @@ onMounted(async () => {
   await cpStore.getMySignatures();
 });
 
+const onCoppy = (value) => {
+  console.log(value)
+  copyToClipboard(value)
+}
+
 const lastRefreshed = ref();
 const openQuotation = ref(false);
 const loading = ref(false);
@@ -1450,7 +1455,7 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const submitted = ref(false);
-const statuses = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
+const statuses = ref(["Normal", "องค์กร", "หน่วยงานราชการ", "ลูกค้ารายเดือน", "VIP"]);
 
 const percents = ref([3, 5]);
 

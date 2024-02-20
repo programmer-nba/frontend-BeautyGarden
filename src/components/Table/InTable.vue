@@ -98,7 +98,7 @@
           <span>
             {{ slotProps.data.invoice }}
             <i 
-              @click="copyToClipboard(slotProps.data.invoice)" 
+              @click="onCoppy(slotProps.data.invoice)" 
               class="pi pi-copy cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
               v-tooltip.top="'คัดลอก'"
               >
@@ -1490,6 +1490,11 @@ const cur_period = ref(0)
 const reStore = useInvoiceStore();
 const cpStore = useCompanyStore();
 
+const onCoppy = (value) => {
+  console.log(value)
+  copyToClipboard(value)
+}
+
 // open reference receipts list
 const selected_invoice = ref()
 const openRefReceiptDialog = ref(false);
@@ -1497,7 +1502,7 @@ const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 })
 const submitted = ref(false);
-const statuses = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
+const statuses = ref(["Normal", "องค์กร", "หน่วยงานราชการ", "ลูกค้ารายเดือน", "VIP"]);
 const percents = ref([3, 5]);
 
 function countdownToEndDate(end_date) {
