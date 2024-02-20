@@ -676,11 +676,12 @@ const createNewCustomer = async () => {
     customerDialog.value = false;
     await Customers.getCustomers().then((data) => (customers.value = data.data));
   } else {
+    console.log(response.response.data.message)
     customerDialog.value = false;
     toast.add({
       severity: "error",
       summary: "มีบางอย่างผิดพลาด",
-      detail: "เพิ่มลูกค้าใหม่ล้มเหลว",
+      detail: response.response.data.message,
       life: 3000,
     });
     loading.value = false;
