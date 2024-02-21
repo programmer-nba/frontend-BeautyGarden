@@ -131,9 +131,9 @@
                     <td class=".td border">
                       <div class="flex">
                         <img v-if="product.product_logo && product.product_logo.trim()!==''" class="w-[150px] pr-3" :src="`https://drive.google.com/thumbnail?id=${product.product_logo}`" :alt="index" />
-                        <article class="text-wrap w-[200px]">
+                        <article class="text-wrap w-full max-w-[300px]">
                             <strong>{{ product.product_name }}</strong>
-                            <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
+                            <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex" class="w-full">
                                 {{ p }}
                             </p>
                         </article>

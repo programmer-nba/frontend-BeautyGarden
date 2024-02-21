@@ -110,6 +110,28 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr class="border">
+                    <td>
+                      
+                    </td>
+                    <td class="py-2">
+                      <strong class="text-md">
+                        {{ data.data.product_head }}
+                      </strong>
+                    </td>
+                    <td>
+                      
+                    </td>
+                    <td>
+                      
+                    </td>
+                    <td v-if="data.data.customer_branch.isVat">
+                      
+                    </td>
+                    <td>
+                      
+                    </td>
+                  </tr>
                   <tr class="border py-2" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       {{ index + 1 }}

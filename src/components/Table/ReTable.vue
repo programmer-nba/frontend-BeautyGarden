@@ -173,22 +173,7 @@
           class="border-b"
         >
           <template #body="slotProps">
-            <div class="grid place-items-center w-full">
-              <span
-                class="text-sm text-center"
-                :class="
-                  slotProps.data.customer_branch.isVat ? 'bg-yellow-200 rounded p-1' : ''
-                "
-              >
-                {{
-                  slotProps.data.customer_branch.isVat && slotProps.data.sumVat
-                    ? "VAT นอก"
-                    : slotProps.data.customer_branch.isVat && !slotProps.data.sumVat
-                    ? "VAT ใน"
-                    : "-"
-                }}
-              </span>
-            </div>
+           
           </template>
         </Column>
         <Column
@@ -1635,6 +1620,7 @@ const receiptEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
 const refQuotation = ref();
+const product_head = ref();
 
 // Create with reference invoice
 const amount_price = ref();
@@ -2192,6 +2178,7 @@ const createNewReceipt = async () => {
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
     },
+    product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,

@@ -1508,6 +1508,7 @@ const bank = ref({});
 const refQuotation = ref()
 const end_period = ref(1)
 const cur_period = ref(0)
+const product_head = ref()
 
 const reStore = useInvoiceStore();
 const cpStore = useCompanyStore();
@@ -1593,6 +1594,7 @@ const referQuotation = async () => {
 const referQuotationInput = async () => {
   if ( refQuotation.value && !refQuotation.value.customer_detail ) {
     refQuotation.value = quotations.value.find(item=>item.quotation===refQuotation.value)
+    product_head.value = refQuotation.value.product_head
     console.log('rfQT', refQuotation.value)   
     console.log('customers', customers.value)
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
@@ -1826,7 +1828,7 @@ const editInvoice = (prod) => {
   );
   selectedCustomer.value = customered;
   refCustomer();
-
+  product_head.value = prod.value.product_head
   isWithholding.value = prod.vat.percen_deducted ? true : false;
   withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
   discount.value = prod.discount;
@@ -1969,6 +1971,7 @@ const createNewInvoice = async () => {
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
     },
+    product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
@@ -2093,6 +2096,7 @@ const editingInvoice = async () => {
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
     },
+    product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
