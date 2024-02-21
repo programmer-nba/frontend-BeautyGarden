@@ -131,7 +131,7 @@
                       <div class="flex justify-center h-full py-2">
                         {{ 
                           data.data.vat.percen_deducted 
-                          ? formatCurrency((totalPrice-data.data.discount+vat-withHolding)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                           : formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                         }}
                       </div>
@@ -190,13 +190,10 @@
                         <td style="text-align: left"><span class="pl-5">ราคารวม VAT 7%</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                       </tr>
-                      <tr v-if="data.data.vat.percen_deducted" class="flex justify-between w-full">
-                        <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย {{ data.data.vat.percen_deducted }}%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(withHolding) }}</span>บาท</td>
-                      </tr>
+                      
                       <tr v-if="data.data.vat.percen_deducted" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat-withHolding) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                       </tr>
                       <tr v-if="!data.data.vat.percen_deducted" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
@@ -210,7 +207,7 @@
                         <td style="text-align: left"><span class="pl-5">ยอดค้างก่อนชำระ</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ 
                           data.data.vat.percen_deducted 
-                          ? formatCurrency((totalPrice-data.data.discount+vat-withHolding)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                           : formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                         }}</span>บาท</td>
                       </tr>
@@ -222,7 +219,7 @@
                         <td style="text-align: left"><span class="pl-5">ยอดค้างสุทธิ</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ 
                           data.data.vat.percen_deducted 
-                          ? formatCurrency((totalPrice-data.data.discount+vat-withHolding)-data.data.invoiceRef_detail?.paid)
+                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid)
                           : formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid)
                         }}</span>บาท</td>
                       </tr>
@@ -232,6 +229,9 @@
               </div>
             </div>
           </div>
+          <!-- <tr v-if="data.data.vat.percen_deducted" class="flex text-sm justify-end w-full border">
+            <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย {{ data.data.vat.percen_deducted }}% {{ formatCurrency(withHolding) }} บาท</span></td>
+          </tr> -->
         
         <div class="flex justify-center px-2">
             <table>

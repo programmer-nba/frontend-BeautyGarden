@@ -176,8 +176,8 @@
           <template #body="slotProps">
             {{ 
               slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
             }}
           </template>
         </Column>
@@ -191,14 +191,14 @@
           <template #body="slotProps">
             <span
               :class="
-              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)-(slotProps.data.paid || 0) < 0
+              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) -(slotProps.data.paid || 0) < 0
               ? 'text-green-700 font-bold bg-green-100 rounded px-2 py-0.5'
               : ''
               "
             >{{ 
-              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)-(slotProps.data.paid || 0) < 0
+              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) -(slotProps.data.paid || 0) < 0
               ? 'ครบแล้ว'
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)-(slotProps.data.paid || 0)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) -(slotProps.data.paid || 0)) 
             }}</span>
           </template>
         </Column>
@@ -557,6 +557,11 @@
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
 
+      <div class="py-4 px-2 bg-slate-100 rounded">
+        <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
+        <InputText id="product_head" v-model="product_head" />
+      </div>
+
       <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
@@ -625,10 +630,7 @@
           </template>
         </DataView>
       </div>
-      <div class="py-4 border">
-        <label for="product_head"></label>
-        <InputText id="product_head" v-model="product_head" />
-      </div>
+      
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1121,6 +1123,11 @@
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
 
+      <div class="py-4 px-2 bg-slate-100 rounded">
+        <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
+        <InputText id="product_head" v-model="product_head" />
+      </div>
+
       <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
@@ -1189,10 +1196,7 @@
           </template>
         </DataView>
       </div>
-      <div class="py-4 border">
-        <label for="product_head"></label>
-        <InputText id="product_head" v-model="product_head" />
-      </div>
+      
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1588,6 +1592,8 @@ const referQuotation = async () => {
     bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
     sumVat.value = refQuotation.value.sumVat
     isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
+    withholdingPercent.value = refQuotation.value.vat.percen_deducted ? refQuotation.value.vat.percen_deducted : null
+    product_head.value = refQuotation.value.product_head
   } 
 }
 
@@ -1674,7 +1680,7 @@ const addProduct = () => {
 }
 
 const allEnd = computed(() => {
-  return netVat.value - withholdingPrice.value;
+  return netVat.value
 })
 
 const removeProduct = (index) => {
@@ -1686,7 +1692,7 @@ const removeProduct = (index) => {
 const sumProductsPrice = computed(() => {
   if (products.value && products.value.length > 0) {
     const prices = products.value.map((pd) => {
-      const result = (pd.product_price * pd.product_amount) + pd.vat_price
+      const result = (pd.product_price * pd.product_amount) 
       return result;
     });
     const sumPrices = prices.reduce((a, b) => a + b);
@@ -1828,7 +1834,7 @@ const editInvoice = (prod) => {
   );
   selectedCustomer.value = customered;
   refCustomer();
-  product_head.value = prod.value.product_head
+  product_head.value = prod.product_head
   isWithholding.value = prod.vat.percen_deducted ? true : false;
   withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
   discount.value = prod.discount;
@@ -1841,6 +1847,7 @@ const editInvoice = (prod) => {
   product.value = {}
   product.value.product_text = [""]
   sumVat.value = prod.sumVat
+  end_period.value = prod.end_period
   refQuotation.value = quotations.value.find(qt=>qt.quotation===invoice.value.quotation)
 }
 
