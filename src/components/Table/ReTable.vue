@@ -152,14 +152,12 @@
                   ? formatCurrency(
                       totalPrice(slotProps.data) -
                         slotProps.data.discount +
-                        totalVat(slotProps.data) -
-                        withHolding(slotProps.data)
+                        totalVat(slotProps.data)
                     )
                   : formatCurrency(
                       totalPrice(slotProps.data) -
                         slotProps.data.discount +
-                        totalVat(slotProps.data) -
-                        withHolding(slotProps.data)
+                        totalVat(slotProps.data)
                     )
               }}
             </span>
@@ -173,7 +171,14 @@
           class="border-b"
         >
           <template #body="slotProps">
-           
+            <div class="grid place-items-center w-full">
+              <span
+                class="text-sm text-center"
+                :class="slotProps.data.isVat ? 'text-orange-500 bg-yellow-200 px-2 rounded' : ''"
+              >
+                {{ slotProps.data.isVat && slotProps.data.sumVat ? "VAT นอก" : slotProps.data.isVat && !slotProps.data.sumVat ? "VAT ใน" : "-" }}
+              </span>
+            </div>
           </template>
         </Column>
         <Column
@@ -604,8 +609,8 @@
           </template>
         </DataView>
       </div>
-      <div class="py-4 border">
-        <label for="product_head"></label>
+      <div class="py-4 bg-slate-100 px-2 rounded-lg">
+        <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
         <InputText id="product_head" v-model="product_head" />
       </div>
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
@@ -1727,6 +1732,9 @@ const referQuotation = () => {
         item.Branch_company_name ===
         refQuotation.value.customer_branch.Branch_company_name
     );
+    product_head.value = refQuotation.value.product_head
+    isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
+    withholdingPercent.value = refQuotation.value.vat.percen_deducted
     company.value = selectedCompany.value;
     openProductForm.value = false;
     products.value = refQuotation.value.product_detail;
