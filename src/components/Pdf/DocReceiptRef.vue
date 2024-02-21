@@ -306,7 +306,7 @@
 
 <script setup>
 import { onMounted, computed } from 'vue';
-import ssn_1 from '@/assets/img/ssn-1.jpg'
+import ssn_1 from '@/assets/img/ssn-1.png'
 import ssn_2 from '@/assets/img/ssn-2.png'
 
 onMounted(()=>{
