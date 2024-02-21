@@ -179,7 +179,7 @@
                       <strong>ชำระผ่าน : </strong>
                       <span v-if="data.data.transfer ==='cash'">เงินสด</span>
                       <span v-else>
-                        บัญชีธนาคาร {{ data.data.bank.remark_2 }} หมายเลข {{ data.data.bank?.status[0] }}
+                        บัญชีธนาคาร {{ data.data.bank?.remark_2 }} หมายเลข {{ data.data.bank?.status }}
                       </span>
                     </div>
                   </div>
