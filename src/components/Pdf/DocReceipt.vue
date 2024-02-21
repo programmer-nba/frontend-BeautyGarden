@@ -183,9 +183,10 @@
                     <div class="flex border-t w-full pt-2 justify-start text-start gap-2">
                       <strong>ชำระผ่าน : </strong>
                       <span v-if="data.data.transfer ==='cash'">เงินสด</span>
-                      <span v-else>
-                        บัญชีธนาคาร {{ data.data.bank.remark_2 }} หมายเลข {{ data.data.bank?.status[0] }} ชื่อบัญชี {{ data.data.bank?.name }}
-                      </span>
+                      <div class="flex flex-col" v-else>
+                        <span>บัญชีธนาคาร {{ data.data.bank.remark_2 }} หมายเลข {{ data.data.bank?.status[0] }}</span>
+                        <span>ชื่อบัญชี {{ data.data.bank?.name }}</span>
+                      </div>
                     </div>
                   </div>
                   <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-green-200 text-center border-t border-r flex justify-center items-center"

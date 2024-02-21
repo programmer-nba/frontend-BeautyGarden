@@ -32,7 +32,7 @@
                   <br />
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
-                  {{ data.data.customer_detail?.customer_email }}<br />
+                  {{ data.data.customer_detail?.customer_email }}<br v-if="data.data.customer_detail?.customer_email" />
                   เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}<br /><br />
                 </div>
                 <div class="from">
@@ -91,7 +91,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th v-if="data.data.customer_branch.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.customer_branch?.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
                       <p>VAT 7%</p>
                       <small class="font-normal"></small>
                     </th>
@@ -117,7 +117,7 @@
                     <td class="border">
                       
                     </td>
-                    <td v-if="data.data.customer_branch.isVat">
+                    <td v-if="data.data.customer_branch?.isVat">
                       
                     </td>
                     <td class="border">
@@ -149,7 +149,7 @@
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
-                    <td v-if="data.data.customer_branch.isVat" class=".td border" style="text-align: right">
+                    <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
                         {{ 
                           product.vat_price > 0
@@ -175,52 +175,42 @@
                     >{{ mark }}</pre>
                   </article>
                   <div class="h-full flex items-end pb-2">
-                    <div class="flex border-t w-full pt-2 justify-start text-start gap-2">
-                      <strong>ชำระผ่าน : </strong>
-                      <span v-if="data.data.transfer ==='cash'">เงินสด</span>
-                      <span v-else>
-                        บัญชีธนาคาร {{ data.data.bank?.remark_2 }} หมายเลข {{ data.data.bank?.status }} ชื่อบัญชี {{ data.data.bank?.name }}
-                      </span>
+                    <div class="h-full w-full flex items-end pb-2">
+                      <div class="flex border-t w-full pt-2 justify-start text-start gap-2">
+                        <strong>ชำระผ่าน : </strong>
+                        <span v-if="data.data.transfer ==='cash'">เงินสด</span>
+                        <div class="flex flex-col" v-else>
+                          <span>บัญชีธนาคาร {{ data.data.bank.remark_2 }} หมายเลข {{ data.data.bank?.status }}</span>
+                          <span>ชื่อบัญชี {{ data.data.bank?.name }}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-yellow-200 text-center border-t border-r flex justify-center items-center"
-                    :style="{ backgroundColor: `#${data.color}` }">
-                    <p class="font-bold">
-                      ( {{ 
-                        data.data.vat.percen_deducted
-                        ? formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน' 
-                        : formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน'
-                      }} )
-                    </p>
-                  </div>
+                  
                 </div>
                 <table class="h-full" v-if="data.data.sumVat">
                     <tbody class="h-full">
-                      <tr class="flex justify-between w-full">
-                        <td class="text-white">.</td>
-                        <td></td>
-                      </tr>
-                      <tr class="flex justify-between w-full">
-                        <td class="text-white">.</td>
-                        <td></td>
-                      </tr>
-                      <tr class="flex justify-between w-full">
+                      <tr class="flex justify-between w-full pb-1">
                         <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
                         <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
                       </tr>
                       
-                      <tr class="flex justify-between w-full">
+                      <tr class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด {{ formatCurrency(data.data.discount*100/totalPrice) || '-' }} (%)</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount) || '0.00' }}</span>บาท</td>
                       </tr>
-                      <tr class="flex justify-between w-full">
+                      <tr class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
                       </tr>
                       
-                      <tr v-if="data.data?.isVat" class="flex justify-between w-full pb-1">
+                      <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
+                      </tr>
+                      <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
+                        <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                       </tr>
 
                       <tr class="flex justify-between items-center w-full py-2 bg-yellow-200 " :style="{ backgroundColor: `#${data.color}` }">
@@ -238,30 +228,27 @@
                 
                 <table v-if="!data.data.sumVat">
                   <tbody>
-                    <tr class="flex justify-between w-full">
-                      <td class="text-white">.</td>
-                      <td></td>
-                    </tr>
-                    <tr class="flex justify-between w-full">
-                      <td class="text-white">.</td>
-                      <td></td>
-                    </tr>
-                    <tr class="flex justify-between w-full">
+                    
+                    <tr class="flex justify-between w-full pb-1">
                       <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
                       <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
                     </tr>
-                    <tr class="flex justify-between w-full">
+                    <tr class="flex justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด {{ formatCurrency(data.data.discount*100/totalPrice) || '-' }} (%)</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount*100/totalPrice) || 0 }}</span>บาท</td>
                     </tr>
                    
-                    <tr class="flex justify-between w-full">
+                    <tr class="flex justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
                     </tr>
-                    <tr v-if="data.data?.isVat" class="flex justify-between w-full">
-                      <td style="text-align: left"><span class="pl-5">VAT 7%</span></td>
+                    <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
+                      <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
+                    </tr>
+                    <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                     </tr>
                    
                     <tr class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
@@ -281,6 +268,16 @@
                   </tbody>
               </table>
               </div>
+              <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-yellow-200 text-center border-b border-r border-l flex justify-center items-center"
+                :style="{ backgroundColor: `#${data.color}` }">
+                <p class="font-bold">
+                  ( {{ 
+                    data.data.vat.percen_deducted
+                    ? formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน' 
+                    : formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน'
+                  }} )
+                </p>
+              </div>
               <tr v-if="data.data.vat.percen_deducted" class="flex justify-between items-center w-full border-b border-l border-r pt-2 pb-2" :style="{ backgroundColor: `#${data.color}` }">
                 <td>
                 </td>
@@ -297,8 +294,8 @@
             <table>
                 <tbody>
                   <tr>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเงิน</td>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้จ่ายเงิน / ลูกค้า</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้เสนอราคา</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้อนุมัติการสั่งซื้อ</td>
                   </tr>
                   <tr>
                     <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
