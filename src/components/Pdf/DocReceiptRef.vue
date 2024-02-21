@@ -238,7 +238,7 @@
                 <tbody>
                   <tr>
                     <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเงิน</td>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้จ่ายเงิน</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้อนุมัติการสั่งซื้อ</td>
                   </tr>
                   <tr>
                     <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">

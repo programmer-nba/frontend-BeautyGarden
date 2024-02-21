@@ -284,7 +284,7 @@
                 <tbody>
                   <tr>
                     <td class="border text-sm" style="text-align: center; padding:0;">ผู้ขาย/ผู้ให้บริการ</td>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ลูกค้า</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเอกสาร</td>
                   </tr>
                   <tr>
                     <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
