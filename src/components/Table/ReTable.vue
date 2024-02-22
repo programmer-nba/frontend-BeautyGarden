@@ -2045,7 +2045,7 @@ const editReceipt = (prod) => {
   products.value = prod.product_detail;
   remark.value = prod.remark;
   bank.value = company
-    ? company.bank.find((item) => item.number === prod.bank.status)
+    ? company.bank.find((item) => item.number === prod.bank.status[0])
     : null;
   selectedSignature.value = cpStore.mySignatures.find(
     (item) => item.name === prod.signature.name
@@ -2334,19 +2334,19 @@ const editingReceipt = async () => {
   });
   console.log(refQuotation.value);
   const data = {
-    quotation: refQuotation.value.quotation,
+    quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,
-    customer_number: customer.value.customer_number,
-    branchId: selectedCompany.value._id,
+    customer_number: customer.value ? customer.value.customer_number : null,
+    branchId: selectedCompany.value ? selectedCompany.value._id : null,
     signatureID: selectedSignature.value ? selectedSignature.value._id : "",
     customer_detail: {
-      tax_id: customer.value.customer_taxnumber,
-      customer_name: customer.value.customer_name,
-      customer_lastname: customer.value.customer_lastname,
-      customer_phone: customer.value.customer_phone,
-      customer_email: customer.value.customer_email,
-      customer_address: customer.value.customer_position,
-      customer_type: customer.value.customer_type,
+      tax_id: customer.value ? customer.value.customer_taxnumber : null,
+      customer_name: customer.value ? customer.value.customer_name : null,
+      customer_lastname: customer.value ? customer.value.customer_lastname : null,
+      customer_phone: customer.value ? customer.value.customer_phone : null,
+      customer_email: customer.value ? customer.value.customer_email : null,
+      customer_address: customer.value ? customer.value.customer_position : null,
+      customer_type: customer.value ? customer.value.customer_type : null,
     },
     product_detail: products.value,
     discount: discount.value,
@@ -2355,13 +2355,13 @@ const editingReceipt = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
-    isVat: selectedCompany.value.isVat,
+    isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     transfer: transfer.value,
     bank: bank.value
       ? {
-          name: bank.value.name,
-          remark_2: bank.value.remark,
-          status: bank.value.number,
+          name: bank.value ? bank.value.name : null,
+          remark_2: bank.value ? bank.value.remark : null,
+          status: bank.value ? bank.value.number : null,
         }
       : {
           name: "",
@@ -2371,7 +2371,7 @@ const editingReceipt = async () => {
   };
   console.log(data);
   try {
-    const response = await Documents.editReceipt(receipt.value._id, data);
+    const response = await Documents.editReceipt(receipt.value?._id, data);
     if (response.data) {
       img = response.data.product_detail;
       qtId = response.data._id;
