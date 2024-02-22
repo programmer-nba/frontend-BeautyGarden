@@ -2209,17 +2209,17 @@ const createNewReceipt = async () => {
   const data = {
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,
-    customer_number: customer.value.customer_number,
-    branchId: selectedCompany.value._id,
+    customer_number: customer.value ? customer.value.customer_number : null,
+    branchId: selectedCompany.value ? selectedCompany.value._id : null,
     signatureID: selectedSignature.value ? selectedSignature.value._id : null,
     customer_detail: {
-      tax_id: customer.value.customer_taxnumber,
-      customer_name: customer.value.customer_name,
-      customer_lastname: customer.value.customer_lastname,
-      customer_phone: customer.value.customer_phone,
-      customer_email: customer.value.customer_email,
-      customer_address: customer.value.customer_position,
-      customer_type: customer.value.customer_type,
+      tax_id: customer.value ? customer.value.customer_taxnumber : null,
+      customer_name: customer.value ? customer.value.customer_name : null,
+      customer_lastname: customer.value ? customer.value.customer_lastname : null,
+      customer_phone: customer.value ? customer.value.customer_phone : null,
+      customer_email: customer.value ? customer.value.customer_email : null,
+      customer_address: customer.value ? customer.value.customer_position : null,
+      customer_type: customer.value ? customer.value.customer_type : null,
     },
     product_head: product_head.value,
     product_detail: products.value,
@@ -2230,11 +2230,11 @@ const createNewReceipt = async () => {
     end_date: end_date.value,
     remark: remark.value,
     bank: {
-      name: bank.value.name,
-      remark_2: bank.value.remark,
-      status: bank.value.number,
+      name: bank.value ? bank.value.name : null,
+      remark_2: bank.value ? bank.value.remark : null,
+      status: bank.value ? bank.value.number : null,
     },
-    isVat: selectedCompany.value.isVat,
+    isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     sumVat: sumVat.value,
     transfer: transfer.value
   };
@@ -2310,6 +2310,9 @@ const createNewReceipt = async () => {
       life: 3000,
     });
     refresh();
+  }
+  finally {
+    loading.value = false
   }
   receiptDialog.value = false;
   loading.value = false;
