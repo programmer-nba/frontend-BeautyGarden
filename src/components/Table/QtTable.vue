@@ -11,7 +11,6 @@
         @close="closeHandle"
       />
     </div>
-
     <div v-if="!openQuotation" class="card">
       <Toolbar class="mb-4">
         <template #start>
@@ -32,17 +31,8 @@
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
         </template>
-
         <template #end>
-          <FileUpload
-            mode="basic"
-            accept="image/*"
-            :maxFileSize="1000000"
-            label="เพิ่มข้อมูลจากไฟล์"
-            chooseLabel="เพิ่มข้อมูลจากไฟล์"
-            class="mr-4 inline-block"
-            disabled
-          />
+          
           <Button
             label="ดาวน์โหลดไฟล์ excel"
             icon="pi pi-upload"
@@ -54,7 +44,6 @@
           {{ color }}
         </template>
       </Toolbar>
-
       <DataTable
         ref="dt"
         :value="quotations"
@@ -91,13 +80,14 @@
           field="quotation"
           header="เลขที่"
           sortable
-          style="min-width: 12rem"
+          style="min-width: 15rem"
           class="border-b"
         >
         <template #body="slotProps">
-          <span>
+          <span class="text-xs">
             {{ slotProps.data?.quotation }}
             <i 
+              size="small"
               @click="onCoppy(slotProps.data?.quotation)" 
               class="pi pi-copy cursor-pointer hover:text-yellow-500 hover:bg-yellow-100 duration-300 ease-in-out p-2 rounded-full" 
               v-tooltip.top="'คัดลอก'"
@@ -314,11 +304,9 @@
           </div>
         </Fieldset>
       </div>
-
       <br />
       <hr />
       <br />
-
       <div class="card">
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
@@ -351,7 +339,6 @@
             </span>
           </div>
         </div>
-
         <div class="field">
           <label for="customer_name">ชื่อลูกค้า</label>
           <InputText
@@ -366,7 +353,6 @@
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
-
         <div class="field">
           <label for="customer_number">รหัสลูกค้า</label>
           <InputText
@@ -381,7 +367,6 @@
             >กรุณาเพิ่มรหัสลูกค้า</small
           >
         </div>
-
         <div class="field">
           <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
           <InputText
@@ -471,8 +456,7 @@
               </template>
             </Dropdown>
           </div>
-
-          <div class="flex py-2 align-items-center">
+          <div v-if="selectedCompany?.isVat" class="flex py-2 align-items-center">
             <Checkbox
               v-model="isWithholding"
               inputId="ingredient1"
@@ -514,7 +498,6 @@
         </div>
       </div>
       <br />
-
       <span class="my-2" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
@@ -575,10 +558,19 @@
                           formatCurrency((item.product_amount * item.product_price)+item.vat_price)
                         }}.-</span
                       >
-                      <div class="flex flex-row-reverse md:flex-row gap-2">
+                      <div class="flex h-fit">
+                        <Button
+                          icon="pi pi-pencil"
+                          outlined
+                          rounded
+                          class="hover:bg-yellow-200"
+                          @click="editProduct(item)"
+                        ></Button>
                         <Button
                           icon="pi pi-trash"
                           outlined
+                          rounded
+                          class="hover:bg-red-200"
                           @click="removeProduct(index)"
                         ></Button>
                       </div>
@@ -590,7 +582,6 @@
           </template>
         </DataView>
       </div>
-      
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -605,7 +596,6 @@
           "
         />
       </div>
-
       <div
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
@@ -693,14 +683,15 @@
 
         <div class="card flex gap-3 justify-center items-center py-2">
           <Button
-            class="py-2 text-center pl-3 pr-5 rounded bg-red-600 text-white"
+            class="py-2 text-center pl-3 pr-5 rounded text-red-500"
             label="ยกเลิก "
             icon="pi pi-times"
             @click="cancleProduct"
           />
           <Button
             class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
-            label="เพิ่ม"
+            :class="edittingProduct ? 'bg-orange-600' : ''"
+            :label="edittingProduct ? 'แก้ไข' : 'เพิ่ม'"
             icon="pi pi-check"
             @click="addProduct"
           />
@@ -1031,7 +1022,7 @@
             </Dropdown>
           </div>
 
-          <div class="flex py-2 align-items-center">
+          <div v-if="selectedCompany?.isVat" class="flex py-2 align-items-center">
             <Checkbox
               v-model="isWithholding"
               inputId="ingredient1"
@@ -1140,10 +1131,19 @@
                           formatCurrency((item.product_amount * item.product_price)+item.vat_price)
                         }}.-</span
                       >
-                      <div class="flex flex-row-reverse md:flex-row gap-2">
+                      <div class="flex h-fit">
+                        <Button
+                          icon="pi pi-pencil"
+                          outlined
+                          rounded
+                          class="hover:bg-yellow-200"
+                          @click="editProduct(item)"
+                        ></Button>
                         <Button
                           icon="pi pi-trash"
                           outlined
+                          rounded
+                          class="hover:bg-red-200"
                           @click="removeProduct(index)"
                         ></Button>
                       </div>
@@ -1258,14 +1258,15 @@
 
         <div class="card flex gap-3 justify-center items-center py-2">
           <Button
-            class="py-2 text-center pl-3 pr-5 rounded bg-red-600 text-white"
+            class="py-2 text-center pl-3 pr-5 rounded text-red-500"
             label="ยกเลิก "
             icon="pi pi-times"
             @click="cancleProduct"
           />
           <Button
             class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
-            label="เพิ่ม"
+            :class="edittingProduct ? 'bg-orange-600' : ''"
+            :label="edittingProduct ? 'แก้ไข' : 'เพิ่ม'"
             icon="pi pi-check"
             @click="addProduct"
           />
@@ -1467,11 +1468,21 @@ const quotationEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
 const product_head = ref('')
+const edittingProduct = ref()
 
 const closeHandle = () => {
   openQuotation.value = false
   const body = document.body;
   body.style.backgroundColor = 'aliceblue';   
+}
+
+const editProduct = (item) => {
+  if(!item) return
+  edittingProduct.value = item
+  console.log(item)
+  product.value = item
+  product.value.isVat = item.vat_price > 0 ? true : false
+  openProductForm.value = true
 }
 
 const filters = ref({
@@ -1578,15 +1589,19 @@ const withholdingPrice = computed(() => {
 });
 
 const addProduct = () => {
-  if (product.value) {
-    product.value.product_price = 
-      sumVat.value ? product.value.product_price
-      : product.value.product_price - product.value.vat_price 
+  if(!product.value) return
+  product.value.product_price = sumVat.value
+    ? product.value.product_price
+    : product.value.product_price - product.value.vat_price;
+  if (edittingProduct.value) {
+    products.value[edittingProduct.value] = product.value
+  } else {
     products.value.push(product.value);
-    product.value = {};
-    product.value.product_text = [""];
-    openProductForm.value = false;
   }
+  edittingProduct.value = null
+  product.value = {};
+  product.value.product_text = [""];
+  openProductForm.value = false;
 };
 
 const allEnd = computed(() => {

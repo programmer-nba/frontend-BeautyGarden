@@ -50,7 +50,7 @@
         </div>
     </div>
 </template>
-  
+
 <script>
 export default {
     data() {
@@ -73,7 +73,7 @@ export default {
     }
 };
 </script>
-  
+
 <style scoped>
 .quotation-paper {
     font-family: Arial, sans-serif;

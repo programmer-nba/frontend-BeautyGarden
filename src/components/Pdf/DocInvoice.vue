@@ -174,7 +174,6 @@
                   </tr>
                 </tbody>
               </table>
-
               <div class="flex w-full justify-between total border-r border-l border-b">
                 <div class="flex flex-col border-r">
                   <article class="text-wrap w-[413px] min-h-[50px] text-start pr-5">
@@ -253,7 +252,6 @@
               </div>
             </div>
           </div>
-
           <div class="w-full min-w-[100px] h-fit min-h-[30px] bg-sky-200 text-center py-2 border-b border-l border-r flex justify-center items-center"
               :style="{ backgroundColor: `#${data.color}` }">
               <p class="font-bold">
@@ -264,7 +262,6 @@
                 }} )
               </p>
           </div>
-
           <tr v-if="data.data.vat?.percen_deducted" class="flex justify-end text-sm py-2 pr-2 border-b border-r border-l font-semibold w-full">
             <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย ({{ data.data.vat?.percen_deducted }}%)</span></td>
             <td style="text-align: right"><span class="pr-3">{{ formatCurrency(withHolding) }}</span>บาท</td>
@@ -288,7 +285,6 @@
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
                         <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
                       </div>
-
                       <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
                         
                         <img class="w-[200px]" 
@@ -300,7 +296,6 @@
                       </div>
                         
                     </td>
-
                     <td class="border h-full min-h-[50px] px-4 w-fit" style="text-align: bottom;">
                       <div class="text-center w-full h-full text-sm flex flex-col mt-auto pt-10 items-center justify-end" style="text-align: bottom;">
                           <p 

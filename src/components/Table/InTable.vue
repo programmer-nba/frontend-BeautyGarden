@@ -34,22 +34,14 @@
         </template>
 
         <template #end>
-          <FileUpload
-            mode="basic"
-            accept="image/*"
-            :maxFileSize="1000000"
-            label="เพิ่มข้อมูลจากไฟล์"
-            chooseLabel="เพิ่มข้อมูลจากไฟล์"
-            class="mr-4 inline-block"
-            disabled
-          />
           <Button
-            label="ดาวน์โหลดไฟล์ excel"
+            label="ดาวน์โหลดไฟล์"
             icon="pi pi-upload"
-            class="mr-4"
+            class="mr-4 py-3"
             severity="help"
             @click="exportCSV($event)"
           />
+            เปลี่ยนสี 
           <ColorPicker class="px-3" v-model="color" />
           {{ color }}
         </template>
@@ -65,7 +57,7 @@
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="แสดง {first} ถึง {last} จากเอกสารทั้งหมด {totalRecords} ชุด"
+        currentPageReportTemplate="{first} - {last} / {totalRecords}"
         :pt="{
           header: { style: `backgroundColor: #${color}` },
         }"
@@ -91,11 +83,11 @@
           field="invoice"
           header="เลขที่"
           sortable
-          style="min-width: 12rem"
+          style="min-width: 15rem"
           class="border-b"
         >
         <template #body="slotProps">
-          <span>
+          <span class="text-sm">
             {{ slotProps.data.invoice }}
             <i 
               @click="onCoppy(slotProps.data.invoice)" 
@@ -615,10 +607,19 @@
                           formatCurrency((item.product_amount * item.product_price)+item.vat_price)
                         }}.-</span
                       >
-                      <div class="flex flex-row-reverse md:flex-row gap-2">
+                      <div class="flex h-fit">
+                        <Button
+                          icon="pi pi-pencil"
+                          outlined
+                          rounded
+                          class="hover:bg-yellow-200"
+                          @click="editProduct(item)"
+                        ></Button>
                         <Button
                           icon="pi pi-trash"
                           outlined
+                          rounded
+                          class="hover:bg-red-200"
                           @click="removeProduct(index)"
                         ></Button>
                       </div>
@@ -1181,10 +1182,19 @@
                           formatCurrency((item.product_amount * item.product_price)+item.vat_price)
                         }}.-</span
                       >
-                      <div class="flex flex-row-reverse md:flex-row gap-2">
+                      <div class="flex h-fit">
+                        <Button
+                          icon="pi pi-pencil"
+                          outlined
+                          rounded
+                          class="hover:bg-yellow-200"
+                          @click="editProduct(item)"
+                        ></Button>
                         <Button
                           icon="pi pi-trash"
                           outlined
+                          rounded
+                          class="hover:bg-red-200"
                           @click="removeProduct(index)"
                         ></Button>
                       </div>
