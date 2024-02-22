@@ -2207,7 +2207,7 @@ const createNewReceipt = async () => {
     product.product_logo64 = "";
   });
   const data = {
-    quotation: refQuotation.value.quotation,
+    quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
