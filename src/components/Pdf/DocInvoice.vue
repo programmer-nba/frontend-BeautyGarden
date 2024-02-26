@@ -28,16 +28,26 @@
                   โทร : {{ data.data.customer_branch?.Branch_company_number }}<br />
                   อีเมลล์ : {{ data.data.customer_branch?.company_email }}
                   <br />
-                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_branch?.taxnumber }}<br />
+                  <span v-if="data.data.customer_branch?.isVat">เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_branch?.taxnumber }}</span><br />
                   <br />
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
                   {{ data.data.customer_detail?.customer_email }}<br />
-                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}<br /><br />
+                  <span v-if="data.data.customer_branch?.isVat">
+                    เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}
+                  </span><br /><br />
                 </div>
                 <div class="from">
                   <span
-                    class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-black bg-sky-200 uppercase last:mr-0 mr-1"
+                    v-if="!data.data.customer_branch?.isVat"
+                    class="text-xs w-full text-center font-semibold inline-block py-2 px-2 rounded text-black bg-sky-200 uppercase last:mr-0 mr-1"
+                    :style="{ backgroundColor: `#${data.color}` }"
+                    >
+                    ใบแจ้งหนี้/ใบวางบิล
+                  </span>
+                  <span
+                    v-if="data.data.customer_branch?.isVat"
+                    class="text-xs w-full text-center font-semibold inline-block py-2 px-2 rounded text-black bg-sky-200 uppercase last:mr-0 mr-1"
                     :style="{ backgroundColor: `#${data.color}` }"
                     >
                     ใบแจ้งหนี้ INVOICE
@@ -54,7 +64,7 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เครดิต</span>
-                    {{ data.data.credit }} วัน
+                    {{ data.data.credit > 0 ? data.data.credit : '-' }} วัน
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันครบกำหนด Date due : </span>
@@ -110,7 +120,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="border">
+                  <!-- <tr class="border">
                     <td class="border">
                       
                     </td>
@@ -131,7 +141,7 @@
                     <td class="border">
                       
                     </td>
-                  </tr>
+                  </tr> -->
                   <tr class="border py-2" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       {{ index + 1 }}

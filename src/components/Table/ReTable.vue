@@ -5,7 +5,7 @@
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openReceipt"
     >
-      <DocReceiptRef v-if="selectedReceipt.invoice && selectedReceipt.amount_price" :color="color" :data="selectedReceipt" @close="closeHandle" />
+      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.amount_price" :color="color" :data="selectedReceipt" @close="closeHandle" />
       <DocReceipt v-else :color="color" :data="selectedReceipt" @close="closeHandle" />
     </div>
 
@@ -617,10 +617,10 @@
           </template>
         </DataView>
       </div>
-      <div class="py-4 bg-slate-100 px-2 rounded-lg">
+      <!-- <div class="py-4 bg-slate-100 px-2 rounded-lg">
         <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
         <InputText id="product_head" v-model="product_head" />
-      </div>
+      </div> -->
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1143,10 +1143,10 @@
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? "Vat ใน" : "Vat นอก" }}</span>
       </span>
 
-      <div class="py-4 bg-slate-100 px-2 mt-2 rounded">
+      <!-- <div class="py-4 bg-slate-100 px-2 mt-2 rounded">
         <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
         <InputText id="product_head" v-model="product_head" />
-      </div>
+      </div> -->
 
       <div class="card">
         <DataView :value="products">
@@ -1605,6 +1605,7 @@ import { Customers } from "@/service/Customer";
 import { useReceiptStore } from "@/stores/receipt";
 import { useCompanyStore } from "@/stores/company";
 import DocReceiptRef from "@/components/Pdf/DocReceiptRef.vue";
+import DocReceiptRef2 from "@/components/Pdf/DocReceiptRef2.vue";
 import DocReceipt from "@/components/Pdf/DocReceipt.vue";
 
 const reStore = useReceiptStore();
@@ -1654,7 +1655,7 @@ const receiptEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
 const refQuotation = ref();
-const product_head = ref();
+const product_head = ref('');
 const edittingProduct = ref();
 
 // Create with reference invoice

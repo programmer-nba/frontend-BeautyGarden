@@ -549,10 +549,10 @@
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
 
-      <div class="py-4 px-2 bg-slate-100 rounded">
+      <!-- <div class="py-4 px-2 bg-slate-100 rounded">
         <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
         <InputText id="product_head" v-model="product_head" />
-      </div>
+      </div> -->
 
       <div class="card">
         <DataView :value="products">
@@ -1124,10 +1124,10 @@
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
 
-      <div class="py-4 px-2 bg-slate-100 rounded">
+      <!-- <div class="py-4 px-2 bg-slate-100 rounded">
         <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
         <InputText id="product_head" v-model="product_head" />
-      </div>
+      </div> -->
 
       <div class="card">
         <DataView :value="products">
@@ -1522,7 +1522,9 @@ const bank = ref({});
 const refQuotation = ref()
 const end_period = ref(1)
 const cur_period = ref(0)
-const product_head = ref()
+const product_head = ref('')
+const edittingProduct = ref()
+const files = ref([])
 
 const reStore = useInvoiceStore();
 const cpStore = useCompanyStore();
@@ -1678,16 +1680,23 @@ const withholdingPrice = computed(() => {
 })
 
 const addProduct = () => {
-  if (product.value) {
-    product.value.product_price = 
-      sumVat.value ? product.value.product_price
-      : product.value.product_price - product.value.vat_price 
+  if(!product.value) return
+  product.value.product_price = sumVat.value
+    ? product.value.product_price
+    : product.value.product_price - product.value.vat_price;
+  if (edittingProduct.value) {
+    products.value[edittingProduct.value] = product.value
+  } else {
     products.value.push(product.value);
-    product.value = {};
-    product.value.product_text = [""];
-    openProductForm.value = false;
   }
-}
+  edittingProduct.value = null
+  product.value = {};
+  product.value.product_logo64 = [];
+  product.value.product_text = [""];
+  openProductForm.value = false;
+  uploadfiles.value.push(files.value)
+  files.value = []
+};
 
 const allEnd = computed(() => {
   return netVat.value
@@ -1927,6 +1936,16 @@ const exportCSV = () => {
   dt.value.exportCSV();
 }
 
+const editProduct = (item) => {
+  if(!item) return
+  edittingProduct.value = item
+  product.value = item
+  product.value.product_logo64 = item.product_logo64 ? item.product_logo64 : []
+  product.value.product_logo = item.product_logo
+  product.value.isVat = item.vat_price > 0 ? true : false
+  openProductForm.value = true
+}
+
 const confirmDeleteSelected = () => {
   deleteInvoicesDialog.value = true;
 }
@@ -1976,17 +1995,17 @@ const createNewInvoice = async () => {
   const data = {
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,
-    customer_number: customer.value.customer_number,
-    branchId: selectedCompany.value._id,
+    customer_number: customer.value ? customer.value.customer_number : null,
+    branchId: selectedCompany.value ? selectedCompany.value._id : null,
     signatureID: selectedSignature.value ? selectedSignature.value._id : null,
     customer_detail: {
-      tax_id: customer.value.customer_taxnumber,
-      customer_name: customer.value.customer_name,
-      customer_lastname: customer.value.customer_lastname,
-      customer_phone: customer.value.customer_phone,
-      customer_email: customer.value.customer_email,
-      customer_address: customer.value.customer_position,
-      customer_type: customer.value.customer_type,
+      tax_id: customer.value ? customer.value.customer_taxnumber : null,
+      customer_name: customer.value ? customer.value.customer_name : null,
+      customer_lastname: customer.value ? customer.value.customer_lastname : null,
+      customer_phone: customer.value ? customer.value.customer_phone : null,
+      customer_email: customer.value ? customer.value.customer_email : null,
+      customer_address: customer.value ? customer.value.customer_position : null,
+      customer_type: customer.value ? customer.value.customer_type : null,
     },
     product_head: product_head.value,
     product_detail: products.value,
@@ -1996,12 +2015,16 @@ const createNewInvoice = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
-    bank: {
+    bank: bank.value ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
+    } : {
+      name:'',
+      remark_2: '',
+      status: '',
     },
-    isVat: selectedCompany.value.isVat,
+    isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     sumVat: sumVat.value,
     credit: credit.value,
     end_period: end_period.value,
@@ -2100,11 +2123,11 @@ const editingInvoice = async () => {
   });
   console.log(refQuotation.value)
   const data = {
-    quotation: refQuotation.value.quotation,
-    customer_number: customer.value.customer_number,
-    branchId: selectedCompany.value._id,
+    quotation: refQuotation.value ? refQuotation.value.quotation : null,
+    customer_number: customer.value ? customer.value.customer_number : null,
+    branchId: selectedCompany.value ? selectedCompany.value._id : null,
     signatureID: selectedSignature.value ? selectedSignature.value._id : '',
-    customer_detail: {
+    customer_detail: customer.value ? {
       tax_id: customer.value.customer_taxnumber,
       customer_name: customer.value.customer_name,
       customer_lastname: customer.value.customer_lastname,
@@ -2112,7 +2135,7 @@ const editingInvoice = async () => {
       customer_email: customer.value.customer_email,
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
-    },
+    } : null,
     product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
@@ -2121,7 +2144,7 @@ const editingInvoice = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
-    isVat: selectedCompany.value.isVat,
+    isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     bank: bank.value ? {
       name: bank.value.name,
       remark_2: bank.value.remark,

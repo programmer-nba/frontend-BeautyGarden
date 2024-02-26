@@ -229,9 +229,6 @@
               </div>
             </div>
           </div>
-          <!-- <tr v-if="data.data.vat.percen_deducted" class="flex text-sm justify-end w-full border">
-            <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย {{ data.data.vat.percen_deducted }}% {{ formatCurrency(withHolding) }} บาท</span></td>
-          </tr> -->
         
         <div class="flex justify-center px-2">
             <table>

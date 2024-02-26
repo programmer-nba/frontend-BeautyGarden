@@ -102,7 +102,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr class="border">
+                  <!-- <tr class="border">
                     <td class="border">
                       
                     </td>
@@ -123,14 +123,22 @@
                     <td class="border">
                       
                     </td>
-                  </tr>
+                  </tr> -->
                   <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       {{ index + 1 }}
                     </td>
                     <td class=".td border">
-                      <div class="flex">
-                        <img v-if="product.product_logo && product.product_logo.trim()!==''" class="w-[150px] pr-3" :src="`https://drive.google.com/thumbnail?id=${product.product_logo}`" :alt="index" />
+                      <div class="flex flex-col-reverse">
+                        <div class="flex gap-2">
+                          <img 
+                            v-for="(pic, index) in product.product_logo"
+                            v-if="product.product_logo && product.product_logo.length>0" 
+                            class="w-[150px] pr-3 object-contain" 
+                            :src="`https://drive.google.com/thumbnail?id=${pic}`" 
+                            :alt="index" 
+                          />
+                        </div>
                         <article class="text-wrap w-[200px]">
                             <strong>{{ product.product_name }}</strong>
                             <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">

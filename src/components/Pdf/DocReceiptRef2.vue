@@ -25,15 +25,17 @@
                   <article class="text-wrap w-[250px]">
                     <p>{{ data.data.customer_branch?.Branch_company_address }}</p>
                   </article>
-                  โทร : {{ data.data.customer_branch?.Branch_company_number }}<br />
-                  อีเมลล์ : {{ data.data.customer_branch?.company_email }}
+                  โทร : {{ data.data.customer_branch?.Branch_company_number !== 'undefind' ? data.data.customer_branch?.Branch_company_number : null }}<br />
+                  อีเมลล์ : {{ data.data.customer_branch?.company_email !=='undefine' ? data.data.customer_branch?.company_email : null }}
                   <br />
-                  <span v-if="data.data.isVat">เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_branch?.taxnumber }}</span><br />
+                  <span v-if="data.data?.isVat">เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_branch?.taxnumber }}</span><br />
                   <br />
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
                   {{ data.data.customer_detail?.customer_email }}<br />
-                  <span v-if="data.data.isVat">เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}</span><br /><br />
+                  <span v-if="data.data?.isVat">
+                    เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}
+                  </span><br /><br />
                 </div>
                 <div class="from">
                   <span
@@ -52,12 +54,10 @@
                     <span class="font-bold pr-4">วันที่เริ่ม Date : </span>
                     {{ formatDate(data.data.start_date) }}
                   </div>
-                 
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง : </span>
-                    {{ data.data.quotation }}
+                    {{ data.data.invoice }}
                   </div>
-                 
                   <br />
                   <hr />
                   <br />
@@ -104,7 +104,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  
+                 
                   <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       {{ index + 1 }}

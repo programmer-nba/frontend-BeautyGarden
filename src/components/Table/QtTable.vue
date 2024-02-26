@@ -213,11 +213,11 @@
         </Column>
       </DataTable>
     </div>
-
+    <!--create-->
     <Dialog
       v-model:visible="quotationDialog"
-      :style="{ width: '450px' }"
-      header="Quotation Details"
+      :style="{ width: '500px' }"
+      header="เพิ่มใบเสนอราคา"
       :modal="true"
       class="p-fluid"
     >
@@ -281,7 +281,7 @@
             <p class="m-0">
               {{ selectedCompany?.Branch_company_address }}
             </p>
-            <p class="m-0">เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}</p>
+            <p v-if="selectedCompany.isVat" class="m-0">เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}</p>
             <p class="m-0">โทร : {{ selectedCompany?.Branch_company_number }}</p>
             <p class="m-0">อีเมล์ : {{ selectedCompany?.company_email }}</p>
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
@@ -326,13 +326,6 @@
             v-if="customer"
             class="flex w-full py-2 justify-center items-center px-2 bg-gray-200 rounded-lg text-slate-700"
           >
-            <div v-if="customer.profile_image" class="mr-4">
-              <Avatar
-                class="object-contain w-[50px] h-[50px]"
-                :image="`https://drive.google.com/thumbnail?id=${customer.profile_image}`"
-                shape="circle"
-              />
-            </div>
             <span class="font-bold"
               >{{ customer.customer_name }}
               {{ customer.customer_lastname ? `(${customer.customer_lastname})` : "" }}
@@ -361,23 +354,21 @@
             v-model.trim="customer.customer_number"
             required="true"
             autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_number }"
+            :class="{ 'p-invalid': !customer.customer_number }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_number"
+          <small class="p-error" v-if="!customer.customer_number"
             >กรุณาเพิ่มรหัสลูกค้า</small
           >
         </div>
-        <div class="field">
-          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+        <div v-if="selectedCompany?.isVat" class="field">
+          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี</label>
           <InputText
             class="p-2"
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
-            required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_taxnumber }"
+            :class="{ 'p-invalid': !customer.customer_taxnumber }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_taxnumber"
+          <small class="p-error" v-if="!customer.customer_taxnumber"
             >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
           >
         </div>
@@ -387,23 +378,18 @@
             class="p-2"
             id="customer_phone"
             v-model.trim="customer.customer_phone"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_phone }"
+            :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_phone"
-            >เบอร์ติดต่อลูกค้า</small
+          <small class="p-error" v-if="!customer.customer_phone"
+            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
           >
         </div>
-        <div class="field">
+        <div v-if="selectedCompany?.isVat" class="field">
           <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
           <InputText
             class="p-2"
             id="customer_lastname"
             v-model.trim="customer.customer_lastname"
-            required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
           />
         </div>
         <div class="field">
@@ -412,10 +398,10 @@
             class="p-2"
             id="customer_position"
             v-model.trim="customer.customer_position"
-            required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_position }"
+            :class="{ 'p-invalid': !customer.customer_position }"
           />
+          <small class="p-error" v-if="!customer.customer_position"
+            >กรุณาเพิ่มที่อยู่ลูกค้า</small>
         </div>
         <div class="field">
           <label for="customer_email">อีเมล์ลูกค้า</label>
@@ -423,9 +409,6 @@
             class="p-2"
             id="customer_email"
             v-model.trim="customer.customer_email"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_email }"
           />
         </div>
         <div class="field">
@@ -456,14 +439,15 @@
               </template>
             </Dropdown>
           </div>
-          <div v-if="selectedCompany?.isVat" class="flex py-2 align-items-center">
+          <div v-if="selectedCompany?.isVat" class="flex py-4 align-items-center">
             <Checkbox
               v-model="isWithholding"
-              inputId="ingredient1"
-              name="pizza"
+              inputId="withholding"
+              name="withholding"
               :binary="true"
+              class="shadow"
             />
-            <label for="ingredient1" class="ml-2"> หัก ณ ที่จ่าย </label>
+            <label for="withholding" class="ml-2"> หัก ณ ที่จ่าย </label>
           </div>
           <div v-if="isWithholding" class="card py-2 flex justify-content-center">
             <Dropdown
@@ -480,9 +464,7 @@
             class="p-2"
             id="customer_contact"
             v-model.trim="customer.customer_contact"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact }"
+            :class="{ 'p-invalid': !customer.customer_contact }"
           />
         </div>
         <div class="field">
@@ -491,20 +473,15 @@
             class="p-2"
             id="customer_contact_number"
             v-model.trim="customer.customer_contact_number"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact_number }"
+            :class="{ 'p-invalid': !customer.customer_contact_number }"
           />
         </div>
       </div>
       <br />
-      <span class="my-2" v-if="selectedCompany?.isVat">
+      <span class="my-4" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
-      <div class="py-4 bg-slate-100 px-2 rounded">
-        <label for="product_head">หัวข้อสินค้า/บริการ</label>
-        <InputText id="product_head" v-model="product_head" />
-      </div>
+      <br />
       <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
@@ -514,14 +491,27 @@
                   class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
                   :class="{ 'surface-border': index !== 0 }"
                 >
-                  <div class="w-[75px] relative">
-                    <img
-                      v-if="item.product_logo64"
-                      class="object-contain block xl:block mx-auto border-round w-full"
-                      :src="item.product_logo64"
-                      :alt="index"
-                    />
+                  <div class="overflow-x-auto w-[120px]">
+                    <div v-if="item.product_logo64?.length > 0" class="flex border overflow-x-auto">
+                      <div v-for="(pic, index) in item.product_logo64" :key="index" class="h-[100px] w-full">
+                        <img
+                          class="w-full h-full object-cover"
+                          :src="pic"
+                          :alt="index"
+                        />
+                      </div>
+                    </div>
+                    <div v-if="item.product_logo?.length>1" class="flex border overflow-x-auto">
+                      <div v-for="(pic, index) in item.product_logo" :key="index" class="h-[100px] w-full">
+                        <img
+                          class="w-full h-full object-cover"
+                          :src="`https://drive.google.com/thumbnail?id=${pic}`"
+                          :alt="index"
+                        />
+                      </div>
+                    </div>
                   </div>
+              
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
@@ -590,6 +580,7 @@
           @click="
             ()=>{
               openProductForm = true
+              product.product_logo64 = []
               product.isVat = false
               product.vat_price = 0
             }
@@ -600,48 +591,58 @@
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
       >
-        <div v-if="product?.product_logo64" class="card flex justify-content-center">
-          <Image :src="product?.product_logo64" alt="Image" width="250" preview />
-        </div>
         <div class="card flex justify-center">
-          <FileUpload
-            class="p-fileupload-file-remove"
-            mode="basic"
-            name="demo[]"
-            :auto="true"
-            accept="image/*"
-            customUpload
-            @uploader="customBase64Uploader"
-          />
+          <div class="card">
+            <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
+                <template #content>
+                  <div v-if="product?.product_logo64?.length>0" class="card flex flex-col justify-center">
+                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, index) in product?.product_logo64" :key="index">
+                      <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                      <i @click="product?.product_logo64.splice(index, 1)" class="pi pi-times" style="color: red"></i>
+                  </div>
+                  </div>
+                </template>
+            </FileUpload>
+          </div>
         </div>
         <div class="field">
-          <label>หัวข้อย่อย</label>
+          <label class="font-semibold text-lg">หัวข้อย่อย</label>
           <div class="card flex justify-content-center">
-            <InputText v-model="product.product_name" />
+            <InputText class="px-2 py-2" v-model="product.product_name" />
           </div>
-          <label>รายละเอียด</label>
+          <label class="font-semibold py-3 text-lg">รายละเอียด</label>
           <div
             v-for="(text, textInputIndex) in product.product_text"
-            class="card flex justify-content-center"
+            class="card flex flex-col gap-y-5 items-center justify-center"
           >
             <Textarea
               v-model="product.product_text[textInputIndex]"
               autoResize
               rows="5"
               cols="50"
+              class="border-2 my-2"
             />
           </div>
+          <div class="flex gap-2">
+            <Button
+            label="ลดบรรทัด"
+            class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
+            @click="product.product_text.pop()"
+            :disabled="product.product_text.length < 2"
+          />
           <Button
-            label="add"
-            class="bg-orange-300 px-2"
+            label="เพิ่มบรรทัดใหม่"
+            class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
             @click="product.product_text.push('')"
           />
+          </div>
+          
         </div>
         <div class="field grid w-full px-5">
           <div class="field grid">
             <label for="price">ราคา/หน่วย</label>
             <InputNumber
-              class="p-2"
+              class="p-2 w-full"
               id="price"
               v-model="product.product_price"
               mode="currency"
@@ -660,17 +661,18 @@
           <div class="field grid">
             <label for="unit">หน่วย</label>
             <InputText
-              class="p-2"
+              class="px-2"
               id="unit"
               v-model="product.unit"
             />
           </div>
-          <div class="flex items-center gap-2">
+          <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
             <p>VAT</p>
             <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+            <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
           </div>
-          <div class="field grid">
-            <label for="quantity">รวม</label>
+          <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+            <label for="quantity" class="font-semibold">รวม</label>
             <p class="font-semibold px-2">
               {{ 
                 sumVat
@@ -773,13 +775,15 @@
         />
       </template>
     </Dialog>
+    <!--create-->
 
+    <!--Edit-->
     <Dialog
       v-model:visible="quotationEditDialog"
-      :style="{ width: '450px' }"
-      header="Quotation Details"
+      :style="{ width: '500px' }"
+      header="แก้ไขใบเสนอราคา"
       :modal="true"
-      class="p-fluid bg-slate-100"
+      class="p-fluid"
     >
       <div
         v-if="loading"
@@ -787,7 +791,7 @@
       >
         <img src="@/assets/spinner.svg" alt="Spinner" />
       </div>
-      <div class="card bg-slate-100 px-2">
+      <div class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
           <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
@@ -841,7 +845,7 @@
             <p class="m-0">
               {{ selectedCompany?.Branch_company_address }}
             </p>
-            <p class="m-0">เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}</p>
+            <p v-if="selectedCompany.isVat" class="m-0">เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}</p>
             <p class="m-0">โทร : {{ selectedCompany?.Branch_company_number }}</p>
             <p class="m-0">อีเมล์ : {{ selectedCompany?.company_email }}</p>
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
@@ -864,12 +868,10 @@
           </div>
         </Fieldset>
       </div>
-
       <br />
       <hr />
       <br />
-
-      <div class="card bg-slate-100 px-2">
+      <div class="card">
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
           <div class="card flex justify-content-center">
@@ -888,20 +890,12 @@
             v-if="customer"
             class="flex w-full py-2 justify-center items-center px-2 bg-gray-200 rounded-lg text-slate-700"
           >
-            <div v-if="customer.profile_image" class="mr-4">
-              <Avatar
-                class="object-contain w-[50px] h-[50px]"
-                :image="`https://drive.google.com/thumbnail?id=${customer.profile_image}`"
-                shape="circle"
-              />
-            </div>
             <span class="font-bold"
               >{{ customer.customer_name }}
               {{ customer.customer_lastname ? `(${customer.customer_lastname})` : "" }}
             </span>
           </div>
         </div>
-
         <div class="field">
           <label for="customer_name">ชื่อลูกค้า</label>
           <InputText
@@ -916,7 +910,6 @@
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
-
         <div class="field">
           <label for="customer_number">รหัสลูกค้า</label>
           <InputText
@@ -925,24 +918,21 @@
             v-model.trim="customer.customer_number"
             required="true"
             autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_number }"
+            :class="{ 'p-invalid': !customer.customer_number }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_number"
+          <small class="p-error" v-if="!customer.customer_number"
             >กรุณาเพิ่มรหัสลูกค้า</small
           >
         </div>
-
-        <div class="field">
-          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+        <div v-if="selectedCompany?.isVat" class="field">
+          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี</label>
           <InputText
             class="p-2"
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
-            required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_taxnumber }"
+            :class="{ 'p-invalid': !customer.customer_taxnumber }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_taxnumber"
+          <small class="p-error" v-if="!customer.customer_taxnumber"
             >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
           >
         </div>
@@ -952,23 +942,18 @@
             class="p-2"
             id="customer_phone"
             v-model.trim="customer.customer_phone"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_phone }"
+            :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_phone"
-            >เบอร์ติดต่อลูกค้า</small
+          <small class="p-error" v-if="!customer.customer_phone"
+            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
           >
         </div>
-        <div class="field">
+        <div v-if="selectedCompany?.isVat" class="field">
           <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
           <InputText
             class="p-2"
             id="customer_lastname"
             v-model.trim="customer.customer_lastname"
-            required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
           />
         </div>
         <div class="field">
@@ -977,10 +962,10 @@
             class="p-2"
             id="customer_position"
             v-model.trim="customer.customer_position"
-            required="true"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_position }"
+            :class="{ 'p-invalid': !customer.customer_position }"
           />
+          <small class="p-error" v-if="!customer.customer_position"
+            >กรุณาเพิ่มที่อยู่ลูกค้า</small>
         </div>
         <div class="field">
           <label for="customer_email">อีเมล์ลูกค้า</label>
@@ -988,9 +973,6 @@
             class="p-2"
             id="customer_email"
             v-model.trim="customer.customer_email"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_email }"
           />
         </div>
         <div class="field">
@@ -1021,15 +1003,15 @@
               </template>
             </Dropdown>
           </div>
-
-          <div v-if="selectedCompany?.isVat" class="flex py-2 align-items-center">
+          <div v-if="selectedCompany?.isVat" class="flex py-4 align-items-center">
             <Checkbox
               v-model="isWithholding"
-              inputId="ingredient1"
-              name="pizza"
+              inputId="withholding"
+              name="withholding"
               :binary="true"
+              class="shadow"
             />
-            <label for="ingredient1" class="ml-2"> หัก ณ ที่จ่าย </label>
+            <label for="withholding" class="ml-2"> หัก ณ ที่จ่าย </label>
           </div>
           <div v-if="isWithholding" class="card py-2 flex justify-content-center">
             <Dropdown
@@ -1046,33 +1028,25 @@
             class="p-2"
             id="customer_contact"
             v-model.trim="customer.customer_contact"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact }"
+            :class="{ 'p-invalid': !customer.customer_contact }"
           />
         </div>
-        <div class="field py-2">
+        <div class="field">
           <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
           <InputText
             class="p-2"
             id="customer_contact_number"
             v-model.trim="customer.customer_contact_number"
-            required="false"
-            autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_contact_number }"
+            :class="{ 'p-invalid': !customer.customer_contact_number }"
           />
         </div>
       </div>
       <br />
-
-      <span class="my-2" v-if="selectedCompany?.isVat">
+      <span class="my-4" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span>
-      <div class="py-4 bg-slate-100 px-2 rounded">
-        <label for="product_head">หัวข้อหลัก</label>
-        <InputText id="product_head" v-model="product_head" />
-      </div>
-      <div class="card bg-slate-100 px-2">
+      <br />
+      <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -1081,20 +1055,27 @@
                   class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
                   :class="{ 'surface-border': index !== 0 }"
                 >
-                  <div class="w-[75px] relative">
-                    <img
-                      v-if="item.product_logo64"
-                      class="object-contain block xl:block mx-auto border-round w-full"
-                      :src="item.product_logo64"
-                      :alt="index"
-                    />
-                    <img
-                      v-if="item.product_logo"
-                      class="object-contain block xl:block mx-auto border-round w-full"
-                      :src="`https://drive.google.com/thumbnail?id=${item.product_logo}`"
-                      :alt="index"
-                    />
+                  <div class="overflow-x-auto w-[120px]">
+                    <div v-if="item.product_logo64?.length > 0" class="flex border overflow-x-auto">
+                      <div v-for="(pic, index) in item.product_logo64" :key="index" class="h-[100px] w-full">
+                        <img
+                          class="w-full h-full object-cover"
+                          :src="pic"
+                          :alt="index"
+                        />
+                      </div>
+                    </div>
+                    <div v-if="item.product_logo?.length>0" class="flex border overflow-x-auto">
+                      <div v-for="(pic, index) in item.product_logo" :key="index" class="h-[100px] w-full">
+                        <img
+                          class="w-full h-full object-cover"
+                          :src="`https://drive.google.com/thumbnail?id=${pic}`"
+                          :alt="index"
+                        />
+                      </div>
+                    </div>
                   </div>
+              
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
@@ -1155,7 +1136,6 @@
           </template>
         </DataView>
       </div>
-      
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1164,59 +1144,75 @@
           @click="
             ()=>{
               openProductForm = true
+              product.product_logo64 = []
               product.isVat = false
               product.vat_price = 0
             }
           "
         />
       </div>
-
       <div
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
       >
-        <div v-if="product?.product_logo64" class="card flex justify-content-center">
-          <Image :src="product?.product_logo64" alt="Image" width="250" preview />
-        </div>
         <div class="card flex justify-center">
-          <FileUpload
-            class="p-fileupload-file-remove"
-            mode="basic"
-            name="demo[]"
-            :auto="true"
-            accept="image/*"
-            customUpload
-            @uploader="customBase64Uploader"
-          />
+          <div class="card">
+            <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
+                <template #content>
+                  <div v-if="product?.product_logo64?.length>0" class="card flex flex-col justify-center">
+                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, index) in product?.product_logo64" :key="index">
+                      <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                      <i @click="product?.product_logo64.splice(index, 1)" class="pi pi-times" style="color: red"></i>
+                    </div>
+                  </div>
+                  <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
+                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, index) in product?.product_logo" :key="index">
+                      <Image :src="`https://drive.google.com/thumbnail?id=${pic}`" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                      <i @click="product?.product_logo.splice(index, 1)" class="pi pi-times" style="color: red"></i>
+                    </div>
+                  </div>
+                </template>
+            </FileUpload>
+          </div>
         </div>
         <div class="field">
-          <label>หัวข้อย่อย</label>
+          <label class="font-semibold text-lg">หัวข้อย่อย</label>
           <div class="card flex justify-content-center">
-            <InputText v-model="product.product_name" />
+            <InputText class="px-2 py-2" v-model="product.product_name" />
           </div>
-          <label>รายละเอียด</label>
+          <label class="font-semibold py-3 text-lg">รายละเอียด</label>
           <div
             v-for="(text, textInputIndex) in product.product_text"
-            class="card flex justify-content-center"
+            class="card flex flex-col gap-y-5 items-center justify-center"
           >
             <Textarea
               v-model="product.product_text[textInputIndex]"
               autoResize
               rows="5"
               cols="50"
+              class="border-2 my-2"
             />
           </div>
+          <div class="flex gap-2">
+            <Button
+            label="ลดบรรทัด"
+            class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
+            @click="product.product_text.pop()"
+            :disabled="product.product_text.length < 2"
+          />
           <Button
-            label="add"
-            class="bg-orange-300 px-2"
+            label="เพิ่มบรรทัดใหม่"
+            class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
             @click="product.product_text.push('')"
           />
+          </div>
+          
         </div>
         <div class="field grid w-full px-5">
           <div class="field grid">
             <label for="price">ราคา/หน่วย</label>
             <InputNumber
-              class="p-2"
+              class="p-2 w-full"
               id="price"
               v-model="product.product_price"
               mode="currency"
@@ -1235,17 +1231,18 @@
           <div class="field grid">
             <label for="unit">หน่วย</label>
             <InputText
-              class="p-2"
+              class="px-2"
               id="unit"
               v-model="product.unit"
             />
           </div>
-          <div class="flex items-center gap-2">
+          <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
             <p>VAT</p>
             <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+            <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
           </div>
-          <div class="field grid">
-            <label for="quantity">รวม</label>
+          <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+            <label for="quantity" class="font-semibold">รวม</label>
             <p class="font-semibold px-2">
               {{ 
                 sumVat
@@ -1283,7 +1280,7 @@
         />
       </div>
 
-      <div class="flex flex-col gap-y-2 bg-slate-100 px-2">
+      <div class="flex flex-col gap-y-2">
         
         <span v-if="sumVat"
           >ราคาสินค้า
@@ -1325,8 +1322,8 @@
         >
       </div>
       
-      <div class="card flex flex-col gap-y-2 py-5 justify-center items-center bg-slate-100 px-2">
-        <p v-tooltip.top="'เพิ่มหมายเหตุ'" @click="remark.push('')" class="cursor-pointer border border-orange-300 px-2 rounded">หมายเหตุ</p>
+      <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
+        <p>หมายเหตุ</p>
         <Textarea
           v-for="(mark, mIndex) in remark"
           v-model="remark[mIndex]"
@@ -1334,21 +1331,21 @@
           rows="5"
           cols="30"
         />
-        <p v-tooltip.bottom="'ลบหมายเหตุ'" v-if="remark.length>0" @click="remark.pop()" class="text-red-500 cursor-pointer">ลบ</p>
+        <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
       </div>
 
       <template #footer>
-        <Button label="ยกเลิก" icon="pi pi-times" text @click="hideDialog" />
+        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
         <Button
-          label="บันทึก"
+          label="Save"
           icon="pi pi-check"
-          class="px-2 border border-green-500 text-green-700"
           :loading="loading"
           text
           @click="editingQuotation"
         />
       </template>
     </Dialog>
+    <!--Edit-->
 
     <Dialog
       v-model:visible="deleteQuotationDialog"
@@ -1406,6 +1403,7 @@
         />
       </template>
     </Dialog>
+
   </div>
 </template>
 
@@ -1469,6 +1467,7 @@ const color = ref();
 const bank = ref({});
 const product_head = ref('')
 const edittingProduct = ref()
+const files = ref([])
 
 const closeHandle = () => {
   openQuotation.value = false
@@ -1479,8 +1478,10 @@ const closeHandle = () => {
 const editProduct = (item) => {
   if(!item) return
   edittingProduct.value = item
-  console.log(item)
+  console.log('item',item)
   product.value = item
+  product.value.product_logo64 = item.product_logo64 ? item.product_logo64 : []
+  product.value.product_logo = item.product_logo
   product.value.isVat = item.vat_price > 0 ? true : false
   openProductForm.value = true
 }
@@ -1600,8 +1601,11 @@ const addProduct = () => {
   }
   edittingProduct.value = null
   product.value = {};
+  product.value.product_logo64 = [];
   product.value.product_text = [""];
   openProductForm.value = false;
+  uploadfiles.value.push(files.value)
+  files.value = []
 };
 
 const allEnd = computed(() => {
@@ -1685,11 +1689,11 @@ const customBase64Uploader = async (event) => {
 
   reader.onloadend = function () {
     const base64data = reader.result
-    product.value.product_logo64 = base64data
+    console.log(product.value)
+    console.log(product.value.product_logo64)
+    product.value.product_logo64.push(base64data)
   }
-
-  uploadfiles.value.push(file)
-  console.log(uploadfiles.value)
+  files.value.push(file) 
 };
 
 const refCustomer = () => {
@@ -1730,6 +1734,7 @@ const openNew = () => {
   quotationDialog.value = true;
   product.value.product_text = [""];
 };
+
 const hideDialog = () => {
   product.value = {};
   products.value = [];
@@ -1764,7 +1769,7 @@ const editQuotation = (prod) => {
   remark.value = prod.remark;
   bank.value = prod.bank ? company.bank.find((item) => item.number === prod.bank.status) : null;
   selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
-  product_head.value = prod.product_head
+  product_head.value = prod.product_head || ''
   quotationEditDialog.value = true
   product.value = {}
   product.value.product_text = [""]
@@ -1791,6 +1796,7 @@ const confirmDeleteQuotation = (prod) => {
   quotation.value = prod;
   deleteQuotationDialog.value = true;
 };
+
 const deleteQuotation = async () => {
   const quotations_to_delete = quotation.value;
   try {
@@ -1833,6 +1839,7 @@ const withHolding = (product) => {
 const exportCSV = () => {
   dt.value.exportCSV();
 };
+
 const confirmDeleteSelected = () => {
   deleteQuotationsDialog.value = true;
 };
@@ -1877,7 +1884,7 @@ const createNewQuotation = async () => {
   let img = [];
   let qtId = null;
   products.value.forEach((product) => {
-    product.product_logo64 = "";
+    product.product_logo64 = [];
   });
 
   const data = {
@@ -1893,7 +1900,7 @@ const createNewQuotation = async () => {
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
     },
-    product_head: product_head.value,
+    product_head: product_head.value || '',
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
@@ -1916,10 +1923,18 @@ const createNewQuotation = async () => {
       img = response.data.product_detail;
       qtId = response.data._id;
       const imgId = img.map((id) => id._id);
-      if (imgId.length > 0 && qtId) {
+      if (imgId) {
+        console.log('uploadfiles',uploadfiles.value)
         uploadfiles.value.forEach(async (file, index) => {
+          console.log('file', file)
           const formData = new FormData();
-          formData.append("imgCollection", file);
+          console.log('file', file)
+
+          for ( let i in file ) {
+            formData.append("imgCollection", file[i])
+          }
+
+          console.log([...formData])
           const res = await Documents.uploadFileQuotation(imgId[index], qtId, formData);
           qtStore.getQuotations()
           refresh()
@@ -1999,7 +2014,7 @@ const editingQuotation = async () => {
   let qtId = null;
   console.log(products.value)
   products.value.forEach((product) => {
-    product.product_logo64 = "";
+    product.product_logo64 = [];
   });
 
   const data = {
@@ -2015,7 +2030,7 @@ const editingQuotation = async () => {
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
     },
-    product_head: product_head.value,
+    product_head: product_head.value || '',
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
@@ -2042,10 +2057,18 @@ const editingQuotation = async () => {
     qtId = response.data._id;
     const imgId = img.map((id) => id._id);
     if (imgId.length > 0 && qtId) {
+      console.log('uploadfiles',uploadfiles.value)
       uploadfiles.value.forEach(async (file, index) => {
         const formData = new FormData();
-        formData.append("imgCollection", file);
+        console.log('file', file)
+        for (let i in file) {
+          formData.append("imgCollection", file[i]);
+        }
+
+        console.log([...formData])
+
         const res = await Documents.uploadFileQuotation(imgId[index], qtId, formData);
+        console.log(res)
         if (res) {
           qtStore
             .getQuotations()
