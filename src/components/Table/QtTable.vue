@@ -102,7 +102,18 @@
           sortable
           style="min-width: 16rem"
           class="border-b"
-        ></Column>
+        >
+          <template #body="slotProps">
+            <div class="flex flex-col">
+              <p>{{ slotProps.data.customer_detail.customer_name }} </p>
+              <p class="text-sm">{{ 
+                slotProps.data.customer_detail.customer_lastname&&slotProps.data.customer_detail.customer_lastname!=='undefined' 
+                ? `(${slotProps.data.customer_detail.customer_lastname})` 
+                : null }}
+              </p>
+            </div>
+          </template>
+        </Column>
         <Column
           field="start_date"
           header="วันที่เริ่ม"
@@ -1581,8 +1592,11 @@ const formatDateRef = (isoDateString) => {
 };
 
 const withholdingPrice = computed(() => {
-  if (isWithholding.value && sumVat) {
+  if (isWithholding.value && sumVat.value) {
     const result = (netVat.value * withholdingPercent.value) / 100;
+    return result;
+  } else if (isWithholding.value && !sumVat.value) {
+    const result = (netPrices.value * withholdingPercent.value) / 100;
     return result;
   } else {
     return 0;
@@ -1636,7 +1650,7 @@ const notSumVatsumProductsPrice = computed(()=>{
     const result = sumProductsPrice.value
     return result;
   } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = sumProductsPrice.value - vat.value
+    const result = sumProductsPrice.value
     return result;
   } else {
     return 0;
@@ -1666,7 +1680,7 @@ const netVat = computed(() => {
     const result = vat.value + netPrices.value;
     return result;
   } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = netPrices.value + vat.value;
+    const result = vat.value + netPrices.value;
     return result;
   } else {
     return netPrices.value;
