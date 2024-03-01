@@ -1881,7 +1881,7 @@ const editInvoice = (prod) => {
   resetData()
   invoice.value = { ...prod };
   console.log("re", invoice.value);
-  inputHeader.value = prod.inputHeader || 'ใบแจ้งหนี้'
+  inputHeader.value = prod.header || 'ใบแจ้งหนี้'
   start_date.value = prod.start_date;
   end_date.value = prod.end_date;
 
