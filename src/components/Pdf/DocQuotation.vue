@@ -245,7 +245,7 @@
                       <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด {{ formatCurrency(data.data.discount*100/totalPrice) || '-' }} (%)</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount*100/totalPrice) || 0 }}</span>บาท</td>
                     </tr>
-                   
+                    
                     <tr class="flex justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
@@ -258,7 +258,7 @@
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                     </tr>
-                   
+                    
                     <tr class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
                       <td style="text-align: left"><strong class="pl-5">จำนวนเงินทั้งสิ้น</strong></td>
                       <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>

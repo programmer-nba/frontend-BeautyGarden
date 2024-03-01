@@ -191,17 +191,21 @@
                     <pre v-for="(mark, mindex) in data.data.remark" class="text-wrap" :key="mindex"
                     >{{ mark }}</pre>
                   </article>
-                    
-                <div class="flex flex-col border-t py-2">
+                  
+                  <div class="flex flex-col border-t py-2">
                     <h1 class="text-md font-bold text-start">
                       ช่องทางการชำระเงิน :
                     </h1>
-                    <div class="text-start flex flex-col w-full">
+                    <div v-if="data.data.transfer === 'cash'" class="text-start flex flex-col w-full">
+                      <span>เงินสด</span>
+                    </div>
+                    <div v-else class="text-start flex flex-col w-full">
                       <span>ธนาคาร {{ data.data.bank?.remark_2 ? data.data.bank?.remark_2 : '.......' }} เลขบัญชี {{ data.data.bank?.status ? data.data.bank?.status : '.........' }}  </span>
                       <span>ชื่อบัญชี {{ data.data.bank?.name ? data.data.bank?.name : '.........' }}</span>
                     </div>
                   </div>
                 </div>
+                
                 <table v-if="data.data.sumVat">
                     <tbody>
                       <tr class="flex justify-between w-full">

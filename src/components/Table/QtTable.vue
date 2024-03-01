@@ -300,16 +300,31 @@
             <br />
             
             <div>
-              <h1>เลือกบัญชีธนาคาร</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="bank"
-                  :options="selectedCompany.bank"
-                  optionLabel="name"
-                  placeholder="เลือกบัญชีธนาคาร"
-                  class="w-full md:w-14rem"
-                >
-                </Dropdown>
+              <p class="pb-2">ช่องทางการชำระเงิน</p>
+              <div class="card flex justify-center bg-slate-200 rounded py-2">
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
+                        <label for="cash" class="ml-2">เงินสด</label>
+                    </div>
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
+                        <label for="bank" class="ml-2">เงินโอน</label>
+                    </div>
+                </div>
+              </div>
+              <div class="pt-2" v-if="transfer==='bank'">
+                <h1>เลือกบัญชีธนาคาร</h1>
+                <div class="card flex justify-content-center">
+                  <Dropdown
+                    v-model="bank"
+                    :options="selectedCompany.bank"
+                    optionLabel="name"
+                    placeholder="เลือกบัญชีธนาคาร"
+                    class="w-full md:w-14rem"
+                  >
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>
@@ -864,16 +879,31 @@
             <br />
             
             <div>
-              <h1>เลือกบัญชีธนาคาร</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="bank"
-                  :options="selectedCompany.bank"
-                  optionLabel="name"
-                  placeholder="เลือกบัญชีธนาคาร"
-                  class="w-full md:w-14rem"
-                >
-                </Dropdown>
+              <p class="pb-2">ช่องทางการชำระเงิน</p>
+              <div class="card flex justify-center bg-slate-200 rounded py-2">
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
+                        <label for="cash" class="ml-2">เงินสด</label>
+                    </div>
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
+                        <label for="bank" class="ml-2">เงินโอน</label>
+                    </div>
+                </div>
+              </div>
+              <div v-if="transfer==='bank'" class="pt-2">
+                <h1>เลือกบัญชีธนาคาร</h1>
+                <div class="card flex justify-content-center">
+                  <Dropdown
+                    v-model="bank"
+                    :options="selectedCompany.bank"
+                    optionLabel="name"
+                    placeholder="เลือกบัญชีธนาคาร"
+                    class="w-full md:w-14rem"
+                  >
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>
@@ -1479,6 +1509,7 @@ const bank = ref({});
 const product_head = ref('')
 const edittingProduct = ref()
 const files = ref([])
+const transfer = ref('bank')
 
 const closeHandle = () => {
   openQuotation.value = false
@@ -1788,6 +1819,7 @@ const editQuotation = (prod) => {
   product.value = {}
   product.value.product_text = [""]
   sumVat.value = prod.sumVat
+  transfer.value = prod.transfer || 'cash'
 };
 
 const totalPrice = (product) => {
@@ -1922,13 +1954,14 @@ const createNewQuotation = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
-    bank: {
+    bank: transfer.value === 'bank' ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    },
+    } : null,
     isVat: selectedCompany.value.isVat,
-    sumVat: sumVat.value
+    sumVat: sumVat.value,
+    transfer: transfer.value
   };
   console.log(data);
   try {
@@ -2053,15 +2086,12 @@ const editingQuotation = async () => {
     end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value.isVat,
-    bank: bank.value ? {
+    bank: bank.value && transfer.value === 'bank' ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    } : {
-      name:'',
-      remark_2: '',
-      status: '',
-    },
+    } : null,
+    transfer: transfer.value
   };
   console.log(data)
   try {

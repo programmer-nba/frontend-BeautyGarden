@@ -339,16 +339,31 @@
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
             <div>
-              <h1>เลือกบัญชีธนาคาร</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="bank"
-                  :options="selectedCompany.bank"
-                  optionLabel="name"
-                  placeholder="เลือกบัญชีธนาคาร"
-                  class="w-full md:w-14rem"
-                >
-                </Dropdown>
+              <p class="pb-2">ช่องทางการชำระเงิน</p>
+              <div class="card flex justify-center bg-slate-200 rounded py-2">
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
+                        <label for="cash" class="ml-2">เงินสด</label>
+                    </div>
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
+                        <label for="bank" class="ml-2">เงินโอน</label>
+                    </div>
+                </div>
+              </div>
+              <div class="pt-2" v-if="transfer==='bank'">
+                <h1>เลือกบัญชีธนาคาร</h1>
+                <div class="card flex justify-content-center">
+                  <Dropdown
+                    v-model="bank"
+                    :options="selectedCompany.bank"
+                    optionLabel="name"
+                    placeholder="เลือกบัญชีธนาคาร"
+                    class="w-full md:w-14rem"
+                  >
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>
@@ -917,16 +932,31 @@
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
             <div>
-              <h1>เลือกบัญชีธนาคาร</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="bank"
-                  :options="selectedCompany.bank"
-                  optionLabel="name"
-                  placeholder="เลือกบัญชีธนาคาร"
-                  class="w-full md:w-14rem"
-                >
-                </Dropdown>
+              <p class="pb-2">ช่องทางการชำระเงิน</p>
+              <div class="card flex justify-center bg-slate-200 rounded py-2">
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
+                        <label for="cash" class="ml-2">เงินสด</label>
+                    </div>
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
+                        <label for="bank" class="ml-2">เงินโอน</label>
+                    </div>
+                </div>
+              </div>
+              <div v-if="transfer==='bank'" class="pt-2">
+                <h1>เลือกบัญชีธนาคาร</h1>
+                <div class="card flex justify-content-center">
+                  <Dropdown
+                    v-model="bank"
+                    :options="selectedCompany.bank"
+                    optionLabel="name"
+                    placeholder="เลือกบัญชีธนาคาร"
+                    class="w-full md:w-14rem"
+                  >
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>
@@ -1525,6 +1555,7 @@ const cur_period = ref(0)
 const product_head = ref('')
 const edittingProduct = ref()
 const files = ref([])
+const transfer = ref('bank')
 
 const reStore = useInvoiceStore();
 const cpStore = useCompanyStore();
@@ -1626,6 +1657,7 @@ const referQuotationInput = async () => {
     bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
     sumVat.value = refQuotation.value.sumVat
     isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
+    transfer.value = refQuotation.value.transfer
   }
 }
 
@@ -2015,20 +2047,17 @@ const createNewInvoice = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
-    bank: bank.value ? {
+    bank: bank.value && transfer.value === 'bank' ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    } : {
-      name:'',
-      remark_2: '',
-      status: '',
-    },
+    } : null,
     isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     sumVat: sumVat.value,
     credit: credit.value,
     end_period: end_period.value,
     cur_period: cur_period.value,
+    transfer: transfer.value
   };
   console.log(data);
   try {
@@ -2145,17 +2174,14 @@ const editingInvoice = async () => {
     end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
-    bank: bank.value ? {
+    bank: bank.value && transfer.value === 'bank' ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    } : {
-      name:'',
-      remark_2: '',
-      status: '',
-    },
+    } : null,
     cur_period: cur_period.value,
-    credit: credit.value
+    credit: credit.value,
+    transfer: transfer.value
   };
   console.log(data)
   try {
