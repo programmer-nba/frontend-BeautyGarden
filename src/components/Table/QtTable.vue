@@ -1958,7 +1958,11 @@ const createNewQuotation = async () => {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    } : null,
+    } : {
+      name: '',
+      remark_2: '',
+      status: '',
+    },
     isVat: selectedCompany.value.isVat,
     sumVat: sumVat.value,
     transfer: transfer.value
@@ -2090,7 +2094,11 @@ const editingQuotation = async () => {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    } : null,
+    } : {
+      name: '',
+      remark_2: '',
+      status: '',
+    },
     transfer: transfer.value
   };
   console.log(data)

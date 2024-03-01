@@ -2051,7 +2051,11 @@ const createNewInvoice = async () => {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    } : null,
+    } : {
+      name: '',
+      remark_2: '',
+      status: '',
+    },
     isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     sumVat: sumVat.value,
     credit: credit.value,
@@ -2178,7 +2182,11 @@ const editingInvoice = async () => {
       name: bank.value.name,
       remark_2: bank.value.remark,
       status: bank.value.number,
-    } : null,
+    } : {
+      name: '',
+      remark_2: '',
+      status: '',
+    },
     cur_period: cur_period.value,
     credit: credit.value,
     transfer: transfer.value

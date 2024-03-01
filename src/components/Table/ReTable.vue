@@ -2230,10 +2230,16 @@ const createNewReceipt = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
-    bank: {
-      name: bank.value ? bank.value.name : null,
-      remark_2: bank.value ? bank.value.remark : null,
-      status: bank.value ? bank.value.number : null,
+    bank: bank.value
+      ? {
+          name: bank.value ? bank.value.name : '',
+          remark_2: bank.value ? bank.value.remark : '',
+          status: bank.value ? bank.value.number : '',
+        }
+      : {
+        name: "",
+        remark_2: "",
+        status: "",
     },
     isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     sumVat: sumVat.value,
@@ -2360,9 +2366,9 @@ const editingReceipt = async () => {
     transfer: transfer.value,
     bank: bank.value
       ? {
-          name: bank.value ? bank.value.name : null,
-          remark_2: bank.value ? bank.value.remark : null,
-          status: bank.value ? bank.value.number : null,
+          name: bank.value ? bank.value.name : '',
+          remark_2: bank.value ? bank.value.remark : '',
+          status: bank.value ? bank.value.number : '',
         }
       : {
           name: "",
