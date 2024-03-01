@@ -50,7 +50,7 @@
                     class="text-xs w-full text-center font-semibold inline-block py-2 px-2 rounded text-black bg-sky-200 uppercase last:mr-0 mr-1"
                     :style="{ backgroundColor: `#${data.color}` }"
                     >
-                    ใบแจ้งหนี้ INVOICE
+                    ใบแจ้งหนี้/ใบวางบิล
                   </span>
                   <br />
                   <br />
@@ -282,7 +282,7 @@
                 <tbody>
                   <tr>
                     <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเงิน</td>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้อนุมัติการสั่งซื้อ</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเอกสาร</td>
                   </tr>
                   <tr>
                     <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">

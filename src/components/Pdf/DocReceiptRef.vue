@@ -37,10 +37,18 @@
                 </div>
                 <div class="from">
                   <span
+                    v-if="data.data.customer_branch?.isVat"
                     class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-black bg-green-200 uppercase last:mr-0 mr-1"
                     :style="{ backgroundColor: `#${data.color}` }"
                     >
-                    ใบเสร็จรับเงิน RECEIPT
+                    ใบเสร็จรับเงิน/ใบกำกับภาษี
+                  </span>
+                  <span
+                    v-if="!data.data.customer_branch?.isVat"
+                    class="text-xs w-full text-center font-semibold inline-block py-1 px-2 rounded text-black bg-green-200 uppercase last:mr-0 mr-1"
+                    :style="{ backgroundColor: `#${data.color}` }"
+                    >
+                    ใบเสร็จรับเงิน
                   </span>
                   <br />
                   <br />
