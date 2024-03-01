@@ -32,7 +32,8 @@
                   <br />
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
-                  {{ data.data.customer_detail?.customer_email }}<br />
+                  {{ data.data.customer_detail?.customer_address }}<br />
+                  {{ data.data.customer_detail?.customer_email !== 'undefined' ? data.data.customer_detail?.customer_email : null }}<br />
                   <span v-if="data.data?.isVat">
                     เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}
                   </span><br /><br />
@@ -112,7 +113,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                 
+                
                   <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       {{ index + 1 }}

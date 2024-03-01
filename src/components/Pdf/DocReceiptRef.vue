@@ -32,7 +32,8 @@
                   <br />
                   <span class="font-bold">ลูกค้า</span><br />
                   {{ data.data.customer_detail?.customer_name }}<br />
-                  {{ data.data.customer_detail?.customer_email }}<br />
+                  {{ data.data.customer_detail?.customer_address }}<br />
+                  {{ data.data.customer_detail?.customer_email !== 'undefined' ? data.data.customer_detail?.customer_email : null }}<br />
                   เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}<br /><br />
                 </div>
                 <div class="from">
