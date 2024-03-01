@@ -1809,8 +1809,12 @@ const referQuotationInput = () => {
 };
 
 const seeReceipt = (data) => {
+  const customered = customers.value.find(
+    (item) => item.customer_name === data.customer_detail.customer_name
+  );
   openReceipt.value = true;
   selectedReceipt.value = data;
+  selectedReceipt.value.customer_detail.customer_address = customered.customer_position
   console.log("data", selectedReceipt.value);
   const body = document.body;
   body.style.backgroundColor = "white";
@@ -2038,6 +2042,7 @@ const editReceipt = (prod) => {
     (item) => item.customer_taxnumber === prod.customer_detail.tax_id
   );
   selectedCustomer.value = customered;
+  console.log('cus', selectedCustomer.value)
   refCustomer();
 
   isWithholding.value = prod.vat.percen_deducted ? true : false;
