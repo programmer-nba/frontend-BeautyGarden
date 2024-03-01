@@ -1631,7 +1631,7 @@ const withholdingPrice = computed(() => {
     const result = (netVat.value * withholdingPercent.value) / 100;
     return result;
   } else if (isWithholding.value && !sumVat.value) {
-    const result = (netPrices.value * withholdingPercent.value) / 100;
+    const result = (notSumVatsumProductsPrice.value * withholdingPercent.value) / 100;
     return result;
   } else {
     return 0;
