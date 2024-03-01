@@ -1891,7 +1891,7 @@ const editInvoice = (prod) => {
   selectedCompany.value = company;
 
   const customered = customers.value.find(
-    (item) => item.customer_taxnumber === prod.customer_detail.tax_id
+    (item) => item.customer_name === prod.customer_detail.customer_name
   );
   selectedCustomer.value = customered;
   refCustomer();
@@ -2049,6 +2049,8 @@ const createNewInvoice = async () => {
       customer_email: customer.value ? customer.value.customer_email : null,
       customer_address: customer.value ? customer.value.customer_position : null,
       customer_type: customer.value ? customer.value.customer_type : null,
+      customer_contact: customer.value ? customer.value.customer_contact : null,
+      customer_contact_number: customer.value ? customer.value.customer_contact_number : null,
     },
     product_head: product_head.value,
     product_detail: products.value,
@@ -2174,12 +2176,14 @@ const editingInvoice = async () => {
     signatureID: selectedSignature.value ? selectedSignature.value._id : '',
     customer_detail: customer.value ? {
       tax_id: customer.value.customer_taxnumber,
-      customer_name: customer.value.customer_name,
+      customer_name: selectedCustomer.value.customer_name,
       customer_lastname: customer.value.customer_lastname,
       customer_phone: customer.value.customer_phone,
       customer_email: customer.value.customer_email,
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
+      customer_contact: customer.value.customer_contact,
+      customer_contact_number: customer.value.customer_contact_number,
     } : null,
     product_head: product_head.value,
     product_detail: products.value,
