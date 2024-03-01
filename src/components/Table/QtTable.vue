@@ -138,7 +138,7 @@
         </Column>
 
         <Column
-          field="vat.totalVat_deducted"
+          field="total"
           class="border-b"
           header="ราคา"
           sortable
@@ -147,8 +147,8 @@
           <template #body="slotProps">
             {{ 
               slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - withHolding(slotProps.data)) 
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
             }}
           </template>
         </Column>

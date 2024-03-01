@@ -546,13 +546,17 @@
                       :src="item.product_logo64"
                       :alt="index"
                     />
-                    <img
-                      v-if="item.product_logo"
-                      class="object-contain block xl:block mx-auto border-round w-full"
-                      :src="`https://drive.google.com/thumbnail?id=${item.product_logo}`"
-                      :alt="index"
-                    />
+                    <div v-if="item.product_logo && item.product_logo.length > 0" class="flex gap-2">
+                      <div v-for="(img, imgIndex) in item.product_logo" :key="imgIndex">
+                        <img 
+                          class="object-contain block xl:block mx-auto border-round w-full"
+                          :src="`https://drive.google.com/thumbnail?id=${img}`"
+                          :alt="imgIndex"
+                        />
+                      </div>
+                    </div>
                   </div>
+
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-2"
                   >
