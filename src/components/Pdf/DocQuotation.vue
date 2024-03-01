@@ -310,8 +310,9 @@
                     <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
                       <div class="text-center w-fit text-sm pt-5 px-2 flex flex-col items-center justify-end">
                         
-                        <img class="w-[130px]" 
-                        :src="ssn_2" alt="..." />
+                        <!-- <img class="w-[130px]" 
+                        :src="ssn_2" alt="..." /> -->
+                        <p>............................</p>
                         <p>( เตชิตา รัตนกิตติกร )</p>
                         <p>ผู้อนุมัติ</p>
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
@@ -320,8 +321,9 @@
 
                       <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
                         
-                        <img class="w-[200px]" 
-                        :src="ssn_1" alt="..." />
+                        <!-- <img class="w-[200px]" 
+                        :src="ssn_1" alt="..." /> -->
+                        <p>............................</p>
                         <p>( เพชรลดา หงษ์สี )</p>
                         <p>ผู้ออกเอกสาร</p>
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>

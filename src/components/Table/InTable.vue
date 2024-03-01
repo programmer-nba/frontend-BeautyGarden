@@ -8,6 +8,7 @@
       <DocInvoice
         :color="color"
         :data="selectedInvoice"
+        :header="inputHeader"
         @close="closeHandle"
       />
     </div>
@@ -270,6 +271,10 @@
         class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
       >
         <img src="@/assets/spinner.svg" alt="Spinner" />
+      </div>
+      <div class="flex flex-col items-center justify-center mt-3">
+        <p class="text-xl font-semibold">หัวเอกสาร</p>
+        <InputText class="py-2 px-2 text-center bg-sky-100 text-xl" v-model="inputHeader" />
       </div>
       <div class="card pt-5">
         <div class="card flex gap-2 justify-start items-center">
@@ -864,7 +869,11 @@
       >
         <img src="@/assets/spinner.svg" alt="Spinner" />
       </div>
-      <div class="card">
+      <div class="flex flex-col items-center justify-center mt-3">
+        <p class="text-xl font-semibold">หัวเอกสาร</p>
+        <InputText class="py-2 px-2 text-center bg-sky-100 text-xl" v-model="inputHeader" />
+      </div>
+      <div class="card pt-5">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
           <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
@@ -1556,9 +1565,10 @@ const product_head = ref('')
 const edittingProduct = ref()
 const files = ref([])
 const transfer = ref('bank')
+const inputHeader = ref('ใบแจ้งหนี้')
 
-const reStore = useInvoiceStore();
-const cpStore = useCompanyStore();
+const reStore = useInvoiceStore()
+const cpStore = useCompanyStore()
 
 const onCoppy = (value) => {
   console.log(value)
@@ -1871,7 +1881,7 @@ const editInvoice = (prod) => {
   resetData()
   invoice.value = { ...prod };
   console.log("re", invoice.value);
-
+  inputHeader.value = prod.inputHeader || 'ใบแจ้งหนี้'
   start_date.value = prod.start_date;
   end_date.value = prod.end_date;
 
@@ -2025,6 +2035,7 @@ const createNewInvoice = async () => {
     product.product_logo64 = "";
   });
   const data = {
+    header: inputHeader.value,
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,
     customer_number: customer.value ? customer.value.customer_number : null,
@@ -2156,6 +2167,7 @@ const editingInvoice = async () => {
   });
   console.log(refQuotation.value)
   const data = {
+    header: inputHeader.value,
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
     customer_number: customer.value ? customer.value.customer_number : null,
     branchId: selectedCompany.value ? selectedCompany.value._id : null,

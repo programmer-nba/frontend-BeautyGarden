@@ -257,8 +257,9 @@
                         ">
                           {{ data.data.signature.position }}
                         </p>
-                        <img class="w-[130px]" 
-                        :src="ssn_2" alt="..." />
+                        <!-- <img class="w-[130px]" 
+                        :src="ssn_2" alt="..." /> -->
+                        <p>............................</p>
                         <p>( เตชิตา รัตนกิตติกร )</p>
                         <p>ผู้อนุมัติ</p>
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
@@ -274,8 +275,9 @@
                           ">
                             {{ data.data.signature.position }}
                           </p>
-                          <img class="w-[180px]" 
-                          :src="ssn_1" alt="..." />
+                          <!-- <img class="w-[180px]" 
+                          :src="ssn_1" alt="..." /> -->
+                          <p>............................</p>
                           <p>( เพชรลดา หงษ์สี )</p>
                           <p>ผู้ออกเอกสาร</p>
                           <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
