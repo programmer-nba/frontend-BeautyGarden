@@ -296,8 +296,8 @@
                     <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเงิน</td>
                     <td class="border text-sm" style="text-align: center; padding:0;">ผู้อนุมัติการสั่งซื้อ</td>
                   </tr>
-                  <tr>
-                    <td class="border-b border-l h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
+                  <tr class="border">
+                    <td class="h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
                       <div class="text-center w-fit text-sm pt-5 px-2 flex flex-col items-center justify-end">
                         
                         <!-- <img class="w-[130px]" 
@@ -308,7 +308,6 @@
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
                         <p v-if="!data.data.start_date">{{`วันที่...../....../.......`}}</p>
                       </div>
-
                       <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
                         
                         <!-- <img class="w-[200px]" 
@@ -321,20 +320,17 @@
                       </div>
                         
                     </td>
-
                     <td class="border h-full min-h-[50px] px-4 w-fit" style="text-align: bottom;">
                       <div class="text-center w-full h-full text-sm flex flex-col mt-auto pt-10 items-center justify-end" style="text-align: bottom;">
-                          <p 
-                          >____________________</p>
-                        <p v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''
-                            ">
+                          <p>____________________</p>
+                        <p class="break-words max-w-[300px]" v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''">
                               ( {{ data.data.customer_detail.customer_name }} )
-                            </p>
-                            <p v-if="!data.data.customer_detail.customer_name || data.data.customer_detail.customer_name.trim() ===''">
-                              {{`(.................................)`}}
-                            </p>
+                        </p>
+                        <p v-if="!data.data.customer_detail.customer_name || data.data.customer_detail.customer_name.trim() ===''">
+                          {{`(.................................)`}}
+                        </p>
                         
-                          <p>{{`วันที่...../....../.......`}}</p>
+                        <p>{{`วันที่...../....../.......`}}</p>
                       </div>
                     </td>
                   </tr>
