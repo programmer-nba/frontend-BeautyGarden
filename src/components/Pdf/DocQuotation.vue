@@ -28,7 +28,9 @@
                   โทร : {{ data.data.customer_branch?.Branch_company_number }}<br />
                   อีเมลล์ : {{ data.data.customer_branch?.company_email }}
                   <br />
-                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_branch?.taxnumber }}<br />
+                  <p v-if="data.data.customer_branch?.isVat">
+                    เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_branch?.taxnumber }}
+                  </p>
                   <br />
                   <span class="font-bold">ลูกค้า</span>
                   <p>{{ data.data.customer_detail?.customer_name }} {{ 
@@ -38,7 +40,10 @@
                   }}</p>
                   <p>{{ data.data.customer_detail?.customer_address }}</p>
                   <p>{{ data.data.customer_detail?.customer_email !== 'undefined' ? data.data.customer_detail?.customer_email : null }}</p>
-                  เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}<br /><br />
+                  <p v-if="data.data.customer_branch?.isVat">
+                    เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}
+                  </p>
+                  <br/>
                 </div>
                 <div class="from">
                   <span
