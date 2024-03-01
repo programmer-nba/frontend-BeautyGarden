@@ -1821,12 +1821,19 @@ const seeReceipt = (data) => {
 };
 
 const changeProductVat = () => {
-  if (product.value.isVat) {
-    product.value.vat_price =
-      product.value.product_price * product.value.product_amount * 0.07;
-  } else {
-    product.value.vat_price = 0;
-  }
+  if (product.value.isVat && sumVat.value) {
+
+product.value.vat_price = product.value.product_price*product.value.product_amount*0.07
+
+} else if (product.value.isVat && !sumVat.value) {
+product.value.vat_price = product.value.product_price*product.value.product_amount*7/107
+}
+
+else {
+
+product.value.vat_price = 0
+
+}
 };
 
 const formatDateRef = (isoDateString) => {
@@ -1984,9 +1991,14 @@ const refCompany = () => {
 };
 
 const formatCurrency = (value) => {
-  if (value) return value.toLocaleString({ style: "currency", currency: "THB" });
+  if (value !== undefined && value !== null) {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
   return;
-};
+}
 
 const resetData = () => {
   receipt.value = {};

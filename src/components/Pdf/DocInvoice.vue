@@ -164,7 +164,7 @@
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_amount) }} {{ product.unit }}
+                        {{ product.product_amount }} {{ product.unit }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
@@ -447,9 +447,14 @@ const formatNumberToText = (number) => {
 const data = defineProps(['data', 'color', 'header'])
 
 const formatCurrency = (value) => {
-  if (value) return value.toLocaleString({ style: "currency", currency: "THB" });
+  if (value !== undefined && value !== null) {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
   return;
-};
+}
 
 const formatDate = (isoDateString) => {
   const isoDate = new Date(isoDateString);

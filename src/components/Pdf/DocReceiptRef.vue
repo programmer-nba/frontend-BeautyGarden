@@ -420,9 +420,14 @@ const formatNumberToText = (number) => {
 const data = defineProps(['data', 'color'])
 
 const formatCurrency = (value) => {
-  if (value) return value.toLocaleString({ style: "currency", currency: "THB" });
+  if (value !== undefined && value !== null) {
+    return value.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
   return;
-};
+}
 
 const formatDate = (isoDateString) => {
   const isoDate = new Date(isoDateString);
