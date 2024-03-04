@@ -1658,7 +1658,7 @@ const addProduct = () => {
 };
 
 const allEnd = computed(() => {
-  return netVat.value - withholdingPrice.value;
+  return netVat.value
 });
 
 const removeProduct = (index) => {
