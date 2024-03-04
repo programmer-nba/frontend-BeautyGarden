@@ -5,7 +5,7 @@
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openReceipt"
     >
-      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.invoiceRef_detail?.period_text!=='1/1'" :color="color" :data="selectedReceipt" @close="closeHandle" />
+      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.invoiceRef_detail?.period_text!=='1/1'" :isSign="sign" :color="color" :data="selectedReceipt" @close="closeHandle" />
       <DocReceipt v-else :color="color" :data="selectedReceipt" :isSign="sign" @close="closeHandle" />
     </div>
 
