@@ -213,11 +213,20 @@
                 @click="seeReceipt(slotProps.data)"
               />
               <Button
+                v-if="!slotProps.data.invoice"
                 class="text-yellow-600 hover:bg-orange-100"
                 icon="pi pi-pencil"
                 outlined
                 rounded
                 @click="editReceipt(slotProps.data)"
+              />
+              <Button
+                v-if="slotProps.data.invoice"
+                class="text-yellow-600 hover:bg-orange-100"
+                icon="pi pi-pencil"
+                outlined
+                rounded
+                @click="edittingReceiptRefInvoice(slotProps.data)"
               />
               <Button
                 class="text-red-600 hover:bg-red-100"
@@ -1606,6 +1615,99 @@
         </div>
       </template>
     </Dialog>
+
+    <Dialog
+      v-model:visible="editReceiptRefInvoiceDialog"
+      :style="{ width: '500px' }"
+      header="Receipt Details"
+      :modal="true"
+      class="p-fluid"
+    >
+      <div class="card flex flex-col gap-y-2 bg-sky-300 py-2 px-2 rounded-lg justify-content-center">
+        <p>ใบแจ้งหนี้อ้างอิง Ref invoice No.</p>
+        <p>{{ receipt.invoice }}</p>
+      </div>
+      <div class="card">
+        <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
+          <p>วันที่ออกใบเสร็จ</p>
+          <Calendar
+            class="border rounded-sm"
+            v-model="start_date"
+            showButtonBar
+            dateFormat="dd/mm/yy"
+          />
+        </div>
+        <div>
+          <p>
+            <strong>บริษัท : </strong
+            >{{ refInvoice?.customer_branch?.Branch_company_name }}
+          </p>
+          <p>
+            <strong>ลูกค้า : </strong>{{ refInvoice?.customer_detail?.customer_name }}
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3 py-4">
+          <div class="flex align-items-center">
+              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="cash" name="cash" value="cash" />
+              <label for="ingredient1" class="ml-2">เงินสด</label>
+          </div>
+          <div class="flex align-items-center">
+              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="bank" name="bank" value="bank" />
+              <label for="ingredient2" class="ml-2">โอนผ่านบัญชีธนาคาร</label>
+          </div>
+        </div>
+        <div class="flex gap-3 justify-start items-center" v-if="transfer==='bank' && refInvoice">
+          <small>{{ refInvoice?.bank?.name }} ({{ refInvoice?.bank?.remark_2 }})</small>
+          <small>{{ refInvoice?.bank?.status }}</small>
+        </div>
+        <div class="py-3">
+          <strong>จำนวนเงิน</strong>
+          <InputGroup class="border rounded">
+            <InputGroupAddon><span class="font-bold px-2">THB</span></InputGroupAddon>
+            <InputNumber v-model="amount_price" />
+            <InputGroupAddon>บาท</InputGroupAddon>
+          </InputGroup>
+        </div>
+        <div class="py-3 flex flex-col">
+          <strong>รายละเอียด</strong>
+          <textarea v-model="paid_detail" class="border">
+          </textarea>
+        </div>
+        <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
+          <p class="hover:text-orange-500 cursor-pointer px-2 py-2 border rounded hover:border-orange-300 duration-300" @click="remark.push('')">หมายเหตุ</p>
+          <Textarea
+            v-for="(mark, mIndex) in remark"
+            v-model="remark[mIndex]"
+            autoResize
+            rows="5"
+            cols="30"
+            class="my-2 border"
+          />
+          <p v-if="remark.length>0" @click="remark.pop()" class="text-red-500 cursor-pointer">ลบ</p>
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex gap-3">
+          <Button
+            label="ยกเลิก"
+            icon="pi pi-times"
+            text
+            @click="hideDialog"
+            class="text-bold text-red-500 py-2 px-2"
+            :loading="loading"
+          />
+          <Button
+            label="บันทึก"
+            icon="pi pi-check"
+            :loading="loading"
+            text
+            rounded
+            @click="editReceiptRefInvoice(receipt._id)"
+            class="text-bold text-green-500 hover:bg-green-100 border border-green-500 px-3"
+          />
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -1633,6 +1735,7 @@ onMounted(async () => {
   await fetchInvoices();
 });
 
+const editReceiptRefInvoiceDialog = ref(false)
 const transfer = ref('bank')
 const quotations = ref([]);
 const lastRefreshed = ref();
@@ -1739,6 +1842,44 @@ async function createNewReceiptRefInvoice() {
   } finally {
     loading.value = false;
     receiptRefInvoiceDialog.value = false;
+    refresh();
+  }
+}
+
+async function editReceiptRefInvoice(id) {
+  loading.value = true;
+  const data = {
+    invoiceId: refInvoice.value ? refInvoice.value.invoice : null,
+    start_date: start_date.value || new Date(),
+    amount_price: amount_price.value || 0,
+    remark: remark.value || [],
+    transfer: transfer.value,
+    paid_detail: paid_detail.value,
+    isSign: isSign.value
+  };
+  console.log("data_refInv : ", data);
+  try {
+    const response = await Documents.editReceiptRefInvoice(id, data);
+    if (response.status) {
+      toast.add({
+        severity: "success",
+        summary: "สำเร็จ",
+        detail: "แก้ไขใบเสร็จรับเงินแล้ว",
+        life: 3000,
+      });
+    }
+    console.log("res_receipt : ", response);
+  } catch (error) {
+    toast.add({
+      severity: "error",
+      summary: "เกิดข้อผิดพลาด !",
+      detail: "ไม่สามารถแก้ไขใบเสร็จรับเงินได้",
+      life: 3000,
+    });
+    console.log("error : ", error);
+  } finally {
+    loading.value = false;
+    editReceiptRefInvoiceDialog.value = false;
     refresh();
   }
 }
@@ -2019,6 +2160,7 @@ const formatCurrency = (value) => {
 }
 
 const resetData = () => {
+  editReceiptRefInvoiceDialog.value = false
   receipt.value = {};
   start_date.value = null;
   end_date.value = null;
@@ -2047,6 +2189,7 @@ const openNew = () => {
 };
 
 const hideDialog = () => {
+  editReceiptRefInvoiceDialog.value = false
   product.value = {};
   products.value = [];
   customer.value = {};
@@ -2098,43 +2241,10 @@ const editReceipt = (prod) => {
   referQuotation();
 };
 
-const editReceiptRefInvoice = (prod) => {
+const edittingReceiptRefInvoice = (prod) => {
   resetData();
-  receipt.value = { ...prod };
-
-  start_date.value = prod.start_date;
-  end_date.value = prod.end_date;
-
-  const company = cpStore.myCompanies.find(
-    (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
-  );
-  selectedCompany.value = company;
-
-  const customered = customers.value.find(
-    (item) => item.customer_taxnumber === prod.customer_detail.tax_id
-  );
-  selectedCustomer.value = customered;
-  refCustomer();
-
-  isWithholding.value = prod.vat.percen_deducted ? true : false;
-  withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
-  discount.value = prod.discount;
-  products.value = prod.product_detail;
-  remark.value = prod.remark;
-  bank.value = company
-    ? company.bank.find((item) => item.number === prod.bank.status)
-    : null;
-  selectedSignature.value = cpStore.mySignatures.find(
-    (item) => item.name === prod.signature.name
-  );
-  receiptEditDialog.value = true;
-  discount.value = 0;
-  product.value = {};
-  product.value.product_text = [""];
-  sumVat.value = prod.sumVat;
-  refQuotation.value = receipt.value.quotation;
-  transfer.value = receipt.value.transfer;
-  referQuotation();
+  receipt.value = prod
+  editReceiptRefInvoiceDialog.value = true
 };
 
 const totalPrice = (product) => {
