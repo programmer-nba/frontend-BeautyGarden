@@ -5,7 +5,7 @@
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openReceipt"
     >
-      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.amount_price && selectedReceipt.invoiceRef_detail?.period_text!=='1/1'" :color="color" :data="selectedReceipt" @close="closeHandle" />
+      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.invoiceRef_detail?.period_text!=='1/1'" :color="color" :data="selectedReceipt" @close="closeHandle" />
       <DocReceipt v-else :color="color" :data="selectedReceipt" :isSign="sign" @close="closeHandle" />
     </div>
 
@@ -202,7 +202,7 @@
             </div>
           </template>
         </Column>
-        <Column :exportable="false" style="min-width: 10rem" class="border-b">
+        <Column :exportable="false" style="min-width: 15rem" class="border-b">
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
               <Button
@@ -213,7 +213,6 @@
                 @click="seeReceipt(slotProps.data)"
               />
               <Button
-                v-if="!slotProps.data.invoice"
                 class="text-yellow-600 hover:bg-orange-100"
                 icon="pi pi-pencil"
                 outlined
@@ -221,9 +220,10 @@
                 @click="editReceipt(slotProps.data)"
               />
               <Button
-                v-if="slotProps.data.invoice"
-                class="text-yellow-600 hover:bg-orange-100"
-                icon="pi pi-pencil"
+                class="text-pink-600 hover:bg-orange-100"
+                :class="slotProps.data.invoice ? '' : 'opacity-10'"
+                :disabled="!slotProps.data.invoice"
+                icon="pi pi-bars"
                 outlined
                 rounded
                 @click="edittingReceiptRefInvoice(slotProps.data)"
@@ -1624,11 +1624,11 @@
       class="p-fluid"
     >
       <div class="card flex flex-col gap-y-2 bg-sky-300 py-2 px-2 rounded-lg justify-content-center">
-        <p>ใบแจ้งหนี้อ้างอิง Ref invoice No.</p>
+        <p>แก้ไขรายละเอียดใบเสร็จ</p>
         <p>{{ receipt.invoice }}</p>
       </div>
       <div class="card">
-        <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
+        <!-- <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
           <p>วันที่ออกใบเสร็จ</p>
           <Calendar
             class="border rounded-sm"
@@ -1636,8 +1636,8 @@
             showButtonBar
             dateFormat="dd/mm/yy"
           />
-        </div>
-        <div>
+        </div> -->
+        <!-- <div>
           <p>
             <strong>บริษัท : </strong
             >{{ refInvoice?.customer_branch?.Branch_company_name }}
@@ -1645,8 +1645,8 @@
           <p>
             <strong>ลูกค้า : </strong>{{ refInvoice?.customer_detail?.customer_name }}
           </p>
-        </div>
-        <div class="flex flex-wrap items-center gap-3 py-4">
+        </div> -->
+        <!-- <div class="flex flex-wrap items-center gap-3 py-4">
           <div class="flex align-items-center">
               <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="cash" name="cash" value="cash" />
               <label for="ingredient1" class="ml-2">เงินสด</label>
@@ -1655,25 +1655,25 @@
               <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="bank" name="bank" value="bank" />
               <label for="ingredient2" class="ml-2">โอนผ่านบัญชีธนาคาร</label>
           </div>
-        </div>
-        <div class="flex gap-3 justify-start items-center" v-if="transfer==='bank' && refInvoice">
+        </div> -->
+        <!-- <div class="flex gap-3 justify-start items-center" v-if="transfer==='bank' && refInvoice">
           <small>{{ refInvoice?.bank?.name }} ({{ refInvoice?.bank?.remark_2 }})</small>
           <small>{{ refInvoice?.bank?.status }}</small>
-        </div>
-        <div class="py-3">
+        </div> -->
+        <!-- <div class="py-3">
           <strong>จำนวนเงิน</strong>
           <InputGroup class="border rounded">
             <InputGroupAddon><span class="font-bold px-2">THB</span></InputGroupAddon>
             <InputNumber v-model="amount_price" />
             <InputGroupAddon>บาท</InputGroupAddon>
           </InputGroup>
-        </div>
+        </div> -->
         <div class="py-3 flex flex-col">
           <strong>รายละเอียด</strong>
           <textarea v-model="paid_detail" class="border">
           </textarea>
         </div>
-        <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
+        <!-- <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
           <p class="hover:text-orange-500 cursor-pointer px-2 py-2 border rounded hover:border-orange-300 duration-300" @click="remark.push('')">หมายเหตุ</p>
           <Textarea
             v-for="(mark, mIndex) in remark"
@@ -1684,7 +1684,7 @@
             class="my-2 border"
           />
           <p v-if="remark.length>0" @click="remark.pop()" class="text-red-500 cursor-pointer">ลบ</p>
-        </div>
+        </div> -->
       </div>
       <template #footer>
         <div class="flex gap-3">

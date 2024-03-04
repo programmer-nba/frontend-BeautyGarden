@@ -203,7 +203,7 @@
                       </div>
                     </td> -->
                     <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
+                      <div class="flex justify-start pl-2 h-full py-2">
                         {{ data.data.invoiceRef_detail?.paid_detail }}
                       </div>
                     </td>
