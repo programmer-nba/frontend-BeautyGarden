@@ -301,9 +301,9 @@
                     <td class="h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
                       <div class="text-center w-fit text-sm pt-5 px-2 flex flex-col items-center justify-end">
                         
-                        <!-- <img class="w-[130px]" 
-                        :src="ssn_2" alt="..." /> -->
-                        <p>............................</p>
+                        <img v-if="data.isSign" class="w-[130px]" 
+                        :src="ssn_2" alt="..." />
+                        <p v-if="!data.isSign">............................</p>
                         <p>( เตชิตา รัตนกิตติกร )</p>
                         <p>ผู้อนุมัติ</p>
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
@@ -311,9 +311,9 @@
                       </div>
                       <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
                         
-                        <!-- <img class="w-[200px]" 
-                        :src="ssn_1" alt="..." /> -->
-                        <p>............................</p>
+                        <img v-if="data.isSign" class="w-[200px]" 
+                        :src="ssn_1" alt="..." />
+                        <p v-if="!data.isSign">............................</p>
                         <p>( เพชรลดา หงษ์สี )</p>
                         <p>ผู้ออกเอกสาร</p>
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
@@ -446,7 +446,7 @@ const formatNumberToText = (number) => {
   return thaiText || "ศูนย์บาท";
 };
 
-const data = defineProps(['data', 'color', 'header'])
+const data = defineProps(['data', 'color', 'header', 'isSign'])
 
 const formatCurrency = (value) => {
   if (value !== undefined && value !== null) {

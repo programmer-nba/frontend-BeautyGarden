@@ -9,6 +9,7 @@
         :color="color"
         :data="selectedInvoice"
         :header="inputHeader"
+        :isSign="sign"
         @close="closeHandle"
       />
     </div>
@@ -64,12 +65,16 @@
         }"
       >
         <template #header>
-          <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+          <div class="flex flex-wrap gap-2 items-center justify-between">
             <h4 class="m-0">จัดการเอกสาร</h4>
             <span class="p-input-icon-right border rounded">
               <i class="pi pi-search" />
-              <InputText v-model="filters['global'].value" placeholder="" />
+              <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหา..." />
             </span>
+            <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
+              <Checkbox v-model="sign" :binary="true" />
+              <p>ลายเซ็นอิเล็กทรอนิกส์</p>
+            </div>
           </div>
         </template>
 
@@ -1566,6 +1571,7 @@ const edittingProduct = ref()
 const files = ref([])
 const transfer = ref('bank')
 const inputHeader = ref('ใบแจ้งหนี้')
+const sign = ref(false)
 
 const reStore = useInvoiceStore()
 const cpStore = useCompanyStore()

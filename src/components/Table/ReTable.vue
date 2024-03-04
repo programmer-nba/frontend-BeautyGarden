@@ -5,8 +5,8 @@
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openReceipt"
     >
-      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.amount_price" :color="color" :data="selectedReceipt" @close="closeHandle" />
-      <DocReceipt v-else :color="color" :data="selectedReceipt" @close="closeHandle" />
+      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.amount_price && selectedReceipt.invoiceRef_detail?.period_text!=='1/1'" :color="color" :data="selectedReceipt" @close="closeHandle" />
+      <DocReceipt v-else :color="color" :data="selectedReceipt" :isSign="sign" @close="closeHandle" />
     </div>
 
     <div v-if="!openReceipt" class="card">
@@ -74,12 +74,16 @@
         }"
       >
         <template #header>
-          <div class="flex flex-wrap gap-y-2 gap-x-4 align-items-center justify-content-between">
+          <div class="flex flex-wrap gap-y-2 w-full gap-x-4 items-center justify-between">
             <h4 class="m-0">จัดการเอกสาร</h4>
             <span class="p-input-icon-right border rounded">
               <i class="pi pi-search" />
-              <InputText v-model="filters['global'].value" placeholder="" />
+              <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหา..." />
             </span>
+            <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
+              <Checkbox v-model="sign" :binary="true" />
+              <p>ลายเซ็นอิเล็กทรอนิกส์</p>
+            </div>
           </div>
         </template>
 
@@ -1562,6 +1566,11 @@
             <InputGroupAddon>บาท</InputGroupAddon>
           </InputGroup>
         </div>
+        <div class="py-3 flex flex-col">
+          <strong>รายละเอียด</strong>
+          <textarea v-model="paid_detail" class="border">
+          </textarea>
+        </div>
         <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
           <p class="hover:text-orange-500 cursor-pointer px-2 py-2 border rounded hover:border-orange-300 duration-300" @click="remark.push('')">หมายเหตุ</p>
           <Textarea
@@ -1661,6 +1670,9 @@ const bank = ref({});
 const refQuotation = ref();
 const product_head = ref('');
 const edittingProduct = ref();
+const paid_detail = ref('')
+const isSign = ref(false)
+const sign = ref(false)
 
 // Create with reference invoice
 const amount_price = ref();
@@ -1700,7 +1712,9 @@ async function createNewReceiptRefInvoice() {
     start_date: start_date.value || new Date(),
     amount_price: amount_price.value || 0,
     remark: remark.value || [],
-    transfer: transfer.value
+    transfer: transfer.value,
+    paid_detail: paid_detail.value,
+    isSign: isSign.value
   };
   console.log("data_refInv : ", data);
   try {
@@ -2020,6 +2034,8 @@ const resetData = () => {
   refQuotation.value = null;
   refInvoice.value = null;
   amount_price.value = null;
+  paid_detail.value = ''
+  isSign.value = false
 };
 
 const openNew = () => {
@@ -2045,7 +2061,7 @@ const editReceipt = (prod) => {
   resetData();
   receipt.value = { ...prod };
   console.log("re", receipt.value);
-
+  isSign.value = prod.isSign
   start_date.value = prod.start_date;
   end_date.value = prod.end_date;
 
@@ -2243,6 +2259,7 @@ const createNewReceipt = async () => {
       customer_address: customer.value ? customer.value.customer_position : null,
       customer_type: customer.value ? customer.value.customer_type : null,
     },
+    isSign: isSign.value,
     product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,

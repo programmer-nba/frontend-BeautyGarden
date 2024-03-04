@@ -694,7 +694,7 @@
         @click="createNewReceipt"
       />
     </template>
-  </Dialog>
+    </Dialog>
 
     <Dialog
       v-model:visible="receiptDialogx"

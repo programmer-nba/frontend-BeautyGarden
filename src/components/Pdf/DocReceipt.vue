@@ -258,7 +258,7 @@
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                     </tr>
-                   
+                  
                     <tr class="flex justify-between w-full mt-2 pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
                       <td style="text-align: left"><strong class="pl-5 font-semibold">จำนวนเงินทั้งสิ้น</strong></td>
                       <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
@@ -308,9 +308,9 @@
                     <td class="h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
                       <div class="text-center w-fit text-sm pt-5 px-2 flex flex-col items-center justify-end">
                         
-                        <!-- <img class="w-[130px]" 
-                        :src="ssn_2" alt="..." /> -->
-                        <p>............................</p>
+                        <img v-if="data.isSign" class="w-[130px]" 
+                        :src="ssn_2" alt="..." />
+                        <p v-if="!data.isSign">............................</p>
                         <p>( เตชิตา รัตนกิตติกร )</p>
                         <p>ผู้อนุมัติ</p>
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
@@ -318,9 +318,9 @@
                       </div>
                       <div class="text-center w-fit text-sm pt-8 flex flex-col items-center justify-end">
                         
-                        <!-- <img class="w-[200px]" 
-                        :src="ssn_1" alt="..." /> -->
-                        <p>............................</p>
+                        <img v-if="data.isSign" class="w-[200px]" 
+                        :src="ssn_1" alt="..." />
+                        <p v-if="!data.isSign">............................</p>
                         <p>( เพชรลดา หงษ์สี )</p>
                         <p>ผู้ออกเอกสาร</p>
                         <p v-if="data.data.start_date">วันที่ <span class="px-2">{{ formatDate(data.data.start_date) }}</span></p>
@@ -453,7 +453,7 @@ const formatNumberToText = (number) => {
   return thaiText || "ศูนย์บาท";
 };
 
-const data = defineProps(['data', 'color'])
+const data = defineProps(['data', 'color', 'isSign'])
 
 const formatCurrency = (value) => {
   if (value !== undefined && value !== null) {

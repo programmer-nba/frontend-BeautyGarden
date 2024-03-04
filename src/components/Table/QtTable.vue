@@ -8,6 +8,7 @@
       <DocQuotation
         :color="color"
         :data="selectedQuotation"
+        :isSign="sign"
         @close="closeHandle"
       />
     </div>
@@ -60,12 +61,16 @@
         }"
       >
         <template #header>
-          <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+          <div class="flex flex-wrap gap-2 items-center justify-between">
             <h4 class="m-0">จัดการเอกสาร</h4>
             <span class="p-input-icon-right border rounded">
               <i class="pi pi-search" />
               <InputText v-model="filters['global'].value" placeholder="" />
             </span>
+            <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
+              <Checkbox v-model="sign" :binary="true" />
+              <p>ลายเซ็นอิเล็กทรอนิกส์</p>
+            </div>
           </div>
         </template>
 
@@ -1510,6 +1515,7 @@ const product_head = ref('')
 const edittingProduct = ref()
 const files = ref([])
 const transfer = ref('bank')
+const sign = ref(false)
 
 const closeHandle = () => {
   openQuotation.value = false
