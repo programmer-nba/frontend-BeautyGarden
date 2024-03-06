@@ -151,9 +151,9 @@
         >
           <template #body="slotProps">
             {{ 
-              slotProps.data.sumVat
+              slotProps.data.customer_branch?.isVat
               ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
+              : formatCurrency(slotProps.data.total - slotProps.data.discount) 
             }}
           </template>
         </Column>
