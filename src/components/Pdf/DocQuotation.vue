@@ -196,7 +196,7 @@
                     <div class="h-full w-full flex items-end pb-2">
                       <div class="flex border-t w-full pt-2 justify-start text-start gap-2">
                         <strong>ชำระผ่าน : </strong>
-                        <span v-if="data.data.transfer ==='cash'">เงินสด</span>
+                        <span v-if="data.data.transfer ==='cash' || data.data.bank.remark_2 === '' ">เงินสด</span>
                         <div class="flex flex-col" v-else>
                           <span>บัญชีธนาคาร {{ data.data.bank.remark_2 }} หมายเลข {{ data.data.bank?.status }}</span>
                           <span>ชื่อบัญชี {{ data.data.bank?.name }}</span>

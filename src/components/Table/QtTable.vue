@@ -2105,6 +2105,7 @@ const editingQuotation = async () => {
     end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value.isVat,
+    sumVat: sumVat.value,
     bank: bank.value && transfer.value === 'bank' ? {
       name: bank.value.name,
       remark_2: bank.value.remark,
