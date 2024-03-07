@@ -4,7 +4,7 @@
         class="col-start-2 col-end-9 border-b-black border-l border-l-black border-r border-r-black text-center"
         >
         <p class="underline text-xs font-bold py-1">
-            ตรวจคุณภาพน้ำทิ้ง ระหว่างเดือนมกราคม - ธันวาคม 2567
+            {{ data ? data : '-' }}
         </p>
         </div>
         <div class="col-span-4 grid grid-cols-4">
@@ -27,5 +27,5 @@
 </template>
 
 <script setup>
-
+const { data } = defineProps(["data"])
 </script>
