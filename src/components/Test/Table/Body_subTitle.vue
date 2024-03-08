@@ -6,7 +6,7 @@
                 <p class="py-1">{{ no ? no : '' }}</p>
             </div>
             <div class="col-start-2 col-end-9 border-b-black border-l border-l-black border-r border-r-black text-start">
-                <p class="text-xs font-bold py-1">{{ data?.subtitle }}</p>
+                <p class="text-xs font-bold py-1 pl-1">{{ data?.subtitle }}</p>
             </div>
             <div class="col-span-4 grid grid-cols-4">
                 <!--จำนวน-->
@@ -43,7 +43,7 @@
                     </div>
                     <div class="col-start-2 col-end-9 border-b-black border-l border-l-black border-r border-r-black text-start">
                         <!--v-for-->
-                        <p v-for="(point, pointIndex) in detail?.points" class="text-xs py-1" :key="pointIndex">{{ point }}</p>
+                        <p v-for="(point, pointIndex) in detail?.points" class="text-xs py-1 pl-1" :key="pointIndex">{{ point }}</p>
                     </div>
                     <div class="col-span-4 grid grid-cols-4">
                         <!--จำนวน-->
@@ -107,11 +107,11 @@
                         </div>
                         <!--ราคา/หน่วย-->
                         <div class="border-r border-r-black flex justify-end pr-1 items-center" style="font-size: 10px;">
-                            <p>{{ param?.unit_price }}</p>
+                            <p>{{ formatCurrency(param?.unit_price) }}</p>
                         </div>
                         <!--จำนวนเงิน-->
                         <div class="flex justify-end pr-1 items-center" style="font-size: 10px;">
-                            <p>{{ param?.total_price }}</p>
+                            <p>{{ formatCurrency(param?.total_price) }}</p>
                         </div>
                     </div>
                 </div>
@@ -122,4 +122,16 @@
 
 <script setup>
 const { data, no } = defineProps(["data", "no"])
+
+function formatCurrency(value) {
+    
+    if (typeof value !== 'number' || isNaN(value)) {
+        return 'Invalid Number'
+    }
+
+    return value.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })
+}
 </script>

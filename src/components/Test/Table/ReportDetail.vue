@@ -43,7 +43,7 @@
                         <p class="py-1">{{ no ? no : '' }}</p>
                     </div>
                     <div class="col-start-2 col-end-9 border-b-black border-l border-l-black border-r border-r-black text-start">
-                        <p class="text-xs py-1 font-bold">ค่าใช้จ่ายในการจัดทำเล่ม</p>
+                        <p class="text-xs py-1 font-bold pl-1">ค่าใช้จ่ายในการจัดทำเล่ม</p>
                     </div>
                     <div class="col-span-4 grid grid-cols-4">
                         <!--จำนวน-->
@@ -76,7 +76,7 @@
                     <div class="text-center text-xs flex items-center justify-center">
                     </div>
                     <div class="col-start-2 col-end-9 border-b-black border-l border-l-black border-r border-r-black text-start">
-                        <p class="text-xs py-1 font-bold">รายละเอียดดังนี้</p>
+                        <p class="text-xs py-1 font-bold pl-1">รายละเอียดดังนี้</p>
                     </div>
                     <div class="col-span-4 grid grid-cols-4">
                         <!--จำนวน-->
@@ -152,7 +152,7 @@
                     <div class="col-span-12 grid grid-cols-12 border-t">
                         <div class="col-start-2 col-end-9 border-b-black border-l border-l-black border-r border-r-black text-start">
                             <div class="col-span-12 grid grid-cols-7">
-                                <div class="col-span-7 font-bold" style="font-size: 12px;">
+                                <div class="col-span-7 font-bold pl-1" style="font-size: 12px;">
                                     รายละเอียดของการส่งเล่ม
                                 </div> 
                             </div>

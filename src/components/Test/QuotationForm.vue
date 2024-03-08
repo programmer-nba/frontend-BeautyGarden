@@ -1,57 +1,61 @@
 <template>
     <div>
-        <div class="flex justify-center w-full border items-start">
-            <div class="border border-black w-auto min-w-[215mm] h-auto bg-white scale-90 origin-top">
-                <!--Header-->
-                <Header />
-
-                <!--SubHead-->
-                <Subhead :data="quotation.subhead" />
-
-                <!--Body Container-->
-                <div class="col-span-12 grid grid-cols-12 border-b border-b-black">
-                    <!--Menu-->
-                    <BodyMenu />
-
-                    <!--Body (v-for)-->
-                    <div v-for="(body, index) in quotation.bodies" :key="index" class="col-span-12 grid grid-cols-12">
-                        <!--Title-->
-                        <BodyTitle :data="body.title" />
-                        <!--Sub Title (v-for)-->
-                        <BodySubTitle v-for="(sub, subIndex) in body.subtitles" :key="subIndex" :data="sub" :no="index+1" />
-                        <!--Report-->
-                        <ReportDetail v-if="body.isReport" :data="body.report" :no="`${index+1}.${body.subtitles.length}`" />
+        <form>
+            <!--subhead-->
+            <div ref="subhead">
+                <div class="flex flex-col gap-y-8">
+                    <p class="text-center font-bold">ลูกค้า</p>
+                    <div class="card flex justify-center">
+                        <Dropdown @change="selectedCustomer" v-model="customer" :options="customers" filter optionLabel="name_tax" showClear placeholder="เลือกลูกค้า" class="w-full md:w-14rem">
+                            <template #value="slotProps">
+                                <div v-if="slotProps.value" class="flex items-center">
+                                    <div>{{ slotProps.value.name }}</div>
+                                </div>
+                                <span v-else>
+                                    {{ slotProps.placeholder }}
+                                </span>
+                            </template>
+                            <template #option="slotProps">
+                                <div class="flex items-center">
+                                    <div class="flex flex-col">
+                                        <p class="text-sm font-bold">{{ slotProps.option.name }}</p>
+                                        <small>{{ slotProps.option.tax_id }}</small>
+                                    </div>
+                                </div>
+                            </template>
+                        </Dropdown>
+                    </div>
+                    <div class="card flex justify-center">
+                        <FloatLabel>
+                            <InputText id="customer_name" v-model="quotation.subhead.customer_name" />
+                            <label for="customer_name">เรียน</label>
+                        </FloatLabel>
+                    </div>
+                    <div class="card flex justify-center">
+                        <FloatLabel>
+                            <InputText id="customer_company" v-model="quotation.subhead.customer_company" />
+                            <label for="customer_company">ชื่อ</label>
+                        </FloatLabel>
+                    </div>
+                    <div class="card flex justify-center">
+                        <FloatLabel>
+                            <InputText id="customer_address" v-model="quotation.subhead.customer_address" />
+                            <label for="customer_address">ที่อยู่ลูกค้า</label>
+                        </FloatLabel>
                     </div>
                 </div>
-
-                <!--Footer-->
-                <Footer :data="quotation.footer" />
-
-                <!--PaymentTerm-->
-                <PaymentTerm :data="quotation.payment_term" />
-
-                <!--Signature-->
-                <Signature :data="quotation.signature" />
             </div>
-        </div>
+
+        </form>
     </div>
 </template>
 
 <script setup>
-import BodyTitle from "@/components/Test/Table/Body_Title.vue";
-import BodySubTitle from "@/components/Test/Table/Body_subTitle.vue";
-import ReportDetail from "@/components/Test/Table/ReportDetail.vue";
-import Header from "@/components/Test/Table/Header.vue";
-import Subhead from "@/components/Test/Table/Subhead.vue";
-import BodyMenu from "@/components/Test/Table/BodyMenu.vue";
-import Footer from "@/components/Test/Table/Footer.vue";
-import PaymentTerm from "@/components/Test/Table/PaymentTerm.vue"
-import Signature from "@/components/Test/Table/Signature.vue"
-import { ref, onMounted } from 'vue';
-
-onMounted(()=>{
-    document.body.style.backgroundColor = 'white';
-})
+import { ref } from 'vue'
+import Button from 'primevue/button'
+import FloatLabel from 'primevue/floatlabel'
+import InputMask from 'primevue/inputmask'
+import InputText from 'primevue/inputtext'
 
 const quotation = ref({
     subhead: {
@@ -228,10 +232,37 @@ const quotation = ref({
             createdAt: new Date()
         }
     ],
-    
 })
+
+const customer = ref({})
+function selectedCustomer () {
+    quotation.value.subhead.customer_name = customer.value?.name
+    quotation.value.subhead.customer_tel = customer.value?.tel
+    quotation.value.subhead.customer_address = customer.value?.address
+    quotation.value.subhead.customer_fax = customer.value?.fax
+    quotation.value.subhead.customer_company = customer.value?.company
+}
+
+const customers = ref([
+    {
+        name: "บริษัท ABC จำกัด",
+        company: "บริษัท ABC จำกัด",
+        tax_id: "1234567890123",
+        name_tax: "บริษัท ABC จำกัด (1234567890123)",
+        address: "12/2 กรุงเทพ",
+        tel: "087-555-5555",
+        fax: "-",
+        email: "abc@gmail.com"
+    },
+    {
+        name: "นิติบุคคล เคียงมอ",
+        company: "นิติบุคคล เคียงมอ",
+        tax_id: "0000055555000",
+        name_tax: "นิติบุคคล เคียงมอ (0000055555000)",
+        address: "345 เชียงใหม่ สุเทพ 50300",
+        tel: "089-999-9999",
+        fax: "-",
+        email: "km@gmail.com"
+    }
+])
 </script>
-
-<style scoped>
-
-</style>
