@@ -1,12 +1,10 @@
 <template>
-    <div class="flex">
-        <Quotatioin />
+    <div>
         <QuotationForm />
     </div>
 </template>
 
 <script setup>
-import Quotatioin from "@/components/Test/Quotation.vue"
 import QuotationForm from '@/components/Test/QuotationForm.vue'
 </script>
 

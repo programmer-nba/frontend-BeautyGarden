@@ -1,61 +1,73 @@
 <template>
-    <div>
-        <form>
-            <!--subhead-->
-            <div ref="subhead">
-                <div class="flex flex-col gap-y-8">
-                    <p class="text-center font-bold">ลูกค้า</p>
-                    <div class="card flex justify-center">
-                        <Dropdown @change="selectedCustomer" v-model="customer" :options="customers" filter optionLabel="name_tax" showClear placeholder="เลือกลูกค้า" class="w-full md:w-14rem">
-                            <template #value="slotProps">
-                                <div v-if="slotProps.value" class="flex items-center">
-                                    <div>{{ slotProps.value.name }}</div>
-                                </div>
-                                <span v-else>
-                                    {{ slotProps.placeholder }}
-                                </span>
-                            </template>
-                            <template #option="slotProps">
-                                <div class="flex items-center">
-                                    <div class="flex flex-col">
-                                        <p class="text-sm font-bold">{{ slotProps.option.name }}</p>
-                                        <small>{{ slotProps.option.tax_id }}</small>
-                                    </div>
-                                </div>
-                            </template>
-                        </Dropdown>
-                    </div>
-                    <div class="card flex justify-center">
-                        <FloatLabel>
-                            <InputText id="customer_name" v-model="quotation.subhead.customer_name" />
-                            <label for="customer_name">เรียน</label>
-                        </FloatLabel>
-                    </div>
-                    <div class="card flex justify-center">
-                        <FloatLabel>
-                            <InputText id="customer_company" v-model="quotation.subhead.customer_company" />
-                            <label for="customer_company">ชื่อ</label>
-                        </FloatLabel>
-                    </div>
-                    <div class="card flex justify-center">
-                        <FloatLabel>
-                            <InputText id="customer_address" v-model="quotation.subhead.customer_address" />
-                            <label for="customer_address">ที่อยู่ลูกค้า</label>
-                        </FloatLabel>
+    <div class="grid grid-cols-4 w-full border gap-2">
+        <div class="col-start-2 bg-emerald-700 rounded-lg">
+            <form>
+                <!--subhead-->
+                <div ref="subhead" class="my-5 mx-5 bg-white/80 rounded-lg">
+                    <div class="flex flex-col gap-y-8 py-8 w-full items-center">
+                        <div class="flex items-center gap-5">
+                            <p class="text-center font-bold text-lg text-emerald-800">ลูกค้า</p>
+                            <div class="card flex justify-center max-w-lg">
+                                <Dropdown @change="selectedCustomer" v-model="customer" :options="customers" filter optionLabel="name_tax" showClear placeholder="เลือกลูกค้า" class="w-full md:w-14rem">
+                                    <template #value="slotProps">
+                                        <div v-if="slotProps.value" class="flex items-center">
+                                            <div>{{ slotProps.value.name }}</div>
+                                        </div>
+                                        <span v-else>
+                                            {{ slotProps.placeholder }}
+                                        </span>
+                                    </template>
+                                    <template #option="slotProps">
+                                        <div class="flex items-center">
+                                            <div class="flex flex-col">
+                                                <p class="text-sm font-bold">{{ slotProps.option.name }}</p>
+                                                <small>{{ slotProps.option.tax_id }}</small>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </Dropdown>
+                            </div>
+                            <Button v-tooltip.top="'เพิ่มลูกค้าใหม่'" icon="pi pi-plus-circle text-3xl text-white hover:text-orange-500 duration-300" class="bg-orange-500 hover:bg-white py-1 px-2 hover:shadow-md hover:ring-1 hover:ring-orange-300 hover:scale-125 ease-in-out duration-300 transition-transform" />
+                        </div>
+                        
+                        <div class="card grid grid-cols-4">
+                            <label for="customer_name" class="text-lg text-center text-emerald-800">เรียน : </label>
+                            <InputText class="col-span-3 px-3" id="customer_name" v-model="quotation.subhead.customer_name" />
+                        </div>
+                        <div class="card grid grid-cols-4">
+                            <label for="customer_company" class="text-lg text-center text-emerald-800">บริษัท : </label>
+                            <InputText class="col-span-3 px-3" id="customer_company" v-model="quotation.subhead.customer_company" />
+                        </div>
+                        <div class="card grid grid-cols-4">
+                            <label for="customer_address" class="text-lg text-center text-emerald-800">ที่อยู่ : </label>
+                            <InputText class="col-span-3 px-3" id="customer_address" v-model="quotation.subhead.customer_address" />
+                        </div>
+                        <div class="card grid grid-cols-4">
+                            <label for="customer_tel" class="text-lg text-center text-emerald-800">โทรศัพท์ : </label>
+                            <InputMask mask="099-999-9999" class="col-span-3 px-3" id="customer_tel" v-model="quotation.subhead.customer_tel" />
+                        </div>
+                        <div class="card grid grid-cols-4">
+                            <label for="customer_fax" class="text-lg text-center text-emerald-800">โทรสาร : </label>
+                            <InputText class="col-span-3 px-3" id="customer_fax" v-model="quotation.subhead.customer_fax" />
+                        </div>
                     </div>
                 </div>
-            </div>
-
-        </form>
+    
+            </form>
+        </div>
+        
+        <Quotatioin class="col-span-2" :quotation="quotation" />
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import Quotatioin from "@/components/Test/Quotation.vue"
 import Button from 'primevue/button'
 import FloatLabel from 'primevue/floatlabel'
 import InputMask from 'primevue/inputmask'
 import InputText from 'primevue/inputtext'
+import Tooltip from 'primevue/tooltip'
 
 const quotation = ref({
     subhead: {
