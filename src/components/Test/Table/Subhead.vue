@@ -79,7 +79,7 @@
                             <p class="px-1">:</p>
                         </div>
                     </div>
-                    <div class="text-xs col-span-2">{{ data?.document_no }}</div>
+                    <div class="text-xs col-span-4">{{ data?.document_no }}</div>
                 </div>
                 <div class="grid grid-cols-6">
                     <div class="text-xs col-span-2">
@@ -88,7 +88,7 @@
                             <p class="px-1">:</p>
                         </div>
                     </div>
-                    <div class="text-xs col-span-2">{{ formatDateToCustom(data?.document_date) }}</div>
+                    <div class="text-xs col-span-4">{{ formatDateToCustom(data?.document_date) }}</div>
                 </div>
                 <div class="grid grid-cols-6">
                     <div class="text-xs col-span-2">
@@ -97,7 +97,7 @@
                             <p class="px-1">:</p>
                         </div>
                     </div>
-                    <div class="text-xs col-span-2">{{ data?.offerer }}</div>
+                    <div class="text-xs col-span-4">{{ data?.offerer }}</div>
                 </div>
                 <div class="grid grid-cols-6">
                     <div class="text-xs col-span-6">

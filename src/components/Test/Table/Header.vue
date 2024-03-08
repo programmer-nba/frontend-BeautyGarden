@@ -3,7 +3,7 @@
         <div class="col-span-12 grid grid-cols-12">
             <div class="col-span-2">
                 <div class="flex justify-center items-center">
-                    <Image :src="Logo" alt="logo1" preview imageClass="rounded-full scale-125 relative top-2"
+                    <Image :src="Logo" alt="logo1" preview imageClass="rounded-full scale-125 relative top-3"
                         imageStyle="width: 80px;" />
                 </div>
             </div>

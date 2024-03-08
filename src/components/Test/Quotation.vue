@@ -23,6 +23,10 @@
                         <ReportDetail v-if="body.isReport" :data="body.report" :no="`${index+1}.${body.subtitles.length}`" />
                     </div>
                 </div>
+
+                <!--Footer-->
+                <Footer />
+
             </div>
         </div>
     </div>
@@ -35,29 +39,54 @@ import ReportDetail from "@/components/Test/Table/ReportDetail.vue";
 import Header from "@/components/Test/Table/Header.vue";
 import Subhead from "@/components/Test/Table/Subhead.vue";
 import BodyMenu from "@/components/Test/Table/BodyMenu.vue";
+import Footer from "@/components/Test/Table/Footer.vue";
 import { ref } from 'vue';
 
 const quotation = ref({
-    subhead: {},
+    subhead: {
+        customer_name: "กรรมการผู้จัดการ",
+        customer_company: "บริษัท แอร์พอร์ตเนิสซิ่งโฮม จำกัด (โรงพยาบาล บี.แคร์ เมดิคอลเซ็นเตอร์)",
+        customer_address: "29 ม.6 ถ.พหลโยธิน แขวงสายไหม เขตสายไหม กรุงเทพ 10220",
+        customer_tel: "",
+        customer_fax: "",
+        sample_lacation: "โรงพยาบาล บี.แคร์ เมดิคอลเซ็นเตอร์",
+        document_no: "QT-2024020001",
+        document_date: new Date(),
+        offerer: "ศุภาพรรณ 080-897-8376",
+        offerer_tax_id: "0105548132830"
+    },
     bodies: [
         {
-            title: "title",
+            title: "ตรวจคุณภาพน้ำทิ้ง ระหว่างเดือนมกราคม - ธันวาคม 2567",
             subtitles: [
                 {
-                    subtitle: "subTitle-1",
+                    subtitle: "ตรวจคุณภาพน้ำทิ้ง จำนวน 7 จุด",
                     details: [
                         {
-                            points: ["-"],
+                            points: [
+                                "ระบบบำบัดน้ำเสียของอาคารรักษาพยาบาล ตรวจวัด 3 เดือน/ครั้ง (ก.พ. พ.ค. ส.ค. พ.ย. 2567)",
+                                "บริเวณบ่อพักน้ำเสียหลังผ่านระบบบำบัดน้ำเสีย (WW1) จำนวน 2 จุด"
+                            ],
                             params: [
                                 {
-                                    name: "-",
-                                    method: "-",
-                                    amount: 0,
+                                    name: "pH",
+                                    method: "Electrometric Method (4500-H+ B)",
+                                    amount: 2,
                                     amount_unit: "จุด",
-                                    freq: 0,
+                                    freq: 4,
                                     freq_unit: "ครั้ง",
-                                    unit_price: 0,
-                                    total_price: 0,
+                                    unit_price: 100,
+                                    total_price: 800,
+                                },
+                                {
+                                    name: "BOD",
+                                    method: "Membrane Electrode Method (4500-O G)",
+                                    amount: 2,
+                                    amount_unit: "จุด",
+                                    freq: 4,
+                                    freq_unit: "ครั้ง",
+                                    unit_price: 400,
+                                    total_price: 3200,
                                 }
                             ]
                         }
@@ -70,8 +99,65 @@ const quotation = ref({
                 freq_unit: 0,
                 unit_price: 0,
                 total_price: 0,
-                detail: [""],
-                sent: [""]
+                detail: [ "1. ส่งผลวิเคราะห์ Analysis report / รายเดือน", "2.จัดทำเล่มรายงานผลการปฎิบัติตามมาตรการ EIA" ],
+                sent: [
+                    " ระหว่างมกราคม - มิถุนายน 2567",
+                    "ระหว่างกรกฎาคม - ธันวาคม 2567",
+                    "- ต้นฉบับสี 1 ชุด  และ สำเนาสี จำนวน 2 ชุด แผ่น นำส่งเล่มรายงานต่อ อธิบดีกรมสนับสนุนบริการสุขภาพ",
+                    "- สำเนาสี 1 ฉบับ ,สำเนาขาวดำ 1 ฉบับ / CD 2 แผ่น นำส่ง บริษัท แอร์พอร์ตเนิสซิ่งโฮม จำกัด(รพ.บี.แคร์ เมดิคอลเซ็นเตอร์) และยื่นรายงานในระบบอิเล็กทรอนิกส์ของสำนักงานนโยบายและแผนทรัพยากรธรรมชาติและสิ่งแวดล้อม"
+                ]
+            }
+        },
+        {
+            title: "ตรวจคุณภาพน้ำทิ้ง ระหว่างเดือนมกราคม - ธันวาคม 2567",
+            subtitles: [
+                {
+                    subtitle: "ตรวจคุณภาพน้ำทิ้ง จำนวน 7 จุด",
+                    details: [
+                        {
+                            points: [
+                                "ระบบบำบัดน้ำเสียของอาคารรักษาพยาบาล ตรวจวัด 3 เดือน/ครั้ง (ก.พ. พ.ค. ส.ค. พ.ย. 2567)",
+                                "บริเวณบ่อพักน้ำเสียหลังผ่านระบบบำบัดน้ำเสีย (WW1) จำนวน 2 จุด"
+                            ],
+                            params: [
+                                {
+                                    name: "pH",
+                                    method: "Electrometric Method (4500-H+ B)",
+                                    amount: 2,
+                                    amount_unit: "จุด",
+                                    freq: 4,
+                                    freq_unit: "ครั้ง",
+                                    unit_price: 100,
+                                    total_price: 800,
+                                },
+                                {
+                                    name: "BOD",
+                                    method: "Membrane Electrode Method (4500-O G)",
+                                    amount: 2,
+                                    amount_unit: "จุด",
+                                    freq: 4,
+                                    freq_unit: "ครั้ง",
+                                    unit_price: 400,
+                                    total_price: 3200,
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            isReport: true,
+            report: {
+                freq: 2,
+                freq_unit: "ครั้ง",
+                unit_price: 10000,
+                total_price: 20000,
+                detail: [ "1. ส่งผลวิเคราะห์ Analysis report / รายเดือน", "2.จัดทำเล่มรายงานผลการปฎิบัติตามมาตรการ EIA" ],
+                sent: [
+                    " ระหว่างมกราคม - มิถุนายน 2567",
+                    "ระหว่างกรกฎาคม - ธันวาคม 2567",
+                    "- ต้นฉบับสี 1 ชุด  และ สำเนาสี จำนวน 2 ชุด แผ่น นำส่งเล่มรายงานต่อ อธิบดีกรมสนับสนุนบริการสุขภาพ",
+                    "- สำเนาสี 1 ฉบับ ,สำเนาขาวดำ 1 ฉบับ / CD 2 แผ่น นำส่ง บริษัท แอร์พอร์ตเนิสซิ่งโฮม จำกัด(รพ.บี.แคร์ เมดิคอลเซ็นเตอร์) และยื่นรายงานในระบบอิเล็กทรอนิกส์ของสำนักงานนโยบายและแผนทรัพยากรธรรมชาติและสิ่งแวดล้อม"
+                ]
             }
         }
     ],
