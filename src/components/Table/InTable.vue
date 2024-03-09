@@ -134,7 +134,7 @@
           </template>
         </Column>
         <Column
-          field=""
+          field="end_date"
           header="เวลาคงเหลือ"
           class="border-b"
           sortable
