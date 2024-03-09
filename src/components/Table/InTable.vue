@@ -174,8 +174,8 @@
           <template #body="slotProps">
             {{ 
               slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data)) 
             }}
           </template>
         </Column>
@@ -189,14 +189,14 @@
           <template #body="slotProps">
             <span
               :class="
-              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) -(slotProps.data.paid || 0) < 0
+              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) < 0
               ? 'text-green-700 font-bold bg-green-100 rounded px-2 py-0.5'
               : ''
               "
             >{{ 
-              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) -(slotProps.data.paid || 0) < 0
+              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) - (slotProps.data.paid || 0) < 0
               ? 'ครบแล้ว'
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) -(slotProps.data.paid || 0)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) - (slotProps.data.paid || 0)) 
             }}</span>
           </template>
         </Column>
