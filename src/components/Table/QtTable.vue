@@ -158,7 +158,7 @@
           </template>
         </Column>
         <Column
-          field="total_products"
+          field="sumVat"
           header="VAT 7%"
           sortable
           style="min-width: 8rem"
@@ -563,11 +563,11 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price) }} x
+                          {{ formatCurrency(item.product_price+item.vat_price) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
-                            item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
-                            : item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
+                            : item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
                             : null 
                           }}
                         </p>
@@ -575,8 +575,9 @@
                     </div>
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
-                        >{{
-                          formatCurrency((item.product_amount * item.product_price)+item.vat_price)
+                        >
+                        {{
+                          formatCurrency((item.product_price+item.vat_price) * item.product_amount)
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -707,8 +708,8 @@
             <p class="font-semibold px-2">
               {{ 
                 sumVat
-                ? formatCurrency((product.product_amount * product.product_price)+product.vat_price) 
-                : formatCurrency((product.product_amount * product.product_price)-product.vat_price) 
+                ? formatCurrency((product.product_amount * product.product_price)+(product.vat_price*product.product_amount)) 
+                : formatCurrency((product.product_amount * product.product_price)-(product.vat_price*product.product_amount)) 
               }} บาท
             </p>
           </div>
@@ -750,7 +751,7 @@
           }}</span></span
         >
         <span v-if="!sumVat"
-          >ราคาสินค้า
+          >ราคาสินค้า {{ products }}
           <span class="border-b px-2">{{
             formatCurrency(notSumVatsumProductsPrice) || 0
           }}</span></span
@@ -1142,7 +1143,7 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price) }} x
+                          {{ formatCurrency(item.product_price+item.vat_price) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
                             item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
@@ -1155,7 +1156,7 @@
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency((item.product_amount * item.product_price)+item.vat_price)
+                          formatCurrency((item.product_price+item.vat_price) * item.product_amount)
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -1292,8 +1293,8 @@
             <p class="font-semibold px-2">
               {{ 
                 sumVat
-                ? formatCurrency((product.product_amount * product.product_price)+product.vat_price) 
-                : formatCurrency((product.product_amount * product.product_price)-product.vat_price) 
+                ? formatCurrency((product.product_amount * product.product_price)+(product.vat_price*product.product_amount)) 
+                : formatCurrency((product.product_amount * product.product_price)-(product.vat_price*product.product_amount)) 
               }} บาท
             </p>
           </div>
@@ -1335,7 +1336,7 @@
           }}</span></span
         >
         <span v-if="!sumVat"
-          >ราคาสินค้า
+          >ราคาสินค้า {{ products }}
           <span class="border-b px-2">{{
             formatCurrency(notSumVatsumProductsPrice) || 0
           }}</span></span
@@ -1563,11 +1564,9 @@ const seeQuotation = (data) => {
 
 const changeProductVat = () => {
   if (product.value.isVat && sumVat.value) {
-
-    product.value.vat_price = product.value.product_price*product.value.product_amount*0.07
-
+    product.value.vat_price = product.value.product_price*0.07
   } else if (product.value.isVat && !sumVat.value) {
-    product.value.vat_price = product.value.product_price*product.value.product_amount*7/107
+    product.value.vat_price = product.value.product_price*7/107
   }
   
   else {
@@ -1648,7 +1647,7 @@ const addProduct = () => {
   if(!product.value) return
   product.value.product_price = sumVat.value
     ? product.value.product_price
-    : product.value.product_price - product.value.vat_price;
+    : product.value.product_price - product.value.vat_price
   if (edittingProduct.value) {
     products.value[edittingProduct.value] = product.value
   } else {
@@ -1679,7 +1678,7 @@ const sumProductsPrice = computed(() => {
       const result = (pd.product_price * pd.product_amount)
       return result;
     });
-    const sumPrices = prices.reduce((a, b) => a + b);
+    const sumPrices = prices.reduce((a, b) => a + b, 0);
     return sumPrices;
   } else {
     return 0;
@@ -1710,9 +1709,9 @@ const netPrices = computed(() => {
 
 const vat = computed(() => {
   const all_vat = products.value.map(item=>{
-    return item.vat_price
+    return item.vat_price*item.product_amount
   })
-  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b ) : 0
+  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b, 0 ) : 0
   return result
 });
 
@@ -1847,7 +1846,7 @@ const totalPrice = (product) => {
 
 const totalVat = (product) => {
   const vat = product.product_detail.map((item)=>{
-    return item.vat_price
+    return item.vat_price*item.product_amount
   })
   const result = vat.length > 0 ? vat.reduce((a,b) => a + b) : 0
   return result

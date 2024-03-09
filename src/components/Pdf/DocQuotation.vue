@@ -178,7 +178,7 @@
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_total) }}
+                        {{ formatCurrency((product.product_price + product.vat_price)*product.product_amount) }}
                       </div>
                     </td>
                   </tr>
@@ -400,9 +400,9 @@ const print = () => {
 
 const vat = computed(()=>{
   const all_vat = data.data.product_detail.map((item)=>{
-    return item.vat_price
+    return item.vat_price * item.product_amount
   })
-  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b) : 0
+  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b, 0) : 0
   return result
 })
 
