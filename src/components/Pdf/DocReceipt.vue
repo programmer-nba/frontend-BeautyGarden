@@ -162,7 +162,7 @@
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_total) }}
+                        {{ formatCurrency((product.product_price+product.vat_price)*product.product_amount) }}
                       </div>
                     </td>
                   </tr>
@@ -245,7 +245,7 @@
                       <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด {{ formatCurrency(data.data.discount*100/totalPrice) || '-' }} (%)</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount*100/totalPrice) || 0 }}</span>บาท</td>
                     </tr>
-                   
+                  
                     <tr class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
@@ -373,7 +373,7 @@ const print = () => {
 
 const vat = computed(()=>{
   const all_vat = data.data.product_detail.map((item)=>{
-    return item.vat_price
+    return (item.vat_price || 0) * item.product_amount
   })
   const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b) : 0
   return result

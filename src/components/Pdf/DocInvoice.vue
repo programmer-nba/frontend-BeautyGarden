@@ -36,7 +36,7 @@
                     ? '(' + data.data.customer_detail?.customer_lastname + ')'
                     : null 
                   }}</p>
-                  <p>{{ data.data.customer_detail?.customer_address }}</p>
+                  <p>{{ data.data.customer_detail?.customer_address !== 'undefined' ? data.data.customer_detail?.customer_address : '' }}</p>
                   <p>{{ data.data.customer_detail?.customer_email !== 'undefined' ? data.data.customer_detail?.customer_email : null }}</p>
                   <span v-if="data.data.customer_branch?.isVat">
                     เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}
@@ -180,14 +180,14 @@
                       <div class="flex justify-center h-full py-2">
                         {{ 
                           product.vat_price > 0
-                          ? formatCurrency(product.vat_price) 
+                          ? formatCurrency(product.vat_price*product.product_amount) 
                           : 0
                         }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_total) }}
+                        {{ formatCurrency((product.product_price+(product.vat_price||0))*product.product_amount) }}
                       </div>
                     </td>
                   </tr>
@@ -366,7 +366,7 @@ const print = () => {
 
 const vat = computed(()=>{
   const all_vat = data.data.product_detail.map((item)=>{
-    return item.vat_price
+    return (item.vat_price || 0) * item.product_amount
   })
   const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b) : 0
   return result

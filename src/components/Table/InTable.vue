@@ -616,7 +616,7 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price) }} x
+                          {{ formatCurrency(item.product_price+item.vat_price) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
                             item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
@@ -629,7 +629,7 @@
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency((item.product_amount * item.product_price)+item.vat_price)
+                          formatCurrency((item.product_amount * item.product_price) + (item.vat_price*item.product_amount))
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -750,8 +750,8 @@
             <p class="font-semibold px-2">
               {{ 
                 sumVat
-                ? formatCurrency((product.product_amount * product.product_price)+product.vat_price) 
-                : formatCurrency((product.product_amount * product.product_price)-product.vat_price) 
+                ? formatCurrency((product.product_amount * product.product_price) + (product.vat_price*product.product_amount)) 
+                : formatCurrency((product.product_amount * product.product_price) - (product.vat_price*product.product_amount)) 
               }} บาท
             </p>
           </div>
@@ -1210,7 +1210,7 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price) }} x
+                          {{ formatCurrency(item.product_price+item.vat_price) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
                             item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
@@ -1223,7 +1223,7 @@
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency((item.product_amount * item.product_price)+item.vat_price)
+                          formatCurrency((item.product_amount * item.product_price)+(item.vat_price*item.product_amount))
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -1344,8 +1344,8 @@
             <p class="font-semibold px-2">
               {{ 
                 sumVat
-                ? formatCurrency((product.product_amount * product.product_price)+product.vat_price) 
-                : formatCurrency((product.product_amount * product.product_price)-product.vat_price) 
+                ? formatCurrency((product.product_amount * product.product_price) + (product.vat_price*product.product_amount)) 
+                : formatCurrency((product.product_amount * product.product_price) - (product.vat_price*product.product_amount)) 
               }} บาท
             </p>
           </div>
@@ -1691,13 +1691,9 @@ const seeInvoice = (data) => {
 
 const changeProductVat = () => {
   if (product.value.isVat && sumVat.value) {
-
-    product.value.vat_price = product.value.product_price*product.value.product_amount*0.07
-
+    product.value.vat_price = product.value.product_price*0.07
   } else if (product.value.isVat && !sumVat.value) {
-
-    product.value.vat_price = product.value.product_price*product.value.product_amount*7/107
-
+    product.value.vat_price = product.value.product_price*7/107
   }
   
   else {
@@ -1737,7 +1733,7 @@ const addProduct = () => {
   if(!product.value) return
   product.value.product_price = sumVat.value
     ? product.value.product_price
-    : product.value.product_price - product.value.vat_price;
+    : product.value.product_price - product.value.vat_price
   if (edittingProduct.value) {
     products.value[edittingProduct.value] = product.value
   } else {
@@ -1765,22 +1761,22 @@ const removeProduct = (index) => {
 const sumProductsPrice = computed(() => {
   if (products.value && products.value.length > 0) {
     const prices = products.value.map((pd) => {
-      const result = (pd.product_price * pd.product_amount) 
+      const result = (pd.product_price * pd.product_amount)
       return result;
     });
-    const sumPrices = prices.reduce((a, b) => a + b);
+    const sumPrices = prices.reduce((a, b) => a + b, 0);
     return sumPrices;
   } else {
     return 0;
   }
-})
+});
 
 const notSumVatsumProductsPrice = computed(()=>{
   if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
     const result = sumProductsPrice.value
     return result;
   } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = sumProductsPrice.value - vat.value
+    const result = sumProductsPrice.value
     return result;
   } else {
     return 0;
@@ -1799,23 +1795,23 @@ const netPrices = computed(() => {
 
 const vat = computed(() => {
   const all_vat = products.value.map(item=>{
-    return item.vat_price
+    return item.vat_price*item.product_amount
   })
-  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b ) : 0
+  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b, 0 ) : 0
   return result
-})
+});
 
 const netVat = computed(() => {
   if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
     const result = vat.value + netPrices.value;
     return result;
   } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = netPrices.value + vat.value;
+    const result = vat.value + netPrices.value;
     return result;
   } else {
     return netPrices.value;
   }
-})
+});
 
 const cancleProduct = () => {
   if (product.value) {
@@ -1931,15 +1927,15 @@ const editInvoice = (prod) => {
 
 const totalPrice = (product) => {
   const price = product.product_detail.map((item)=>{
-    return item.product_total - item.vat_price
+    return (item.product_price*item.product_amount) - (item.vat_price || 0 *item.product_amount)
   })
-  const all_price = price.length > 0 ? price.reduce((a,b) => a + b) : 0
+  const all_price = price.length > 0 ? price.reduce((a,b) => a + b, 0) : 0
   return all_price
 }
 
 const totalVat = (product) => {
   const vat = product.product_detail.map((item)=>{
-    return item.vat_price
+    return item.vat_price || 0 * item.product_amount
   })
   const result = vat.length > 0 ? vat.reduce((a,b) => a + b) : 0
   return result
