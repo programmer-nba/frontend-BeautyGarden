@@ -1927,7 +1927,7 @@ const editInvoice = (prod) => {
 
 const totalPrice = (product) => {
   const price = product.product_detail.map((item)=>{
-    return (item.product_price*item.product_amount) - (item.vat_price || 0 *item.product_amount)
+    return (item.product_price*item.product_amount) - ((item.vat_price || 0) *item.product_amount)
   })
   const all_price = price.length > 0 ? price.reduce((a,b) => a + b, 0) : 0
   return all_price
@@ -1935,9 +1935,9 @@ const totalPrice = (product) => {
 
 const totalVat = (product) => {
   const vat = product.product_detail.map((item)=>{
-    return item.vat_price || 0 * item.product_amount
+    return (item.vat_price || 0) * item.product_amount
   })
-  const result = vat.length > 0 ? vat.reduce((a,b) => a + b) : 0
+  const result = vat.length > 0 ? vat.reduce((a,b) => a + b, 0) : 0
   return result
 }
 
