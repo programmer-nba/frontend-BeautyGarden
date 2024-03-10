@@ -1633,7 +1633,7 @@ const formatDateRef = (isoDateString) => {
 
 const withholdingPrice = computed(() => {
   if (isWithholding.value && sumVat.value) {
-    const result = (netVat.value * withholdingPercent.value) / 100;
+    const result = (netPrices.value * withholdingPercent.value) / 100;
     return result;
   } else if (isWithholding.value && !sumVat.value) {
     const result = (notSumVatsumProductsPrice.value * withholdingPercent.value) / 100;
