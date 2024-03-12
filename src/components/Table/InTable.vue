@@ -222,7 +222,7 @@
         >
           <template #body="slotProps">
             งวด {{ slotProps.data.cur_period }} / {{ slotProps.data.end_period }}
-            <i @click="openNextInvoice(slotProps.data)" v-tooltip.top="`สร้างใบแจ้งหนี้งวด ${slotProps.data.cur_period+1}`" v-show="slotProps.data.cur_period > 0 && slotProps.data.cur_period !== slotProps.data.end_period" class="pi hover:text-sky-800 cursor-pointer pi-plus-circle pl-2 text-sky-500"></i>
+            <i @click="openNextInvoice(slotProps.data)" v-tooltip.top="`สร้างใบแจ้งหนี้งวด ${slotProps.data.cur_period+1}`" v-show="slotProps.data.cur_period > 0 && slotProps.data.invoice_period.length+1 < slotProps.data.end_period && slotProps.data.cur_period !== slotProps.data.end_period" class="pi hover:text-sky-800 cursor-pointer pi-plus-circle pl-2 text-sky-500"></i>
           </template>
         </Column>
         <Column :exportable="false" style="min-width: 13rem" class="border-b">
