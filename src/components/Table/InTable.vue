@@ -13,8 +13,20 @@
         @close="closeHandle"
       />
     </div>
+    <div
+      class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
+      v-if="openInvoiceII"
+    >
+      <DocInvoiceII
+        :color="color"
+        :data="selectedInvoice"
+        :header="inputHeader"
+        :isSign="sign"
+        @close="closeHandle"
+      />
+    </div>
 
-    <div v-if="!openInvoice" class="card">
+    <div v-if="!openInvoice && !openInvoiceII" class="card">
       <Toolbar class="mb-4">
         <template #start>
           <Button
@@ -222,13 +234,35 @@
                 outlined 
                 rounded
                 @click="openRefReceipt(slotProps.data)" />
-              <Button 
-                class="text-blue-600 hover:bg-blue-100" 
-                v-tooltip.top="'ปริ้นท์'"
-                icon="pi pi-file" 
-                outlined 
-                rounded
-                @click="seeInvoice(slotProps.data)" />
+              <div class="relative">
+                <Button
+                  v-if="slotProps.data.status.length > 0 && slotProps.data.end_period > 1"
+                  class="text-blue-600 hover:bg-blue-100 focus:bg-blue-100" 
+                  v-tooltip.top="'ปริ้นท์'"
+                  icon="pi pi-file" 
+                  outlined 
+                  rounded
+                  @click="openMenus=slotProps.data._id"
+                  @blur="blurMenu(slotProps.data._id)"
+                />
+                <Button
+                  v-else
+                  class="text-blue-600 hover:bg-blue-100" 
+                  v-tooltip.top="'ปริ้นท์'"
+                  icon="pi pi-file" 
+                  outlined 
+                  rounded
+                  @click="seeInvoice(slotProps.data)" 
+                  
+                />
+                <div v-show="openMenus===slotProps.data._id" class="absolute -top-12 bg-black text-white z-10 shadow-lg flex flex-col divide-y-2 w-[100px] overflow-x-hidden">
+                  <p v-for="i in slotProps.data.end_period" :key="i" class="py-1 px-2 cursor-pointer hover:bg-white hover:text-black duration-300 ease-in-out"
+                  @click="seeInvoiceRef(slotProps.data, i)"
+                  @mouseover="hoverMenu=true"
+                  @mouseout="hoverMenu=false"
+                  >งวดที่ {{ i }}</p>
+                </div>
+              </div>
               <Button
                 class="text-yellow-600 hover:bg-orange-100"
                 v-tooltip.top="'แก้ไข'"
@@ -1518,6 +1552,7 @@ import { Customers } from "@/service/Customer";
 import { useInvoiceStore } from "@/stores/invoice";
 import { useCompanyStore } from "@/stores/company";
 import DocInvoice from "@/components/Pdf/DocInvoice.vue";
+import DocInvoiceII from "@/components/Pdf/DocInvoiceII.vue";
 import RefReceipt from '@/components/Dialog/RefReceipt.vue';
 import { formatThaiDate } from '@/functions/DateTime'
 import { copyToClipboard } from "@/functions/Coppy"
@@ -1533,6 +1568,7 @@ onMounted(async () => {
 const quotations = ref([])
 const lastRefreshed = ref();
 const openInvoice = ref(false);
+const openInvoiceII = ref(false);
 const loading = ref(false);
 const openProductForm = ref(false);
 const start_date = ref();
@@ -1623,6 +1659,7 @@ const openRefReceipt = (invoice) => {
 
 const closeHandle = () => {
   openInvoice.value = false
+  openInvoiceII.value = false
   const body = document.body;
   body.style.backgroundColor = 'aliceblue';   
 }
@@ -2291,6 +2328,45 @@ const getStatusLabel = (status) => {
     default:
       return null;
   }
+}
+
+const hoverMenu = ref(false)
+const openMenus = ref(null)
+const blurMenu = (val) => {
+  if (!hoverMenu.value) {
+    openMenus.value = null
+  }
+}
+
+const seeInvoiceRef = (val, period) => {
+  console.log(val.status)
+  console.log(period)
+  const index = period-2
+  let prev_paid = 0
+
+  if ( index >= 0 ) {
+    let sumPrevPaid = 0
+    for (let i=0; i < index+1 ; i++) {
+      sumPrevPaid += val.status[i].paid
+    }
+    prev_paid = sumPrevPaid
+  } else {
+    prev_paid = 0
+  }
+  console.log(prev_paid)
+  seeInvoiceII(val, period, prev_paid)
+  openMenus.value = null
+  hoverMenu.value = false
+}
+
+const seeInvoiceII = (data, period, prev_paid) => {
+  openInvoiceII.value = true;
+  selectedInvoice.value = data;
+  selectedInvoice.value.prev_paid = prev_paid
+  selectedInvoice.value.thisperiod = period
+  console.log("data", selectedInvoice.value);
+  const body = document.body;
+  body.style.backgroundColor = 'white';
 }
 
 </script>

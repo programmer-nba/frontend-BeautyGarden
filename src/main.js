@@ -44,6 +44,7 @@ import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
+import TieredMenu from 'primevue/tieredmenu'
 
 import App from './App.vue'
 import router from './router'
@@ -67,6 +68,7 @@ app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('tooltip', Tooltip);
 
+app.component('TieredMenu', TieredMenu)
 app.component('Button', Button)
 app.component('InputText', InputText);
 app.component('Menubar', Menubar);
