@@ -222,6 +222,7 @@
         >
           <template #body="slotProps">
             งวด {{ slotProps.data.cur_period }} / {{ slotProps.data.end_period }}
+            <i @click="openNextInvoice(slotProps.data)" v-tooltip.top="`สร้างใบแจ้งหนี้งวด ${slotProps.data.cur_period+1}`" v-show="slotProps.data.cur_period > 0 && slotProps.data.cur_period !== slotProps.data.end_period" class="pi hover:text-sky-800 cursor-pointer pi-plus-circle pl-2 text-sky-500"></i>
           </template>
         </Column>
         <Column :exportable="false" style="min-width: 13rem" class="border-b">
@@ -1541,6 +1542,20 @@
     />
 
   </div>
+
+  <Dialog v-model:visible="openNextInvoiceDialog" modal :header="`${selectedInvoice.invoice}-${selectedInvoice.cur_period+1}/${selectedInvoice.end_period}`" :style="{ width: '25rem' }">
+    <div class="flex flex-col gap-5">
+      <div class="flex flex-col gap-3">
+        <p>วันที่ออกเอกสาร</p>
+        <Calendar v-model="nextInvoice.start_date" class="border" />
+      </div>
+      <div class="flex flex-col gap-3">
+        <p>วันที่สิ้นสุด</p>
+        <Calendar v-model="nextInvoice.end_date" class="border" />
+      </div>
+    </div>
+    <Button class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createNextInvoice" />
+  </Dialog>
 </template>
 
 <script setup>
@@ -1556,6 +1571,7 @@ import DocInvoiceII from "@/components/Pdf/DocInvoiceII.vue";
 import RefReceipt from '@/components/Dialog/RefReceipt.vue';
 import { formatThaiDate } from '@/functions/DateTime'
 import { copyToClipboard } from "@/functions/Coppy"
+import axios from "axios"
 
 onMounted(async () => {
   Documents.getInvoices().then((data) => (invoices.value = data.data.reverse()));
@@ -2367,6 +2383,44 @@ const seeInvoiceII = (data, period, prev_paid) => {
   console.log("data", selectedInvoice.value);
   const body = document.body;
   body.style.backgroundColor = 'white';
+}
+
+const nextInvoice = ref({})
+const openNextInvoiceDialog = ref(false)
+const openNextInvoice = (val) => {
+  openNextInvoiceDialog.value = true
+  selectedInvoice.value = val
+  console.log(selectedInvoice.value)
+}
+const createNextInvoice = async () => {
+  loading.value = true
+  const id = selectedInvoice.value._id
+  const body = {
+    start_date: nextInvoice.value.start_date,
+    end_date: nextInvoice.value.end_date,
+    period: nextInvoice.value.period
+  }
+  const { data } = await axios.put(
+    `${import.meta.env.VITE_API_URL}/invoice/nextInvoice/${id}`,
+    body,
+    {
+      headers: {
+        'auth-token' : import.meta.env.VITE_TOKEN,
+        'Content-type' : 'application/json'
+      }
+    }
+  )
+  if (data.data && data.status) {
+    console.log(data.data)
+    nextInvoice.value = {}
+    selectedInvoice.value = {}
+    openNextInvoiceDialog.value = false
+    loading.value = false
+    Documents.getInvoices().then((data) => (invoices.value = data.data.reverse()))
+  } else {
+    console.log(data.data)
+    loading.value = false
+  }
 }
 
 </script>

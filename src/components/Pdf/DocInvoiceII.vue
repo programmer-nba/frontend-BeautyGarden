@@ -61,11 +61,11 @@
                   <br />
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เลขที่ : </span>
-                    {{ data.data.invoice }}
+                    {{ data.data.invoice }}-{{ data.data.thisperiod }}/{{ data.data.end_period }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่ Date : </span>
-                    {{ formatDate(data.data.start_date) }}
+                    {{ formatDate(data.data.invoice_period[data.data.thisperiod-2].start_date) }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เครดิต</span>
@@ -73,7 +73,7 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันครบกำหนด Date due : </span>
-                    {{ formatDate(data.data.end_date) }}
+                    {{ formatDate(data.data.invoice_period[data.data.thisperiod-2].end_date) }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง :</span>
