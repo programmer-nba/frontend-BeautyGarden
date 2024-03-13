@@ -1141,6 +1141,7 @@
                           </p>
                         </div>
                         <p
+                          v-if="selectedCompany?.isVat"
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
                           {{ formatCurrency(item.product_price+item.vat_price) }} x
@@ -1151,12 +1152,19 @@
                             : null 
                           }}
                         </p>
+                        <p
+                          v-else
+                          class="font-normal text-xs text-clip overflow-hidden w-[100px]"
+                        >
+                          {{ formatCurrency(item.product_price) }} x
+                          {{ item.product_amount }} {{ item.unit }}
+                        </p>
                       </div>
                     </div>
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency((item.product_price+item.vat_price) * item.product_amount)
+                          formatCurrency((item.product_price) * item.product_amount)
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -1256,6 +1264,7 @@
           
         </div>
         <div class="field grid w-full px-5">
+          {{ product }}
           <div class="field grid">
             <label for="price">ราคา/หน่วย</label>
             <InputNumber
@@ -1288,13 +1297,21 @@
             <InputSwitch v-model="product.isVat" @change="changeProductVat" />
             <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
           </div>
-          <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+          <div v-if="selectedCompany?.isVat" class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
             <label for="quantity" class="font-semibold">รวม</label>
             <p class="font-semibold px-2">
               {{ 
                 sumVat
                 ? formatCurrency((product.product_amount * product.product_price)+(product.vat_price*product.product_amount)) 
                 : formatCurrency((product.product_amount * product.product_price)-(product.vat_price*product.product_amount)) 
+              }} บาท
+            </p>
+          </div>
+          <div v-else class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+            <label for="quantity" class="font-semibold">รวม</label>
+            <p class="font-semibold px-2">
+              {{ 
+                formatCurrency((product.product_amount * product.product_price)) 
               }} บาท
             </p>
           </div>

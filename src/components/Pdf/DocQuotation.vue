@@ -178,7 +178,7 @@
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency((product.product_price + product.vat_price)*product.product_amount) }}
+                        {{ formatCurrency((product.product_price + (product.vat_price || 0))*product.product_amount) }}
                       </div>
                     </td>
                   </tr>
