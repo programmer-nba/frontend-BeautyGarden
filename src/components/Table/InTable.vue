@@ -651,11 +651,11 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price+item.vat_price) }} x
+                          {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
-                            item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
-                            : item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
+                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
                             : null 
                           }}
                         </p>
@@ -664,7 +664,7 @@
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency((item.product_amount * item.product_price) + (item.vat_price*item.product_amount))
+                          formatCurrency((item.product_amount * item.product_price) + ((item.vat_price || 0)*item.product_amount))
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -785,8 +785,8 @@
             <p class="font-semibold px-2">
               {{ 
                 sumVat
-                ? formatCurrency((product.product_amount * product.product_price) + (product.vat_price*product.product_amount)) 
-                : formatCurrency((product.product_amount * product.product_price) - (product.vat_price*product.product_amount)) 
+                ? formatCurrency((product.product_amount * product.product_price) + ((product.vat_price || 0)*product.product_amount)) 
+                : formatCurrency((product.product_amount * product.product_price) - ((product.vat_price || 0)*product.product_amount)) 
               }} บาท
             </p>
           </div>
@@ -1245,11 +1245,11 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price+item.vat_price) }} x
+                          {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
-                            item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
-                            : item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
+                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
                             : null 
                           }}
                         </p>
@@ -1258,7 +1258,7 @@
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency((item.product_amount * item.product_price)+(item.vat_price*item.product_amount))
+                          formatCurrency((item.product_amount * item.product_price)+((item.vat_price || 0)*item.product_amount))
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -1379,8 +1379,8 @@
             <p class="font-semibold px-2">
               {{ 
                 sumVat
-                ? formatCurrency((product.product_amount * product.product_price) + (product.vat_price*product.product_amount)) 
-                : formatCurrency((product.product_amount * product.product_price) - (product.vat_price*product.product_amount)) 
+                ? formatCurrency((product.product_amount * product.product_price) + ((product.vat_price || 0)*product.product_amount)) 
+                : formatCurrency((product.product_amount * product.product_price) - ((product.vat_price || 0)*product.product_amount)) 
               }} บาท
             </p>
           </div>
@@ -1786,7 +1786,7 @@ const addProduct = () => {
   if(!product.value) return
   product.value.product_price = sumVat.value
     ? product.value.product_price
-    : product.value.product_price - product.value.vat_price
+    : product.value.product_price - (product.value.vat_price || 0)
   if (edittingProduct.value) {
     products.value[edittingProduct.value] = product.value
   } else {
@@ -1848,7 +1848,7 @@ const netPrices = computed(() => {
 
 const vat = computed(() => {
   const all_vat = products.value.map(item=>{
-    return item.vat_price*item.product_amount
+    return (item.vat_price || 0)*item.product_amount
   })
   const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b, 0 ) : 0
   return result
@@ -2050,7 +2050,7 @@ const editProduct = (item) => {
   product.value = item
   product.value.product_logo64 = item.product_logo64 ? item.product_logo64 : []
   product.value.product_logo = item.product_logo
-  product.value.isVat = item.vat_price > 0 ? true : false
+  product.value.isVat = item.vat_price && item.vat_price > 0 ? true : false
   openProductForm.value = true
 }
 
