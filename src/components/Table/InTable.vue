@@ -78,7 +78,13 @@
       >
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
-            <h4 class="m-0">จัดการเอกสาร</h4>
+            <div class="flex items-center gap-3">
+              <p class="m-0">
+                จัดการเอกสาร
+              </p>
+              <SelectButton v-model="curfilter" :options="['ทั้งหมด', 'ยังไม่ครบ', 'ครบแล้ว']" aria-labelledby="basic" @change="filterInvoice(curfilter)" />
+            </div>
+            
             <span class="p-input-icon-right border rounded">
               <i class="pi pi-search" />
               <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหา..." />
@@ -201,12 +207,12 @@
           <template #body="slotProps">
             <span
               :class="
-              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) < 0
+              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) <= 0
               ? 'text-green-700 font-bold bg-green-100 rounded px-2 py-0.5'
               : ''
               "
             >{{ 
-              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) - (slotProps.data.paid || 0) < 0
+              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) - (slotProps.data.paid || 0) <= 0
               ? 'ครบแล้ว'
               : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) - (slotProps.data.paid || 0)) 
             }}</span>
@@ -1574,13 +1580,17 @@ import { copyToClipboard } from "@/functions/Coppy"
 import axios from "axios"
 
 onMounted(async () => {
-  Documents.getInvoices().then((data) => (invoices.value = data.data.reverse()));
+  Documents.getInvoices().then((data) => {
+    originalInvoices.value = data.data.reverse()
+    invoices.value = originalInvoices.value
+  });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
   Customers.getCustomers().then((data) => (customers.value = data.data));
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
 })
 
+const originalInvoices = ref([])
 const quotations = ref([])
 const lastRefreshed = ref();
 const openInvoice = ref(false);
@@ -1681,7 +1691,10 @@ const closeHandle = () => {
 }
 
 const refresh = () => {
-  Documents.getInvoices().then((data) => (invoices.value = data.data.reverse()));
+  Documents.getInvoices().then((data) => {
+    originalInvoices.value = data.data.reverse()
+    invoices.value = originalInvoices.value
+  });
 
   const currentTimestamp = Date.now();
   const options = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
@@ -2288,7 +2301,10 @@ const editingInvoice = async () => {
         if (res) {
           reStore
             .getInvoices()
-            .then((data) => (invoices.value = data.data.reverse()));
+            .then((data) => {
+              originalInvoices.value = data.data.reverse()
+              invoices.value = originalInvoices.value
+            });
           invoiceDialog.value = false;
           toast.add({
             severity: "success",
@@ -2416,10 +2432,30 @@ const createNextInvoice = async () => {
     selectedInvoice.value = {}
     openNextInvoiceDialog.value = false
     loading.value = false
-    Documents.getInvoices().then((data) => (invoices.value = data.data.reverse()))
+    Documents.getInvoices().then((data) => {
+      originalInvoices.value = data.data.reverse()
+      invoices.value = originalInvoices.value
+    })
   } else {
     console.log(data.data)
     loading.value = false
+  }
+}
+
+const curfilter = ref('ทั้งหมด')
+const filterInvoice = () => {
+  const filter = curfilter.value
+  if ( filter === 'ยังไม่ครบ' ) {
+    invoices.value = originalInvoices.value.filter((inv)=>(
+      totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) > 0
+    ))
+  } else if ( filter === 'ครบแล้ว' ) {
+    invoices.value = originalInvoices.value.filter((inv)=>(
+      totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) <= 0
+    ))
+  }
+  else {
+    invoices.value = originalInvoices.value
   }
 }
 

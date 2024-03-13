@@ -46,6 +46,7 @@ import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
 import TieredMenu from 'primevue/tieredmenu'
 import InputMask from 'primevue/inputmask'
+import SelectButton from 'primevue/selectbutton'
 
 import App from './App.vue'
 import router from './router'
@@ -69,6 +70,7 @@ app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('tooltip', Tooltip);
 
+app.component('SelectButton', SelectButton)
 app.component('InputMask', InputMask)
 app.component('TieredMenu', TieredMenu)
 app.component('Button', Button)
