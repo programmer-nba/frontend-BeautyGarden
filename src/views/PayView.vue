@@ -7,14 +7,14 @@
     <div>
   
       <div class="pt-5">
-        <Supplier />
+        <Pay />
       </div>
     </div>
   </template>
   
   <script setup>
   import AdminNavBar from '@/components/NavBar/AdminNavBar.vue'
-  import Supplier from '@/components/Table/Supplier.vue'
+  import Pay from '@/components/Table/Pay.vue'
   
   </script>
   

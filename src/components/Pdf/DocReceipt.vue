@@ -162,7 +162,7 @@
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency((product.product_price+product.vat_price)*product.product_amount) }}
+                        {{ formatCurrency((product.product_price+(product.vat_price || 0))*product.product_amount) }}
                       </div>
                     </td>
                   </tr>
@@ -279,11 +279,7 @@
               <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-green-200 text-center py-2 border-b border-r border-l flex justify-center items-center"
               :style="{ backgroundColor: `#${data.color}` }">
               <p class="font-bold">
-                ( {{ 
-                  data.data.vat.percen_deducted
-                  ? formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน' 
-                  : formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน'
-                }} )
+                ( {{ formatNumberToText(formatCurrency(totalPrice-data.data.discount+vat)) + 'ถ้วน' }} )
               </p>
             </div>
               <tr v-if="data.data.vat.percen_deducted" class="flex justify-between items-center w-full border-b border-l border-r pt-2 pb-2" :style="{ backgroundColor: `#${data.color}` }">

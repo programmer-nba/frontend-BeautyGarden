@@ -98,6 +98,14 @@ const items = ref([
             router.push('/suppliers');
         },
         badge: 0
+    },
+    {
+        label: 'บันทึกค่าใช้จ่าย',
+        icon: 'pi pi-money-bill',
+        command: () => {
+            router.push('/pays');
+        },
+        badge: 0
     }
 ]);
 </script>

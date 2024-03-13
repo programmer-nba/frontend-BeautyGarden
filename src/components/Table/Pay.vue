@@ -24,7 +24,6 @@
             />
             <small class="opacity-60">{{ lastRefreshed }}</small>
           </template>
-  
           <template #end>
             <FileUpload
               mode="basic"
@@ -59,10 +58,10 @@
         >
           <template #header>
             <div class="flex flex-wrap gap-2 items-center justify-between">
-              <p class="m-0">ซัพพลายเออร์ <span class="mx-5 font-bold text-green-700">{{ suppliers?.length }}</span></p>
+              <p class="m-0">รายการ <span class="mx-5 font-bold text-green-700">{{ suppliers?.length }}</span></p>
               <span class="p-input-icon-right border rounded">
                 <i class="pi pi-search" />
-                <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหาร้านค้า..." />
+                <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหารายการ..." />
               </span>
             </div>
           </template>
@@ -74,7 +73,8 @@
           </template>
   
           <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
-          <Column field="supplier_company_name" header="ชื่อร้านค้า" sortable style="min-width: 16rem" class="border-b">
+
+          <Column field="supplier_company_name" header="เลขที่ใบเสร็จ" sortable style="min-width: 16rem" class="border-b">
             <template #body="slotProps">
               <div>
                 <p>{{ slotProps.data.supplier_company_name }}</p>
@@ -82,30 +82,39 @@
               </div>
             </template>
           </Column>
-          <Column
-            field="supplier_tel"
-            header="เบอร์โทรติดต่อ"
-            sortable
-            class="border-b"
-            style="min-width: 8rem"
-          ></Column>
-          <Column
-            field="'supplier_company_address'"
-            header="ที่อยู่ร้านค้า"
-            sortable
-            class="border-b"
-            style="min-width: 8rem"
-          >
+          <Column field="supplier_company_name" header="ร้านค้า" sortable style="min-width: 16rem" class="border-b">
             <template #body="slotProps">
-              {{ slotProps.data.supplier_company_address !== 'ไม่มี' ? slotProps.data.supplier_company_address : null }}
-              <div class="w-1/2 flex items-center gap-2">
-                <i class="pi pi-map-marker text-red-500"></i>
-                <a v-if="slotProps.data.supplier_type" :href="slotProps.data.supplier_type" target="_blank" class="overflow-hidden hover:bg-green-100 rounded w-1/2 text-sm hover:w-full cursor-pointer">{{ slotProps.data.supplier_type }}</a>
-                <small v-else>-</small>
+              <div>
+                <p>{{ slotProps.data.supplier_company_name }}</p>
+                <small>{{ slotProps.data.supplier_company_number !== 'ไม่มี' ? slotProps.data.supplier_company_number : null }}</small>
               </div>
             </template>
-        
           </Column>
+          <Column field="supplier_company_name" header="วันที่" sortable style="min-width: 16rem" class="border-b">
+            <template #body="slotProps">
+              <div>
+                <p>{{ slotProps.data.supplier_company_name }}</p>
+                <small>{{ slotProps.data.supplier_company_number !== 'ไม่มี' ? slotProps.data.supplier_company_number : null }}</small>
+              </div>
+            </template>
+          </Column>
+          <Column field="supplier_company_name" header="ราคา" sortable style="min-width: 16rem" class="border-b">
+            <template #body="slotProps">
+              <div>
+                <p>{{ slotProps.data.supplier_company_name }}</p>
+                <small>{{ slotProps.data.supplier_company_number !== 'ไม่มี' ? slotProps.data.supplier_company_number : null }}</small>
+              </div>
+            </template>
+          </Column>
+          <Column field="supplier_company_name" header="ไฟล์แนบ" sortable style="min-width: 16rem" class="border-b">
+            <template #body="slotProps">
+              <div>
+                <p>{{ slotProps.data.supplier_company_name }}</p>
+                <small>{{ slotProps.data.supplier_company_number !== 'ไม่มี' ? slotProps.data.supplier_company_number : null }}</small>
+              </div>
+            </template>
+          </Column>
+          
           <Column :exportable="false" style="min-width: 10rem" class="border-b">
             <template #body="slotProps">
               <Button
@@ -424,7 +433,6 @@
     Suppliers.getSuppliers().then((data) => (suppliers.value = data.data));
   });
   
-  const isMain = ref(false)
   const openSupplier = ref(false);
   const loading = ref(false);
   const supplierEditDialog = ref(false);
@@ -443,7 +451,9 @@
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
   const submitted = ref(false);
-  const supplierTypes = ref(["ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"]);
+  const supplierTypes = ref([
+    "ทั่วไป", "องค์กร", "หน่วยงานราชการ", "VIP"
+  ]);
   
   const refreshData = () => {
     Suppliers.getSuppliers().then((data) => (suppliers.value = data.data));
