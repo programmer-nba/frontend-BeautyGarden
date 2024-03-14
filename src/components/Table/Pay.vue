@@ -9,7 +9,11 @@
               icon="pi pi-plus"
               severity="success"
               class="mr-4"
-              @click="payDialog = true"
+              @click="() => {
+                payDialog = true
+                resetData()
+                isEdit = false
+              }"
             />
             <Button
               label="ลบ"
@@ -92,7 +96,7 @@
           <Column field="date" header="วันที่" sortable style="min-width: 16rem" class="border-b">
             <template #body="slotProps">
               <div>
-                <p>{{ slotProps.data.date }}</p>
+                <p>{{ formatDateDisplay(slotProps.data.date) }}</p>
               </div>
             </template>
           </Column>
@@ -105,11 +109,18 @@
           </Column>
           <Column field="bill_img" header="ไฟล์แนบ" sortable style="min-width: 16rem" class="border-b">
             <template #body="slotProps">
-              <div v-if="slotProps.data.bill_img">
-                <Image :src="`https://drive.google.com/thumbnail?id=${slotprops.data.bill_img}`" alt="..." width="150" preview />
+              <div v-if="slotProps.data.bill_img" class="flex flex-col">
+                <Image :src="slotProps.data.bill_img" alt="..." width="100" preview class="w-fit" />
+                <input 
+                  type="file" 
+                  @change="inputFileHandle($event, slotProps.data._id)" 
+                  class="file:border-none file:bg-emerald-300 cursor-pointer hover:file:text-white hover:file:bg-emerald-500 file:rounded" 
+                />
               </div>
               <div v-else>
-                <p>ยังไม่ได้แนบไฟล์</p>
+                <p v-if="!picture.file">ยังไม่ได้แนบไฟล์</p>
+                <Image v-else :src="picture.file" alt="..." width="150" preview />
+                <input type="file" @change="inputFileHandle($event, slotProps.data._id)" />
               </div>
             </template>
           </Column>
@@ -119,8 +130,9 @@
               <Button
                 icon="pi pi-eye"
                 outlined
+                disabled
                 lable="open"
-                class="py-1.5 text-blue-500"
+                class="py-1.5 text-blue-500 opacity-20 cursor-none"
                 @click="seePay(slotProps.data)"
               />
               <Button
@@ -128,7 +140,7 @@
                 outlined
                 rounded
                 class="text-yellow-500"
-                @click="openEditProduct(slotProps.data)"
+                @click="openEditPay(slotProps.data)"
               />
               <Button
                 icon="pi pi-trash"
@@ -329,6 +341,23 @@
                   <div class="w-full flex justify-end items-center pb-2">
                     <i class="pi pi-times hover:text-red-500 cursor-pointer hover:rotate-180 ease-in-out duration-300" @click="pay.product_detail.splice(prodIndex, 1)"></i>
                   </div>
+                  <div class="field flex items-center mb-2 relative">
+                    <InputText v-model="prod.product_cost_type" placeholder="ประเภท" class="ring-1 px-5 py-2" />
+                    
+                    <Dropdown v-model="prod.product_cost_type" :options="costTypes" filter optionLabel="supplier_company_name" placeholder="เลือกประเภทค่าใช้จ่าย" class="bg-sky-100 w-16 py-2 h-full absolute right-0">
+                      <template #value="slotProps">
+                          <span>
+                              
+                          </span>
+                      </template>
+                      <template #option="slotProps">
+                          <div class="flex items-center">
+                              <div>{{ slotProps.option }}</div>
+                          </div>
+                      </template>
+                    </Dropdown>
+                    
+                  </div>
                   <div class="field">
                     <InputText v-model="prod.product_name" placeholder="ชื่อสินค้า" class="ring-1 px-5 py-2" />
                   </div>
@@ -385,78 +414,31 @@
         <!--3-->
         <div v-if="formCurPage===3" class="card flex flex-col gap-y-4">
           <div class="flex flex-col gap-y-4">
-            <div class="field">
-              <div class="flex w-full items-center gap-2 mb-5">
-                <Dropdown v-model="supplier" @change="selectedRefSup" :options="suppliers" filter optionLabel="supplier_company_name" placeholder="เลือกร้านค้า" class="bg-sky-100 w-full">
-                  <template #value="slotProps">
-                      <div v-if="slotProps.value.supplier_company_name && slotProps.value.supplier_company_name !== ''" class="flex items-center">
-                          <div>{{ slotProps.value.supplier_company_name }}</div>
-                      </div>
-                      <span v-else>
-                          {{ slotProps.placeholder }}
-                      </span>
-                  </template>
-                  <template #option="slotProps">
-                      <div class="flex items-center">
-                          <div>{{ slotProps.option.supplier_company_name }}</div>
-                      </div>
-                  </template>
-                </Dropdown>
-              </div>
-              <div class="relative">
-                <p class="p-error absolute text-2xl -top-3" v-if="!pay.supplier_detail.supplier_company_name">
-                  *
+            <p><strong>เลขที่ใบเสร็จ : </strong>{{ pay.code }}</p>
+            <p><strong>วันที่ : </strong>{{ formatDate(pay.date) }}</p>
+            <p><strong>ร้านค้า : </strong>{{ pay.supplier_detail.supplier_company_name }}</p>
+            <div class="flex flex-col">
+              <strong>สินค้า : </strong>
+              <div v-for="(prod, prodIndex) in pay.product_detail" :key="prodIndex" class="flex justify-between w-full">
+                <div class="flex gap-1 pr-1">
+                  {{ prodIndex + 1 }}.) 
+                  <p class="truncate w-32">{{ prod.product_name }}</p>
+                  <span class="text-sm">
+                    x {{ prod.product_amount }} 
+                    {{ prod.unit }}
+                  </span>
+                </div>
+                <p class="font-bold">
+                  {{ formatCurrency(prod.product_total) }} 
+                  <span class="font-normal px-2 rounded">
+                    {{ prod.product_cost_type ? `(${prod.product_cost_type})` : '(-)' }}
+                  </span>
                 </p>
-                <InputText
-                class="py-2 px-5 ring-1"
-                id="supplier_company_name"
-                v-model="pay.supplier_detail.supplier_company_name"
-                required="true"
-                autofocus
-                placeholder="ชื่อร้านค้า (สาขา)"
-              />
               </div>
-            </div>
-            <div class="field">
-              <label>เลขประจำตัวผู้เสียภาษี หรือ รหัสประชาชน</label>
-              <InputText
-                maxlength="13"
-                class="py-2 px-5 ring-1"
-                id="supplier_company_number"
-                v-model.trim="pay.supplier_detail.supplier_company_number"
-                required="true"
-                placeholder="เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน 13 หลัก"
-                autofocus
-              />
-            </div>
-            <div class="field">
-              <label>
-                เบอร์ติดต่อร้านค้า
-              </label>
-              <InputMask id="basic" mask="099-999-9999" placeholder="0xx-xxx-xxxx" class="p-2 ring-1" v-model.trim="pay.supplier_detail.supplier_tel" required="false" />
-            </div>
-            <div class="field">
-              <label for="supplier_company_address">ที่อยู่ร้านค้า</label>
-              <InputText
-                class="p-2 ring-1"
-                id="supplier_company_address"
-                v-model.trim="pay.supplier_detail.supplier_company_address"
-                required="false"
-                placeholder="ที่อยู่ร้านค้า"
-                autofocus
-              />
-            </div>
-            <div class="field">
-              <div>
-                <label for="supplier_type" class="mb-3">แผนที่</label>
-                <InputText
-                  class="p-2 ring-1"
-                  id="supplier_type"
-                  v-model.trim="pay.supplier_detail.supplier_type"
-                  required="false"
-                  placeholder="ลิงค์แผนที่ร้านค้า"
-                  autofocus
-                />
+              <div class="mt-4 pt-3 border-t">
+                <p><strong>รวม : </strong> {{ formatCurrency(pay.total) }} </p>
+                <p><strong>ส่วนลด : </strong> {{ formatCurrency(pay.discount) || '0.00' }} </p>
+                <p><strong>ราคาสุทธิ : </strong> {{ formatCurrency(pay.net) }} </p>
               </div>
             </div>
           </div>
@@ -482,12 +464,22 @@
               @click="formCurPage--"
             />
             <Button
+              v-if="!isEdit"
               label="บันทึก"
               iconPos="right"
               :loading="loading"
               text
               class="rounded p-3 text-white w-1/2 bg-green-500"
               @click="createNewPay"
+            />
+            <Button
+              v-if="isEdit"
+              label="ยืนยันการแก้ไข"
+              iconPos="right"
+              :loading="loading"
+              text
+              class="rounded p-3 text-white w-1/2 bg-orange-500"
+              @click="editingPay"
             />
           </div>
           <div v-else class="flex gap-5 justify-between w-full mt-5">
@@ -508,92 +500,6 @@
               @click="formCurPage++"
             />
           </div>
-        </template>
-      </Dialog>
-  
-      <Dialog
-        v-model:visible="payEditDialog"
-        :style="{ width: '450px' }"
-        header="แก้ไขข้อมูลซัพพลายเออร์"
-        :modal="true"
-        class="p-fluid"
-      >
-        <div class="card flex flex-col gap-y-4">
-          <div class="field">
-            <label>
-              ชื่อร้านค้า 
-              <small class="p-error" v-if="!pay.supplier_detail.supplier_company_name">
-                *กรุณาเพิ่มชื่อร้านค้า
-              </small>
-            </label>
-            <InputText
-              class="p-2 ring-1"
-              id="supplier_company_name"
-              v-model="pay.supplier_detail.supplier_company_name"
-              required="true"
-              autofocus
-              placeholder="ชื่อร้านค้า (สาขา)"
-            />
-          </div>
-          <div class="field">
-            <label for="supplier_company_number">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
-            <InputText
-              maxlength="13"
-              class="p-2 ring-1"
-              id="supplier_company_number"
-              v-model.trim="pay.supplier_detail.supplier_company_number"
-              required="true"
-              placeholder="เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน 13 หลัก"
-              autofocus
-            />
-            <small class="p-error" v-if="!pay.supplier_detail.supplier_company_number"
-              >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
-            >
-          </div>
-          <div class="field">
-            <label>
-              เบอร์ติดต่อร้านค้า
-            </label>
-            <InputMask id="basic" mask="099-999-9999" placeholder="0xx-xxx-xxxx" class="p-2 ring-1" v-model.trim="pay.supplier_detail.supplier_tel" required="false" />
-          </div>
-          <div class="field">
-            <label for="supplier_company_address">ที่อยู่ร้านค้า</label>
-            <InputText
-              class="p-2 ring-1"
-              id="supplier_company_address"
-              v-model.trim="supplier.supplier_company_address"
-              required="false"
-              placeholder="ที่อยู่ร้านค้า"
-              autofocus
-            />
-          </div>
-          
-          <div class="field">
-            <div>
-              <label for="supplier_type" class="mb-3">แผนที่</label>
-              <InputText
-                class="p-2 ring-1"
-                id="supplier_type"
-                v-model.trim="supplier.supplier_type"
-                required="false"
-                placeholder="ลิงค์แผนที่ร้านค้า"
-                autofocus
-              />
-            </div>
-          </div>
-        </div>
-        <br />
-  
-        <template #footer>
-          <Button label="ยกเลิก" icon="pi pi-times" text @click="hideDialog" />
-          <Button
-            label="บันทึก"
-            icon="pi pi-check"
-            :loading="loading"
-            text
-            class="text-green-700 font-bold hover:bg-green-100 px-0 hover:px-3 duration-300 ease-in-out transition-transform rounded"
-            @click="editingSupplier"
-          />
         </template>
       </Dialog>
   
@@ -649,60 +555,6 @@
         </template>
       </Dialog>
 
-      <Dialog v-model:visible="openPay" modal :header="selectedPay?.supplier_company_name" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-        <div class="flex flex-col gap-y-2">
-          <span><strong>ชื่อร้านค้า : </strong>{{ selectedPay?.supplier_company_name }} 
-          </span>
-          <span><strong>เลขประจำตัวผู้เสียภาษี : </strong>{{ selectedPay?.supplier_detail.supplier_company_number || '-' }}</span>
-          <span><strong>ที่อยู่ : </strong>{{ selectedPay?.supplier_detail.supplier_company_address }}</span>
-          <a :href="selectedPay?.supplier_detail.supplier_type" target="_blank" class="cursor-pointer hover:text-bold hover:text-orange-400 duration-300 ease-in-out"><i class="pi pi-map-marker pr-3 text-red-500"></i>{{ selectedSupplier?.supplier_type }}</a>
-          <span><strong>เบอร์โทร : </strong>{{ selectedPay?.supplier_detail.supplier_tel }}</span>
-          <div>
-            <p class="font-bold">ประวัติการสั่งซื้อ</p>
-            <div class="grid grid-cols-12">
-              <div class="col-span-full border grid grid-cols-12">
-                <div class="border-r col-span-2">
-                  <p class="text-center">เลขที่บิล</p>
-                </div>
-                <div class="border-r col-span-4">
-                  <p class="text-center">รายการ</p>
-                </div>
-                <div class="border-r col-span-2">
-                  <p class="text-center">ราคา</p>
-                </div>
-                <div class="border-r col-span-2">
-                  <p class="text-center">วันที่ซื้อ</p>
-                </div>
-                <div class="col-span-2">
-                  <p class="text-center">ไฟล์แนบ</p>
-                </div>
-              </div>
-              <div class="col-span-full grid grid-cols-12 border-b border-l border-r min-h-10">
-                <div v-if="selectedPay.supplier_detail.remark.length < 1" class="col-span-full flex items-center justify-center">
-                  <p class="text-center">ไม่มีรายการ</p>
-                </div>
-                <div class="col-span-full border grid grid-cols-12" v-else v-for="(his, hisIndex) in selectedPay.supplier_detail.remark" :key="hisIndex">
-                  <div class="border-r col-span-2 h-10">
-                    <p class="text-center">-</p>
-                  </div>
-                  <div class="border-r col-span-4 h-10">
-                    <p class="text-center">-</p>
-                  </div>
-                  <div class="border-r col-span-2 h-10">
-                    <p class="text-center">-</p>
-                  </div>
-                  <div class="border-r col-span-2 h-10">
-                    <p class="text-center">-</p>
-                  </div>
-                  <div class="col-span-2 h-10">
-                    <p class="text-center">-</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Dialog>
     </div>
   </template>
   
@@ -829,8 +681,7 @@
   // create && edit
   const hideDialog = () => {
     payDialog.value = false
-    editProductDialog.value = false
-    addProductDialog.value = false
+    resetData()
   }
 
   const pay = ref(
@@ -914,18 +765,20 @@
         refreshData()
     }
   }
+
   const editingPay = async () => {
+    isEdit.value = false
     loading.value = true;
     const id =  pay.value._id
     const data = {
       code: pay.value.code,
       supplier_detail : {
-        supplier_tel: pay.value.supplier.supplier_tel,
-        supplier_company_name: pay.value.supplier.supplier_company_name,
-        supplier_company_number: pay.value.supplier.supplier_company_number,
-        supplier_company_address: pay.value.supplier.supplier_company_address,
-        supplier_type : pay.value.supplier.supplier_type,
-        supplier_id : pay.value.supplier.supplier_id
+        supplier_tel: pay.value.supplier_detail.supplier_tel,
+        supplier_company_name: pay.value.supplier_detail.supplier_company_name,
+        supplier_company_number: pay.value.supplier_detail.supplier_company_number,
+        supplier_company_address: pay.value.supplier_detail.supplier_company_address,
+        supplier_type : pay.value.supplier_detail.supplier_type,
+        supplier_id : pay.value.supplier_detail.supplier_id
       },
       product_detail: [...pay.value.product_detail],
       bill_img: pay.value.bill_img,
@@ -938,7 +791,7 @@
     }
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/Create/${id}`,
+        `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/EditPurchaseOS/${id}`,
         data,
         {
           headers: {
@@ -974,6 +827,56 @@
     }
   }
 
+  const picture = ref({})
+  const inputFileHandle = async (event, id) => {
+    picture.value._id = id
+    const file = event.target.files[0]
+    const base64String = await fileToBase64(file);
+    picture.value.file = base64String
+    uploadPicture()
+  }
+
+  const uploadPicture = async () => {
+    loading.value = true
+    try {
+      const id = picture.value._id
+      const pictureData = picture.value.file
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/upload-pic-purchase/${id}`,
+        {
+          bill_img: pictureData
+        },
+        {
+          headers: {
+            'auth-token' : import.meta.env.VITE_TOKEN
+          }
+        }
+      )
+      if (response.data.status) {
+        toast.add({
+            severity: "success",
+            summary: "สำเร็จ",
+            detail: "อัพโหลดรูปภาพแล้ว",
+            life: 3000,
+        })
+        picture.value = {}
+        refreshData()
+      }
+    }
+    catch (err) {
+      console.log(err)
+      toast.add({
+            severity: "error",
+            summary: "เกิดข้อผิดพลาด",
+            detail: "อัพโหลดรูปภาพล้มเหลว",
+            life: 3000,
+        })
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
   // product
   const product = ref({
     product_name: null,
@@ -992,7 +895,7 @@
     product.value = {
       product_name: null,
       product_text: null,
-      product_price: 0,
+      product_price: null,
       product_amount: 1,
       product_total: 0,
       product_cost_type: null,
@@ -1002,54 +905,36 @@
       sumVat : null
     }
   }
-  const editProductDialog = ref(false)
-  const openEditProduct = (product) => {
-    product.value = {
-      product_name: product.product_name || null,
-      product_text: product.product_text || null,
-      product_price: product.product_price || 0,
-      product_amount: product.product_amount || 1,
-      product_total: product.product_total || 0,
-      product_cost_type: product.product_cost_type || null,
-      unit : product.unit || null,
-      isVat : product.isVat || false,
-      vat : product.vat || 0,
-      sumVat : product.sumVat || null
+
+  const isEdit = ref(false)
+  const openEditPay = (prod) => {
+    resetData()
+    console.log({...prod})
+    const data = {...prod}
+    pay.value = {
+      _id: data._id,
+      code : data._code,
+      supplier_detail : {
+          supplier_tel: data.supplier_detail.supplier_tel,
+          supplier_company_name: data.supplier_detail.supplier_company_name,
+          supplier_company_number: data.supplier_detail.supplier_company_number,
+          supplier_company_address: data.supplier_detail.supplier_company_address,
+          supplier_type: data.supplier_detail.supplier_type,
+          supplier_id : data.supplier_detail.supplier_id
+      },
+      product_detail: [...data.product_detail],
+      bill_img: data.bill_img,
+      discount: data.discount,
+      date : data.date,
+      note: data.note,
+      total : data.total || 0,
+      net : data.net || 0,
+      total_vat : data.total_vat || 0
     }
-    editProductDialog.value = true
+    isEdit.value = true
+    payDialog.value = true
   }
-  const editProduct = () => {
-    pay.value.product_detail[index] = product.value
-    product.value = {
-      product_name: null,
-      product_text: null,
-      product_price: 0,
-      product_amount: 1,
-      product_total: 0,
-      product_cost_type: null,
-      unit : null,
-      isVat : false,
-      vat : 0,
-      sumVat : null
-    }
-    editProductDialog.value = false
-  }
-  const addProductDialog = ref(false)
-  const openAddProduct = () => {
-    product.value = {
-      product_name: null,
-      product_text: null,
-      product_price: 0,
-      product_amount: 1,
-      product_total: 0,
-      product_cost_type: null,
-      unit : null,
-      isVat : false,
-      vat : 0,
-      sumVat : null
-    }
-    addProductDialog.value = true
-  }
+  
   
   // etc
   const refreshData = async () => {
@@ -1064,6 +949,7 @@
       )
       if ( response.data.status ) {
         pays.value = response.data.data
+        console.log(pays.value)
         const currentTimestamp = Date.now();
         const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
         const formattedTime = new Intl.DateTimeFormat('en-US', options).format(new Date(currentTimestamp));
@@ -1118,5 +1004,110 @@ const calTotalPrice = (products) => {
   const result = prices.length > 0 ? prices.reduce(( a,b ) => a + b, 0 ) : 0
   return result
 }
+
+const formatDate = (isoDateString) => {
+  const isoDate = new Date(isoDateString);
+
+  if (isNaN(isoDate)) {
+      // Handle invalid date string
+      return "Invalid Date";
+  }
+
+  // Convert to Buddhist Era (BE) by adding 543 years
+  const thaiYear = isoDate.getFullYear() + 543; // Use getFullYear() instead of getUTCFullYear()
+
+  const formattedDate = isoDate.toLocaleDateString("th-TH", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "Asia/Bangkok" // Specify the UTC time zone
+  });
+
+  // Construct the final formatted date in "dd/mm/yyyy" format
+  const [month, day, year] = formattedDate.split('/');
+  const formattedThaiDate = `${month}/${day}/${thaiYear}`;
+
+  return formattedThaiDate;
+}
+
+// cost Type
+const costType = ref()
+const costTypes = ref(['ประเภท-1', 'ประเภท-2', 'ประเภท-3'])
+function selectedCostType(prodIndex) {
+  pay.value.product_detail[prodIndex].product_cost_type = costType.value
+}
+
+const formatDateDisplay = (isoDateString) => {
+    const isoDate = new Date(isoDateString);
+
+    if (isNaN(isoDate)) {
+        // Handle invalid date string
+        return "Invalid Date";
+    }
+
+    const day = isoDate.getUTCDate();
+    const month = isoDate.getUTCMonth() + 1; // Month is zero-based
+    const year = isoDate.getUTCFullYear() + 543;
+
+    // Pad single digits with leading zeros
+    const formattedDay = String(day).padStart(2, '0');
+    const formattedMonth = String(month).padStart(2, '0');
+
+    return `${formattedDay}/${formattedMonth}/${year}`;
+};
+
+const resizeImage = (file, maxWidth, maxHeight) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, file.type);
+        };
+
+        img.onerror = (error) => {
+            reject(error);
+        };
+    });
+};
+
+// Function to convert a file to Base64
+const fileToBase64 = async (file) => {
+    const resizedBlob = await resizeImage(file, 500, 500); // Adjust max width and height as needed
+    const reader = new FileReader();
+    reader.readAsDataURL(resizedBlob);
+    return new Promise((resolve, reject) => {
+        reader.onloadend = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = reject;
+    });
+};
+
 </script>
   
