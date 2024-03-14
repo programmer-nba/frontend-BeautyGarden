@@ -65,12 +65,12 @@
                     <span class="font-bold pr-4">วันที่เริ่ม Date : </span>
                     {{ formatDate(data.data.start_date) }}
                   </div>
-                 
+                
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง : </span>
                     {{ data.data.quotation }}
                   </div>
-                 
+                
                   <br />
                   <hr />
                   <br />
@@ -214,29 +214,38 @@
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                       </tr>
 
+                      <tr class="flex justify-between w-full pt-2 mt-2 border-t">
+                        <td style="text-align: left"><span class="pl-5 font-semibold">ยอดที่ชำระแล้ว</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.invoiceRef_detail?.paid - data.data.amount_price) }}</span>บาท</td>
+                      </tr>
+                      <tr class="flex justify-between w-full">
+                        <td style="text-align: left"><span class="pl-5 font-semibold">ยอดค้างก่อนชำระ</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice-data.data.discount+vat)-(data.data.invoiceRef_detail?.paid - data.data.amount_price)) }}</span>บาท</td>
+                      </tr>
+                      <tr class="flex justify-between w-full">
+                        <td style="text-align: left"><span class="pl-5 font-semibold">ยอดชำระงวดปัจจุบัน</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.amount_price) }}</span>บาท</td>
+                      </tr>
+                      <tr class="flex justify-between w-full">
+                        <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงเหลือ</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice-data.data.discount+vat)-(data.data.invoiceRef_detail?.paid)) }}</span>บาท</td>
+                      </tr>
+
                       <tr class="flex justify-between items-center w-full mt-2 py-2 bg-green-200 " :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left">
                           <div class="flex flex-col items-center">
                             <strong class="pl-5 font-semibold">
-                              จำนวนเงินทั้งสิ้น
+                              ยอดชำระทั้งสิ้น
                             </strong>
                           </div>
                         </td>
-                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
+                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.amount_price) }}</strong>บาท</td>
                       </tr>
                     </tbody>
                 </table>
                 
                 <table v-if="!data.data.sumVat">
                   <tbody>
-                    <tr class="flex justify-between w-full">
-                      <td class="text-white">.</td>
-                      <td></td>
-                    </tr>
-                    <tr class="flex justify-between w-full">
-                      <td class="text-white">.</td>
-                      <td></td>
-                    </tr>
                     <tr class="flex justify-between w-full">
                       <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
                       <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
@@ -258,20 +267,32 @@
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
                     </tr>
-                  
-                    <tr class="flex justify-between w-full mt-2 pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
-                      <td style="text-align: left"><strong class="pl-5 font-semibold">จำนวนเงินทั้งสิ้น</strong></td>
-                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
+                    <tr class="flex justify-between w-full pt-2 mt-2 border-t">
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ยอดที่ชำระแล้ว</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.invoiceRef_detail?.paid - data.data.amount_price) }}</span>บาท</td>
                     </tr>
-                    <tr class="flex justify-between items-center w-full py-2 bg-green-200 " :style="{ backgroundColor: `#${data.color}` }">
+                    <tr class="flex justify-between w-full">
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ยอดค้างก่อนชำระ</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice-data.data.discount+vat)-(data.data.invoiceRef_detail?.paid - data.data.amount_price)) }}</span>บาท</td>
+                    </tr>
+                    <tr class="flex justify-between w-full">
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ยอดชำระงวดปัจจุบัน</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.amount_price) }}</span>บาท</td>
+                    </tr>
+                    <tr class="flex justify-between w-full">
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงเหลือ</span></td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice-data.data.discount+vat)-(data.data.invoiceRef_detail?.paid)) }}</span>บาท</td>
+                    </tr>
+                  
+                    <tr class="flex justify-between items-center w-full py-2 mt-2 bg-green-200 " :style="{ backgroundColor: `#${data.color}` }">
                       <td style="text-align: left">
                         <div class="flex flex-col items-center">
                           <strong class="pl-5 text-md font-semibold">
-                            จำนวนเงินทั้งสิ้น
+                            ยอดชำระทั้งสิ้น
                           </strong>
                         </div>
                       </td>
-                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
+                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.amount_price) }}</strong>บาท</td>
                     </tr>
                   </tbody>
               </table>
@@ -279,7 +300,7 @@
               <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-green-200 text-center py-2 border-b border-r border-l flex justify-center items-center"
               :style="{ backgroundColor: `#${data.color}` }">
               <p class="font-bold">
-                ( {{ formatNumberToText(formatCurrency(totalPrice-data.data.discount+vat)) + 'ถ้วน' }} )
+                ( {{ formatNumberToText((data.data.amount_price)) + 'ถ้วน' }} )
               </p>
             </div>
               <tr v-if="data.data.vat.percen_deducted" class="flex justify-between items-center w-full border-b border-l border-r pt-2 pb-2" :style="{ backgroundColor: `#${data.color}` }">

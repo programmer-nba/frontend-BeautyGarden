@@ -3,13 +3,20 @@
     <Toast />
     <div
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
-      v-if="openReceipt"
+      v-if="openFullReceipt"
     >
-      <DocReceiptRef2 v-if="selectedReceipt.invoice && selectedReceipt.invoiceRef_detail?.period_text!=='1/1'" :isSign="sign" :color="color" :data="selectedReceipt" @close="closeHandle" />
-      <DocReceipt v-else :color="color" :data="selectedReceipt" :isSign="sign" @close="closeHandle" />
+      <DocReceipt v-if="selectedReceipt.invoice && selectedReceipt.invoiceRef_detail?.period_text !== '1/1'" :color="color" :data="selectedReceipt" :isSign="sign" @close="closeHandle" />
+      <DocReceipt1 v-else :color="color" :data="selectedReceipt" :isSign="sign" @close="closeHandle" />
+    </div>
+    <div
+      class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
+      v-if="openSmallReceipt"
+    >
+      <DocReceiptRef2 :isSign="sign" :color="color" :data="selectedReceipt" @close="closeHandle" />
+      
     </div>
 
-    <div v-if="!openReceipt" class="card">
+    <div v-if="!openFullReceipt && !openSmallReceipt" class="card">
       <Toolbar class="mb-4">
         <template #start>
           <Button
@@ -123,7 +130,7 @@
           field="customer_detail.customer_name"
           header="ชื่อลูกค้า"
           sortable
-          style="min-width: 16rem"
+          style="max-width: 16rem"
           class="border-b"
         ></Column>
         <Column
@@ -206,11 +213,20 @@
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
               <Button
-                class="text-blue-600 hover:bg-blue-100"
-                icon="pi pi-file"
+                class="text-green-600 hover:bg-green-100 px-1"
+                label="เต็ม"
                 outlined
                 rounded
-                @click="seeReceipt(slotProps.data)"
+                @click="seeFullReceipt(slotProps.data)"
+              />
+              <Button
+                class="text-blue-600 hover:bg-blue-100 px-1"
+                :class="!slotProps.data.invoice || slotProps.data.invoiceRef_detail.period_text === '1/1' ? 'opacity-10' : 'opacity-100'"
+                :disabled="!slotProps.data.invoice"
+                label="ย่อ"
+                outlined
+                rounded
+                @click="seeSmallReceipt(slotProps.data)"
               />
               <Button
                 class="text-yellow-600 hover:bg-orange-100"
@@ -221,7 +237,7 @@
               />
               <Button
                 class="text-pink-600 hover:bg-orange-100"
-                :class="slotProps.data.invoice ? '' : 'opacity-10'"
+                :class="!slotProps.data.invoice ? 'opacity-10' : 'opacity-100'"
                 :disabled="!slotProps.data.invoice"
                 icon="pi pi-bars"
                 outlined
@@ -1722,6 +1738,7 @@ import { useCompanyStore } from "@/stores/company";
 import DocReceiptRef from "@/components/Pdf/DocReceiptRef.vue";
 import DocReceiptRef2 from "@/components/Pdf/DocReceiptRef2.vue";
 import DocReceipt from "@/components/Pdf/DocReceipt.vue";
+import DocReceipt1 from "@/components/Pdf/DocReceipt1.vue";
 
 const reStore = useReceiptStore();
 const cpStore = useCompanyStore();
@@ -1739,7 +1756,8 @@ const editReceiptRefInvoiceDialog = ref(false)
 const transfer = ref('bank')
 const quotations = ref([]);
 const lastRefreshed = ref();
-const openReceipt = ref(false);
+const openFullReceipt = ref(false);
+const openSmallReceipt = ref(false);
 const loading = ref(false);
 const openProductForm = ref(false);
 const start_date = ref();
@@ -1886,7 +1904,8 @@ async function editReceiptRefInvoice(id) {
 // -----------------------------
 
 const closeHandle = () => {
-  openReceipt.value = false;
+  openFullReceipt.value = false;
+  openSmallReceipt.value = false;
   const body = document.body;
   body.style.backgroundColor = "aliceblue";
 };
@@ -1967,11 +1986,23 @@ const referQuotationInput = () => {
   }
 };
 
-const seeReceipt = (data) => {
+const seeFullReceipt = (data) => {
   const customered = customers.value.find(
     (item) => item.customer_name === data.customer_detail.customer_name
   );
-  openReceipt.value = true;
+  openFullReceipt.value = true;
+  selectedReceipt.value = data;
+  selectedReceipt.value.customer_detail.customer_address = customered.customer_position
+  console.log("data", selectedReceipt.value);
+  const body = document.body;
+  body.style.backgroundColor = "white";
+};
+
+const seeSmallReceipt = (data) => {
+  const customered = customers.value.find(
+    (item) => item.customer_name === data.customer_detail.customer_name
+  );
+  openSmallReceipt.value = true;
   selectedReceipt.value = data;
   selectedReceipt.value.customer_detail.customer_address = customered.customer_position
   console.log("data", selectedReceipt.value);
