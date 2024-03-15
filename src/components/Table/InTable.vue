@@ -115,8 +115,8 @@
             {{ slotProps.data.invoice }}
             <i 
               @click="onCoppy(slotProps.data.invoice)" 
-              class="pi pi-copy cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
-              v-tooltip.top="'คัดลอก'"
+              class="pi pi-file-export cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
+              v-tooltip.top="'ใช้อ้างอิงใบเสร็จ'"
               >
             </i>
           </span>
@@ -1638,9 +1638,12 @@ const sign = ref(false)
 const reStore = useInvoiceStore()
 const cpStore = useCompanyStore()
 
+const emits = defineEmits(["chooseRef", "refIv"])
 const onCoppy = (value) => {
   console.log(value)
   copyToClipboard(value)
+  emits("chooseRef")
+  emits("refIv", value)
 }
 
 // open reference receipts list

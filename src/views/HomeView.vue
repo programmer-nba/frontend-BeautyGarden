@@ -14,7 +14,7 @@
   
       <div class="pt-5 h-full overflow-y-auto">
         <QtTable v-if="table==='quotation'" />
-        <InTable v-if="table==='invoice'" />
+        <InTable @refIv="refIv" @chooseRef="ontable('receipt')" v-if="table==='invoice'" />
         <ReTable :ivref="ivref" v-if="table==='receipt'" />
       </div>
     </div>
@@ -33,10 +33,11 @@ import { ref } from 'vue'
 
 const table = ref('quotation')
 
+const ivref = ref()
 const refIv = (val) => {
   console.log(val)
   if (val) {
-    refIv.value = val
+    ivref.value = val
   }
 }
 

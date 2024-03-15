@@ -34,13 +34,6 @@
             @click="openNewRef"
           />
           <Button
-            label="จากใบแจ้งหนี้"
-            icon="pi pi-plus"
-            severity="success"
-            class="mr-4 md:hidden text-sm"
-            @click="openNewRef"
-          />
-          <Button
             label="ลบ"
             icon="pi pi-trash"
             severity="danger"
@@ -260,7 +253,7 @@
     <Dialog
       v-model:visible="receiptDialog"
       :style="{ width: '450px' }"
-      header="Receipt Details"
+      header="เพิ่มใบเสร็จรับเงิน"
       :modal="true"
       class="p-fluid"
     >
@@ -871,7 +864,7 @@
     <Dialog
       v-model:visible="receiptEditDialog"
       :style="{ width: '450px' }"
-      header="Receipt Details"
+      header="แก้ไขใบเสร็จรับเงิน"
       :modal="true"
       class="p-fluid"
     >
@@ -1536,11 +1529,15 @@
     <Dialog
       v-model:visible="receiptRefInvoiceDialog"
       :style="{ width: '500px' }"
-      header="Receipt Details"
+      header="เพิ่มใบเสร็จรับเงิน"
       :modal="true"
       class="p-fluid"
     >
-      <div class="card flex flex-col gap-y-2 bg-sky-300 py-2 px-2 rounded-lg justify-content-center">
+
+      <div v-show="!invoices || invoices.length === 0" class="bg-black/30 rounded-lg h-[650px] w-full animate-pulse">
+      </div>
+    
+      <div v-if="invoices && invoices.length > 0" class="card flex flex-col gap-y-2 bg-sky-300 py-2 px-2 rounded-lg justify-content-center">
         <Dropdown
           v-model="refInvoice"
           editable
@@ -1550,7 +1547,7 @@
           class="w-full md:w-14rem"
         />
       </div>
-      <div class="card">
+      <div v-if="invoices && invoices.length > 0" class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
           <p>วันที่ออกใบเสร็จ</p>
           <Calendar
@@ -1610,7 +1607,7 @@
         </div>
       </div>
       <template #footer>
-        <div class="flex gap-3">
+        <div v-if="invoices && invoices.length > 0" class="flex gap-3">
           <Button
             label="ยกเลิก"
             icon="pi pi-times"
@@ -1678,7 +1675,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch, watchEffect } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import { Documents } from "@/service/ProductService";
@@ -1692,6 +1689,8 @@ import DocReceipt1 from "@/components/Pdf/DocReceipt1.vue";
 
 const reStore = useReceiptStore();
 const cpStore = useCompanyStore();
+
+const invoices = ref([]);
 
 onMounted(async () => {
   Documents.getReceipts().then((data) => (receipts.value = data.data.reverse()));
@@ -1746,13 +1745,19 @@ const isSign = ref(false)
 const sign = ref(false)
 
 // Create with reference invoice
-const amount_price = ref();
-const invoices = ref([]);
 const refInvoice = ref();
+const { ivref } = defineProps(["ivref"])
+const invref = ref(ivref)
 const receiptRefInvoiceDialog = ref(false);
+watchEffect(()=> {
+  receiptRefInvoiceDialog.value = true
+  refInvoice.value = invoices.value.find(i=>i.invoice===invref.value)
+})
+
+const amount_price = ref();
 
 function openNewRef() {
-  resetRefInvoice();
+  //resetRefInvoice();
   receiptRefInvoiceDialog.value = true;
 }
 
@@ -2574,7 +2579,5 @@ const getStatusLabel = (status) => {
       return null;
   }
 };
-
-const { invref } = defineProps(["invref"])
 
 </script>
