@@ -136,51 +136,58 @@
                   </tr> -->
                   <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
-                      {{ index + 1 }}
+                      <p v-if="product.product_name">{{ index + 1 > minus ? (index + 1) - minus : index + 1 === minus ? (index + 1) - minus + 2 : index +1 }}</p>
                     </td>
                     <td class=".td border">
-                      <div class="flex flex-col-reverse">
-                        <div class="flex gap-2">
-                          <img 
-                            v-for="(pic, index) in product.product_logo"
-                            v-if="product.product_logo && product.product_logo.length>0" 
-                            class="w-[150px] pr-3 object-contain" 
-                            :src="`https://drive.google.com/thumbnail?id=${pic}`" 
-                            :alt="index" 
-                          />
-                        </div>
+                      <div class="flex flex-col">
                         <article class="text-wrap w-[200px]">
-                            <strong>{{ product.product_name }}</strong>
+                            <p class="pb-3 font-bold">{{ product.product_name }}</p>
                             <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
-                                {{ p }}
+                              <!-- {{ index + 1 }}.{{ pindex + 1 }}) {{ p }} -->
+                              {{ p }}
+                              <img 
+                              v-if="product.product_logo[pindex]" 
+                              class="w-[120px] pr-3 object-contain" 
+                              :src="`${product.product_logo[pindex]}`" 
+                              :alt="pindex" 
+                            />
                             </p>
                         </article>
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
-                      <div class="flex justify-center h-full py-2">
+                      <div class="flex justify-center h-full py-2"
+                        :class="product.product_amount < 1 ? 'hidden' : ''"
+                      >
                         {{ product.product_amount }} {{ product.unit }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
+                      <div class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      >
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
                     <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
+                      <div class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      >
                         {{ 
                           product.vat_price > 0
-                          ? formatCurrency(product.vat_price) 
-                          : 0
+                          ? formatCurrency(product.vat_price)
+                          : '0.00'
                         }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
+                      <div class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      >
                         {{ formatCurrency((product.product_price + (product.vat_price || 0))*product.product_amount) }}
                       </div>
                     </td>
+                    
                   </tr>
                 </tbody>
               </table>
@@ -397,6 +404,11 @@ const close = () => {
 const print = () => {
   window.print()
 }
+
+const minus = computed(()=>{
+  const mi = data.data.product_detail.filter(item=>!item.product_name).length
+  return mi
+})
 
 const vat = computed(()=>{
   const all_vat = data.data.product_detail.map((item)=>{

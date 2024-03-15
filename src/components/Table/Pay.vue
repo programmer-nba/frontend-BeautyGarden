@@ -836,47 +836,6 @@
     uploadPicture()
   }
 
-  const uploadPicture = async () => {
-    loading.value = true
-    try {
-      const id = picture.value._id
-      const pictureData = picture.value.file
-      const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/upload-pic-purchase/${id}`,
-        {
-          bill_img: pictureData
-        },
-        {
-          headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN
-          }
-        }
-      )
-      if (response.data.status) {
-        toast.add({
-            severity: "success",
-            summary: "สำเร็จ",
-            detail: "อัพโหลดรูปภาพแล้ว",
-            life: 3000,
-        })
-        picture.value = {}
-        refreshData()
-      }
-    }
-    catch (err) {
-      console.log(err)
-      toast.add({
-            severity: "error",
-            summary: "เกิดข้อผิดพลาด",
-            detail: "อัพโหลดรูปภาพล้มเหลว",
-            life: 3000,
-        })
-    }
-    finally {
-      loading.value = false
-    }
-  }
-
   // product
   const product = ref({
     product_name: null,
@@ -1055,6 +1014,47 @@ const formatDateDisplay = (isoDateString) => {
 
     return `${formattedDay}/${formattedMonth}/${year}`;
 };
+
+const uploadPicture = async () => {
+    loading.value = true
+    try {
+      const id = picture.value._id
+      const pictureData = picture.value.file
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/upload-pic-purchase/${id}`,
+        {
+          bill_img: pictureData
+        },
+        {
+          headers: {
+            'auth-token' : import.meta.env.VITE_TOKEN
+          }
+        }
+      )
+      if (response.data.status) {
+        toast.add({
+            severity: "success",
+            summary: "สำเร็จ",
+            detail: "อัพโหลดรูปภาพแล้ว",
+            life: 3000,
+        })
+        picture.value = {}
+        refreshData()
+      }
+    }
+    catch (err) {
+      console.log(err)
+      toast.add({
+            severity: "error",
+            summary: "เกิดข้อผิดพลาด",
+            detail: "อัพโหลดรูปภาพล้มเหลว",
+            life: 3000,
+        })
+    }
+    finally {
+      loading.value = false
+    }
+  }
 
 const resizeImage = (file, maxWidth, maxHeight) => {
     return new Promise((resolve, reject) => {

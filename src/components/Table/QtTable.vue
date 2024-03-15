@@ -523,21 +523,12 @@
                   :class="{ 'surface-border': index !== 0 }"
                 >
                   <div class="overflow-x-auto w-[120px]">
-                    <div v-if="item.product_logo64?.length > 0" class="flex border overflow-x-auto">
-                      <div v-for="(pic, index) in item.product_logo64" :key="index" class="h-[100px] w-full">
+                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
+                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
                         <img
                           class="w-full h-full object-cover"
                           :src="pic"
-                          :alt="index"
-                        />
-                      </div>
-                    </div>
-                    <div v-if="item.product_logo?.length>1" class="flex border overflow-x-auto">
-                      <div v-for="(pic, index) in item.product_logo" :key="index" class="h-[100px] w-full">
-                        <img
-                          class="w-full h-full object-cover"
-                          :src="`https://drive.google.com/thumbnail?id=${pic}`"
-                          :alt="index"
+                          :alt="picindex"
                         />
                       </div>
                     </div>
@@ -612,7 +603,7 @@
           @click="
             ()=>{
               openProductForm = true
-              product.product_logo64 = []
+              product.product_logo = []
               product.isVat = false
               product.vat_price = 0
             }
@@ -627,10 +618,11 @@
           <div class="card">
             <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
                 <template #content>
-                  <div v-if="product?.product_logo64?.length>0" class="card flex flex-col justify-center">
-                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, index) in product?.product_logo64" :key="index">
+                  
+                  <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
+                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
                       <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
-                      <i @click="product?.product_logo64.splice(index, 1)" class="pi pi-times" style="color: red"></i>
+                      <i @click="product?.product_logo.splice(picindex, 1)" class="pi pi-times" style="color: red"></i>
                   </div>
                   </div>
                 </template>
@@ -751,7 +743,7 @@
           }}</span></span
         >
         <span v-if="!sumVat"
-          >ราคาสินค้า {{ products }}
+          >ราคาสินค้า
           <span class="border-b px-2">{{
             formatCurrency(notSumVatsumProductsPrice) || 0
           }}</span></span
@@ -1102,9 +1094,10 @@
                   class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
                   :class="{ 'surface-border': index !== 0 }"
                 >
+                  
                   <div class="overflow-x-auto w-[120px]">
-                    <div v-if="item.product_logo64?.length > 0" class="flex border overflow-x-auto">
-                      <div v-for="(pic, index) in item.product_logo64" :key="index" class="h-[100px] w-full">
+                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
+                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
                         <img
                           class="w-full h-full object-cover"
                           :src="pic"
@@ -1112,15 +1105,7 @@
                         />
                       </div>
                     </div>
-                    <div v-if="item.product_logo?.length>0" class="flex border overflow-x-auto">
-                      <div v-for="(pic, index) in item.product_logo" :key="index" class="h-[100px] w-full">
-                        <img
-                          class="w-full h-full object-cover"
-                          :src="`https://drive.google.com/thumbnail?id=${pic}`"
-                          :alt="index"
-                        />
-                      </div>
-                    </div>
+                    
                   </div>
               
                   <div
@@ -1164,7 +1149,7 @@
                     <div class="flex flex-column md:align-items-end gap-5">
                       <span class="text-xl font-semibold text-900"
                         >{{
-                          formatCurrency((item.product_price) * item.product_amount)
+                          formatCurrency((item.product_price * item.product_amount)+((item.vat_price || 0) * item.product_amount))
                         }}.-</span
                       >
                       <div class="flex h-fit">
@@ -1199,7 +1184,7 @@
           @click="
             ()=>{
               openProductForm = true
-              product.product_logo64 = []
+              product.product_logo = []
               product.isVat = false
               product.vat_price = 0
             }
@@ -1214,16 +1199,11 @@
           <div class="card">
             <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
                 <template #content>
-                  <div v-if="product?.product_logo64?.length>0" class="card flex flex-col justify-center">
-                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, index) in product?.product_logo64" :key="index">
-                      <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
-                      <i @click="product?.product_logo64.splice(index, 1)" class="pi pi-times" style="color: red"></i>
-                    </div>
-                  </div>
+                  
                   <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
-                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, index) in product?.product_logo" :key="index">
-                      <Image :src="`https://drive.google.com/thumbnail?id=${pic}`" alt="Image" class="h-[100px] flex items-center" width="100" preview />
-                      <i @click="product?.product_logo.splice(index, 1)" class="pi pi-times" style="color: red"></i>
+                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
+                      <Image :src="`${pic}`" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                      <i @click="product?.product_logo?.splice(picindex, 1)" class="pi pi-times" style="color: red"></i>
                     </div>
                   </div>
                 </template>
@@ -1264,7 +1244,6 @@
           
         </div>
         <div class="field grid w-full px-5">
-          {{ product }}
           <div class="field grid">
             <label for="price">ราคา/หน่วย</label>
             <InputNumber
@@ -1353,7 +1332,7 @@
           }}</span></span
         >
         <span v-if="!sumVat"
-          >ราคาสินค้า {{ products }}
+          >ราคาสินค้า
           <span class="border-b px-2">{{
             formatCurrency(notSumVatsumProductsPrice) || 0
           }}</span></span
@@ -1546,7 +1525,7 @@ const editProduct = (item) => {
   edittingProduct.value = item
   console.log('item',item)
   product.value = item
-  product.value.product_logo64 = item.product_logo64 ? item.product_logo64 : []
+  //product.value.product_logo64 = item.product_logo64 ? item.product_logo64 : []
   product.value.product_logo = item.product_logo
   product.value.isVat = item.vat_price && item.vat_price > 0 ? true : false
   openProductForm.value = true
@@ -1670,6 +1649,7 @@ const addProduct = () => {
   } else {
     products.value.push(product.value);
   }
+  console.log(product.value)
   edittingProduct.value = null
   product.value = {};
   product.value.product_logo64 = [];
@@ -1749,22 +1729,6 @@ const cancleProduct = () => {
     product.value = {};
     openProductForm.value = false;
   }
-};
-
-const customBase64Uploader = async (event) => {
-  const file = event.files[0];
-  const reader = new FileReader();
-  let blob = await fetch(file.objectURL).then((r) => r.blob()); //blob:url
-
-  reader.readAsDataURL(blob)
-
-  reader.onloadend = function () {
-    const base64data = reader.result
-    console.log(product.value)
-    console.log(product.value.product_logo64)
-    product.value.product_logo64.push(base64data)
-  }
-  files.value.push(file) 
 };
 
 const refCustomer = () => {
@@ -1961,7 +1925,7 @@ const createNewQuotation = async () => {
   let img = [];
   let qtId = null;
   products.value.forEach((product) => {
-    product.product_logo64 = [];
+    product.product_logo = [];
   });
 
   const data = {
@@ -2092,13 +2056,6 @@ const createNewQuotation = async () => {
 
 const editingQuotation = async () => {
   loading.value = true;
-  let img = [];
-  let qtId = null;
-  console.log(products.value)
-  products.value.forEach((product) => {
-    product.product_logo64 = [];
-  });
-
   const data = {
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
@@ -2136,66 +2093,22 @@ const editingQuotation = async () => {
   console.log(data)
   try {
     const response = await Documents.editQuotation(quotation.value._id, data);
-  if (response.data) {
-    img = response.data.product_detail;
-    qtId = response.data._id;
-    const imgId = img.map((id) => id._id);
-    if (imgId.length > 0 && qtId) {
-      console.log('uploadfiles',uploadfiles.value)
-      uploadfiles.value.forEach(async (file, index) => {
-        const formData = new FormData();
-        console.log('file', file)
-        for (let i in file) {
-          formData.append("imgCollection", file[i]);
-        }
-
-        console.log([...formData])
-
-        const res = await Documents.uploadFileQuotation(imgId[index], qtId, formData);
-        console.log(res)
-        if (res) {
-          qtStore
-            .getQuotations()
-            .then((data) => (quotations.value = data.data.reverse()));
-          quotationDialog.value = false;
-          toast.add({
-            severity: "success",
-            summary: "Successful",
-            detail: "แก้ไขใบเสนอราคาแล้ว",
-            life: 3000,
-          });
-          loading.value = false;
-        }
-      });
-    } else {
-      qtStore.getQuotations()
-      refresh()
-      quotationEditDialog.value = false;
+    if (response.data) {
       toast.add({
         severity: "success",
         summary: "Successful",
-        detail: "แก้ไขใบเสนอราคาแล้ว",
+        detail: "อัพเดทใบเสนอราคาแล้ว",
         life: 3000,
       });
-      loading.value = false;
-    }
-  } else {
-    quotationEditDialog.value = false;
-    toast.add({
-      severity: "error",
-      summary: "มีบางอย่างผิดพลาด",
-      detail: "แก้ไขใบเสนอราคาล้มเหลว",
-      life: 3000,
-    });
-    loading.value = false;
-  }
-  } catch(err){
-console.log(err)
+    } 
+  } 
+  catch(err) {
+    console.log(err);
   }
   finally {
     loading.value = false;
     quotationEditDialog.value = false;
-    refresh()
+    refresh();
   }
 };
 
@@ -2212,6 +2125,108 @@ const getStatusLabel = (status) => {
     default:
       return null;
   }
+};
+
+// uploadpictures
+const customBase64Uploader = async (event) => {
+  const file = event.files[0];
+  const formattedFile = await fileToBase64(file)
+  product.value.product_logo.push(formattedFile)
+  console.log(product.value.product_logo)
+};
+
+const uploadPicture = async () => {
+    loading.value = true
+    try {
+      const id = picture.value._id
+      const pictureData = picture.value.file
+      const response = await axios.put(
+        `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/upload-pic-purchase/${id}`,
+        {
+          bill_img: pictureData
+        },
+        {
+          headers: {
+            'auth-token' : import.meta.env.VITE_TOKEN
+          }
+        }
+      )
+      if (response.data.status) {
+        toast.add({
+            severity: "success",
+            summary: "สำเร็จ",
+            detail: "อัพโหลดรูปภาพแล้ว",
+            life: 3000,
+        })
+        picture.value = {}
+        refreshData()
+      }
+    }
+    catch (err) {
+      console.log(err)
+      toast.add({
+            severity: "error",
+            summary: "เกิดข้อผิดพลาด",
+            detail: "อัพโหลดรูปภาพล้มเหลว",
+            life: 3000,
+        })
+    }
+    finally {
+      loading.value = false
+    }
+  }
+
+const resizeImage = (file, maxWidth, maxHeight) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = URL.createObjectURL(file);
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+                if (width > maxWidth) {
+                    height *= maxWidth / width;
+                    width = maxWidth;
+                }
+            } else {
+                if (height > maxHeight) {
+                    width *= maxHeight / height;
+                    height = maxHeight;
+                }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            ctx.drawImage(img, 0, 0, width, height);
+
+            canvas.toBlob((blob) => {
+                resolve(blob);
+            }, file.type);
+        };
+
+        img.onerror = (error) => {
+            reject(error);
+        };
+    });
+};
+
+// Function to convert a file to Base64
+const fileToBase64 = async (file) => {
+    const resizedBlob = await resizeImage(file, 200, 200); // Adjust max width and height as needed
+    const reader = new FileReader();
+    reader.readAsDataURL(resizedBlob);
+    return new Promise((resolve, reject) => {
+        reader.onloadend = () => {
+            resolve(reader.result);
+        };
+        reader.onerror = reject;
+    });
 };
 
 </script>
