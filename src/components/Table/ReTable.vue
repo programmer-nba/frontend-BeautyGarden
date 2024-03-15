@@ -1587,7 +1587,7 @@
           <strong>จำนวนเงิน</strong>
           <InputGroup class="border rounded">
             <InputGroupAddon><span class="font-bold px-2">THB</span></InputGroupAddon>
-            <InputNumber v-model="amount_price" />
+            <InputNumber v-model="amount_price" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" />
             <InputGroupAddon>บาท</InputGroupAddon>
           </InputGroup>
         </div>
@@ -1644,63 +1644,13 @@
         <p>{{ receipt.invoice }}</p>
       </div>
       <div class="card">
-        <!-- <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
-          <p>วันที่ออกใบเสร็จ</p>
-          <Calendar
-            class="border rounded-sm"
-            v-model="start_date"
-            showButtonBar
-            dateFormat="dd/mm/yy"
-          />
-        </div> -->
-        <!-- <div>
-          <p>
-            <strong>บริษัท : </strong
-            >{{ refInvoice?.customer_branch?.Branch_company_name }}
-          </p>
-          <p>
-            <strong>ลูกค้า : </strong>{{ refInvoice?.customer_detail?.customer_name }}
-          </p>
-        </div> -->
-        <!-- <div class="flex flex-wrap items-center gap-3 py-4">
-          <div class="flex align-items-center">
-              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="cash" name="cash" value="cash" />
-              <label for="ingredient1" class="ml-2">เงินสด</label>
-          </div>
-          <div class="flex align-items-center">
-              <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="bank" name="bank" value="bank" />
-              <label for="ingredient2" class="ml-2">โอนผ่านบัญชีธนาคาร</label>
-          </div>
-        </div> -->
-        <!-- <div class="flex gap-3 justify-start items-center" v-if="transfer==='bank' && refInvoice">
-          <small>{{ refInvoice?.bank?.name }} ({{ refInvoice?.bank?.remark_2 }})</small>
-          <small>{{ refInvoice?.bank?.status }}</small>
-        </div> -->
-        <!-- <div class="py-3">
-          <strong>จำนวนเงิน</strong>
-          <InputGroup class="border rounded">
-            <InputGroupAddon><span class="font-bold px-2">THB</span></InputGroupAddon>
-            <InputNumber v-model="amount_price" />
-            <InputGroupAddon>บาท</InputGroupAddon>
-          </InputGroup>
-        </div> -->
+        
         <div class="py-3 flex flex-col">
           <strong>รายละเอียด</strong>
           <textarea v-model="paid_detail" class="border">
           </textarea>
         </div>
-        <!-- <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
-          <p class="hover:text-orange-500 cursor-pointer px-2 py-2 border rounded hover:border-orange-300 duration-300" @click="remark.push('')">หมายเหตุ</p>
-          <Textarea
-            v-for="(mark, mIndex) in remark"
-            v-model="remark[mIndex]"
-            autoResize
-            rows="5"
-            cols="30"
-            class="my-2 border"
-          />
-          <p v-if="remark.length>0" @click="remark.pop()" class="text-red-500 cursor-pointer">ลบ</p>
-        </div> -->
+        
       </div>
       <template #footer>
         <div class="flex gap-3">
@@ -2624,4 +2574,7 @@ const getStatusLabel = (status) => {
       return null;
   }
 };
+
+const { invref } = defineProps(["invref"])
+
 </script>
