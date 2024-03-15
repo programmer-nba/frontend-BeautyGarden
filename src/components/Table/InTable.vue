@@ -1641,7 +1641,6 @@ const cpStore = useCompanyStore()
 const emits = defineEmits(["chooseRef", "refIv"])
 const onCoppy = (value) => {
   console.log(value)
-  copyToClipboard(value)
   emits("chooseRef")
   emits("refIv", value)
 }
