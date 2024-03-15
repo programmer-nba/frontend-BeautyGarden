@@ -514,6 +514,8 @@
       </span>
       <br />
       <div class="card">
+        <p>หัวข้อโครงการ</p>
+        <inputText v-model="product_head" class="border" />
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -610,10 +612,12 @@
           "
         />
       </div>
+
       <div
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
       >
+
         <div class="card flex justify-center">
           <div class="card">
             <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
@@ -629,8 +633,9 @@
             </FileUpload>
           </div>
         </div>
+
         <div class="field">
-          <label class="font-semibold text-lg">หัวข้อย่อย</label>
+          <label class="font-semibold text-lg">หัวข้อ</label>
           <div class="card flex justify-content-center">
             <InputText class="px-2 py-2" v-model="product.product_name" />
           </div>
@@ -723,6 +728,40 @@
           />
         </div>
       </div>
+
+      <!-- <div class="bg-yellow-100 px-2 py-5 rounded shadow-md border-2">
+        <div>
+          <div>
+            <p>ชื่อโครงการ (Project)</p>
+            <inputText v-model="prod.project.name" />
+          </div>
+          <div>
+            <p>จำนวน</p>
+            <inputNumber v-model="prod.project.amount" />
+            <inputText v-model="prod.project.unit" />
+          </div>
+          <div>
+            <p>ราคา/หน่วย</p>
+            <inputNumber v-model="prod.project.unit_price" />
+          </div>
+          <div>
+            <div class="flex items-center">
+              <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
+              <label for="isVat" class="ml-2"> VAT 7% </label>
+          </div>
+            <SelectButton v-show="prod.project.isVat" v-model="prod.project.sumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
+            <inputNumber v-model="prod.project.unit_price" />
+          </div>
+          <div>
+            <p>ราคารวม</p>
+            <pre class="hidden">{{ prod.project.total_price = (prod.project.unit_price * prod.project.amount) }}</pre>
+            <inputNumber v-model="prod.project.total_price" />
+          </div>
+        </div>
+        <div v-for="(pro, proIndex) in prod.product_detail" :key="proIndex">
+
+        </div>
+      </div> -->
 
       <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
         <p>ส่วนลด</p>
@@ -1086,6 +1125,8 @@
       </span>
       <br />
       <div class="card">
+        <p>หัวข้อโครงการ</p>
+        <inputText v-model="product_head" class="border" />
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -1460,6 +1501,7 @@ import { useQuotationStore } from "@/stores/quotation";
 import { useCompanyStore } from "@/stores/company";
 import DocQuotation from "@/components/Pdf/DocQuotation.vue";
 import { copyToClipboard } from "@/functions/Coppy"
+import axios from 'axios';
 
 const qtStore = useQuotationStore();
 const cpStore = useCompanyStore();
@@ -1474,8 +1516,12 @@ onMounted(async () => {
 const onCoppy = (value) => {
   console.log(value)
   copyToClipboard(value)
-}
+};
 
+const prod = ref({
+  project: {},
+  product_detail: []
+});
 const lastRefreshed = ref();
 const openQuotation = ref(false);
 const loading = ref(false);
@@ -1513,6 +1559,36 @@ const edittingProduct = ref()
 const files = ref([])
 const transfer = ref('bank')
 const sign = ref(false)
+
+const pushProduct = () => {
+  prod.value.product_detail.push({})
+};
+
+const spliceProduct = (index) => {
+  prod.value.product_detail.splice(index, 1)
+};
+
+const uploadProductPicture = async () => {
+  loading.value = true
+  const data = tempPictures.value
+  try {
+    const { data } = await axios.put(
+      `${import.meta.env.VITE_API_URL}/...`,
+      data,
+      {
+        headers: {
+          'auth-token': import.meta.env.VITE_TOKEN
+        }
+      }
+    )
+  }
+  catch (e) {
+    console.log(e)
+  }
+  finally {
+    loading.value = false
+  }
+};
 
 const closeHandle = () => {
   openQuotation.value = false
@@ -1922,10 +1998,10 @@ const deleteSelectedQuotations = async () => {
 
 const createNewQuotation = async () => {
   loading.value = true;
-  let img = [];
-  let qtId = null;
+  let product_pics = [];
   products.value.forEach((product) => {
-    product.product_logo = [];
+    product_pics = [...product.product_logo]
+    product.product_logo = []
   });
 
   const data = {
@@ -1963,95 +2039,82 @@ const createNewQuotation = async () => {
     transfer: transfer.value
   };
   console.log(data);
+
+  let product_detail = [];
+  let qtId = null;
+
   try {
     const response = await Documents.createNewQuotation(data);
-    if (response.data) {
-      img = response.data.product_detail;
+    if (response.data.data) {
+      product_detail = [...response.data.product_detail];
       qtId = response.data._id;
-      const imgId = img.map((id) => id._id);
-      if (imgId) {
-        console.log('uploadfiles',uploadfiles.value)
-        uploadfiles.value.forEach(async (file, index) => {
-          console.log('file', file)
-          const formData = new FormData();
-          console.log('file', file)
-
-          for ( let i in file ) {
-            formData.append("imgCollection", file[i])
+      const imgId = product_detail.map((id) => id._id);
+      if (imgId && imgId.length > 0) {
+        product_detail.forEach(async (image, index) => {
+          try {
+            const response = await axios.put('/')
           }
-
-          console.log([...formData])
-          const res = await Documents.uploadFileQuotation(imgId[index], qtId, formData);
-          qtStore.getQuotations()
-          refresh()
-          quotationDialog.value = false;
-          toast.add({
-            severity: "success",
-            summary: "Successful",
-            detail: "สร้างใบเสนอราคาแล้ว",
-            life: 3000,
-          });
-          loading.value = false;
-          quotationDialog.value = false;
-          refresh()
-        });
+          catch (e) {
+            console.log(e);
+            toast.add({
+              severity: "error",
+              summary: "สร้างใบเสนอราคาแล้ว",
+              detail: "ไม่สามารถอัพโหลดรูปภาพ",
+              life: 3000,
+            });
+          }
+        })
       } else {
-        qtStore.getQuotations()
-        refresh()
-        quotationDialog.value = false;
+        console.log(response.data.data.product_detail);
         toast.add({
-          severity: "success",
-          summary: "Successful",
-          detail: "สร้างใบเสนอราคาแล้ว",
+          severity: "info",
+          summary: "สร้างใบเสนอราคาแล้ว",
+          detail: "ไม่มีสินค้าในใบเสนอราคา",
           life: 3000,
         });
-        loading.value = false;
-        refresh()
       }
-      refresh()
-    } else {
-      qtStore.getQuotations()
-      refresh()
-      quotationDialog.value = false;
-      toast.add({
-        severity: "error",
-        summary: "มีบางอย่างผิดพลาด",
-        detail: "สร้างใบเสนอราคาล้มเหลว",
-        life: 3000,
-      });
-      quotationDialog.value = false;
-      loading.value = false;
-      refresh()
     }
-    loading.value = false;
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "สร้างใบเสนอราคาแล้ว",
-      life: 3000,
-    });
-    refresh()
-  } catch (err) {
+  }
+  catch (err) {
     console.log(err);
-    quotationDialog.value = false;
-    loading.value = false;
     toast.add({
       severity: "error",
       summary: "มีบางอย่างผิดพลาด",
       detail: "สร้างใบเสนอราคาล้มเหลว",
       life: 3000,
-    });
+    })
+  }
+  finally {
+    quotationDialog.value = false;
+    loading.value = false;
+    refresh();
+  }
+}
+
+const editingProductQuotation = async () => {
+  loading.value = true;
+  const data = {
+    product_detail: products.value
+  }
+  try {
+    const response = await Documents.editQuotation(quotation.value._id, data);
+    if (response.data) {
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "อัพเดทใบเสนอราคาแล้ว",
+        life: 3000,
+      });
+    } 
+  } 
+  catch(err) {
+    console.log(err);
+  }
+  finally {
+    loading.value = false;
+    quotationEditDialog.value = false;
     refresh()
   }
-  quotationDialog.value = false;
-  loading.value = false;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "สร้างใบเสนอราคาแล้ว",
-    life: 3000,
-  });
-  refresh()
 };
 
 const editingQuotation = async () => {
@@ -2070,7 +2133,7 @@ const editingQuotation = async () => {
       customer_type: customer.value.customer_type,
     },
     product_head: product_head.value || '',
-    product_detail: products.value,
+    //product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
     percen_payment: isWithholding.value ? withholdingPercent.value : null,
@@ -2100,10 +2163,17 @@ const editingQuotation = async () => {
         detail: "อัพเดทใบเสนอราคาแล้ว",
         life: 3000,
       });
+      await editingProductQuotation()
     } 
   } 
   catch(err) {
     console.log(err);
+    toast.add({
+      severity: "error",
+      summary: "ERROR",
+      detail: "อัพเดทใบเสนอราคาล้มเหลว",
+      life: 3000,
+    });
   }
   finally {
     loading.value = false;

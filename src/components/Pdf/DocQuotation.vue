@@ -136,12 +136,19 @@
                   </tr> -->
                   <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
-                      <p v-if="product.product_name">{{ index + 1 > minus ? (index + 1) - minus : index + 1 === minus ? (index + 1) - minus + 2 : index +1 }}</p>
+                      <p v-if="product.product_name" :class="index===0 && product.product_head">
+                        {{ 
+                          index + 1 > minus ? (index + 1) - minus 
+                          : index + 1 === minus ? (index + 1) - minus + 2 
+                          : index +1 
+                        }}
+                      </p>
                     </td>
                     <td class=".td border">
                       <div class="flex flex-col">
                         <article class="text-wrap w-[200px]">
-                            <p class="pb-3 font-bold">{{ product.product_name }}</p>
+                            <p v-if="product.product_head" class="pb-3 font-bold">{{ product.product_head }}</p>
+                            <p v-else class="pb-3 font-bold">{{ product.product_name }}</p>
                             <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
                               <!-- {{ index + 1 }}.{{ pindex + 1 }}) {{ p }} -->
                               {{ p }}
