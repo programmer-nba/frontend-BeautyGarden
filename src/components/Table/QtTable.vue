@@ -509,13 +509,82 @@
         </div>
       </div>
       <br />
-      <span class="my-4" v-if="selectedCompany?.isVat">
+      <!-- <span class="my-4" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
-      </span>
+      </span> -->
+      
+      <div v-if="selectedCompany?.isVat"  class="flex justify-between bg-slate-200 px-3 py-2">
+        <div class="flex items-center">
+          <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
+          <label for="isVat" class="ml-2"> VAT 7% </label>
+        </div>
+        <SelectButton class="w-1/2" @change="changesumVat()" v-show="prod.project.isVat" v-model="choosesumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
+      </div>
+      
       <br />
       <div class="card">
-        <p>หัวข้อโครงการ</p>
-        <inputText v-model="product_head" class="border" />
+        <div class="bg-slate-200 px-2 py-5 rounded shadow-md">
+          <div>
+            <div>
+              <p class="font-bold">ชื่อโครงการ (Project)</p>
+              <inputText v-model="prod.project.name" class="px-2" />
+            </div>
+            <div>
+              <p>จำนวน</p>
+              <div class="flex gap-2">
+                <inputNumber v-model="prod.project.amount" />
+                <inputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+              </div>
+            </div>
+            <div>
+              <p>ราคา/หน่วย</p>
+              <inputNumber v-model="prod.project.price" />
+            </div>
+            <pre class="hidden">
+              {{ 
+                prod.project.isVat && sumVat
+                ? prod.project.vat_price = prod.project.total*0.07
+                : prod.project.isVat && !sumVat
+                ? prod.project.vat_price = prod.project.total*7/107
+                : 0
+              }}
+            </pre>
+
+            <div class="py-3" v-if="sumVat">
+              <p>ราคาสินค้า/บริการ</p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && !sumVat">
+              <p>ราคาสินค้า/บริการ</p> 
+              <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0">
+              <p>VAT 7%</p> 
+              <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
+            </div>
+            
+            <div class="py-3" v-if="!sumVat">
+              <p>ราคาสินค้า/บริการ 
+                <span class="px-2 text-sm bg-yellow-300">
+                  {{ 'รวม Vat' }}
+                </span>
+              </p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && sumVat">
+              <p>ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
+                {{ 'รวม Vat' }}
+              </span></p> 
+              <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
+            </div>
+
+          </div>
+        </div>
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -634,134 +703,123 @@
           </div>
         </div>
 
-        <div class="field">
-          <label class="font-semibold text-lg">หัวข้อ</label>
-          <div class="card flex justify-content-center">
-            <InputText class="px-2 py-2" v-model="product.product_name" />
-          </div>
-          <label class="font-semibold py-3 text-lg">รายละเอียด</label>
-          <div
-            v-for="(text, textInputIndex) in product.product_text"
-            class="card flex flex-col gap-y-5 items-center justify-center"
-          >
-            <Textarea
-              v-model="product.product_text[textInputIndex]"
-              autoResize
-              rows="5"
-              cols="50"
-              class="border-2 my-2"
-            />
-          </div>
-          <div class="flex gap-2">
-            <Button
-            label="ลดบรรทัด"
-            class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
-            @click="product.product_text.pop()"
-            :disabled="product.product_text.length < 2"
-          />
-          <Button
-            label="เพิ่มบรรทัดใหม่"
-            class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
-            @click="product.product_text.push('')"
-          />
-          </div>
-          
-        </div>
-        <div class="field grid w-full px-5">
-          <div class="field grid">
-            <label for="price">ราคา/หน่วย</label>
-            <InputNumber
-              class="p-2 w-full"
-              id="price"
-              v-model="product.product_price"
-              mode="currency"
-              currency="THB"
-            />
-          </div>
-          <div class="field grid">
-            <label for="quantity">จำนวน</label>
-            <InputNumber
-              class="p-2"
-              id="quantity"
-              v-model="product.product_amount"
-              integeronly
-            />
-          </div>
-          <div class="field grid">
-            <label for="unit">หน่วย</label>
-            <InputText
-              class="px-2"
-              id="unit"
-              v-model="product.unit"
-            />
-          </div>
-          <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
-            <p>VAT</p>
-            <InputSwitch v-model="product.isVat" @change="changeProductVat" />
-            <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
-          </div>
-          <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
-            <label for="quantity" class="font-semibold">รวม</label>
-            <p class="font-semibold px-2">
-              {{ 
-                sumVat
-                ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
-                : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
-              }} บาท
-            </p>
-          </div>
-        </div>
-
-        <div class="card flex gap-3 justify-center items-center py-2">
-          <Button
-            class="py-2 text-center pl-3 pr-5 rounded text-red-500"
-            label="ยกเลิก "
-            icon="pi pi-times"
-            @click="cancleProduct"
-          />
-          <Button
-            class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
-            :class="edittingProduct ? 'bg-orange-600' : ''"
-            :label="edittingProduct ? 'แก้ไข' : 'เพิ่ม'"
-            icon="pi pi-check"
-            @click="addProduct"
-          />
-        </div>
-      </div>
-
-      <!-- <div class="bg-yellow-100 px-2 py-5 rounded shadow-md border-2">
+        <!--sub details-->
         <div>
-          <div>
-            <p>ชื่อโครงการ (Project)</p>
-            <inputText v-model="prod.project.name" />
+          <div class="field">
+            <div class="flex gap-2 items-center">
+              <label class="font-semibold text-lg">หัวข้อที่</label>
+              <input type="number" v-model="product.product_no" class="border-b text-center rounded w-20" />
+            </div>
+            
+            <div class="card flex justify-content-center">
+              <InputText class="px-2 py-2" v-model="product.product_name" />
+            </div>
+            
+            <div class="flex gap-2 items-center">
+              <label class="font-semibold py-3 text-lg">รายละเอียดที่ <span>{{ product.product_no }}.</span></label>
+              <input type="number" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
+            </div>
+            
+            <div
+              v-for="(text, textInputIndex) in product.product_text"
+              class="card flex flex-col gap-y-5 items-center justify-center"
+            >
+              <Textarea
+                v-model="product.product_text[textInputIndex]"
+                autoResize
+                placeholder="รายละเอียด..."
+                rows="5"
+                cols="50"
+                class="border-2 mb-2"
+              />
+            </div>
+            <div class="flex gap-2">
+              <Button
+              label="ลดบรรทัด"
+              class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
+              @click="product.product_text.pop()"
+              :disabled="product.product_text.length < 2"
+            />
+            <Button
+              label="เพิ่มบรรทัดใหม่"
+              class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
+              @click="product.product_text.push('')"
+            />
+            </div>
           </div>
-          <div>
-            <p>จำนวน</p>
-            <inputNumber v-model="prod.project.amount" />
-            <inputText v-model="prod.project.unit" />
+          <pre class="hidden">{{ !isPrice ? product.product_price = 0 : product.product_price = product.product_price }}</pre>
+          <div class="field grid w-full px-5">
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">รายละเอียดราคา</label>
+                <InputSwitch v-model="isPrice" />
+              </div>
+              <InputNumber
+                class="p-2 w-full"
+                id="price"
+                v-model="product.product_price"
+                mode="currency"
+                currency="THB"
+                :disabled="!isPrice"
+              />
+            </div>
+            <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">จำนวน</label>
+                <InputSwitch v-model="isAmount" />
+              </div>
+              <InputNumber
+                class="p-2"
+                id="quantity"
+                v-model="product.product_amount"
+                integeronly
+                :disabled="!isAmount"
+              />
+            </div>
+            <div class="field grid">
+              <label for="unit">หน่วย</label>
+              <InputText
+                class="px-2"
+                id="unit"
+                v-model="product.unit"
+                :disabled="!isAmount"
+              />
+            </div>
+            <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
+              <p>VAT</p>
+              <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+              <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
+            </div>
+            <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+              <label for="quantity" class="font-semibold">รวม</label>
+              <p class="font-semibold px-2">
+                {{ 
+                  sumVat
+                  ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
+                  : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
+                }} บาท
+              </p>
+            </div>
           </div>
-          <div>
-            <p>ราคา/หน่วย</p>
-            <inputNumber v-model="prod.project.unit_price" />
-          </div>
-          <div>
-            <div class="flex items-center">
-              <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
-              <label for="isVat" class="ml-2"> VAT 7% </label>
-          </div>
-            <SelectButton v-show="prod.project.isVat" v-model="prod.project.sumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
-            <inputNumber v-model="prod.project.unit_price" />
-          </div>
-          <div>
-            <p>ราคารวม</p>
-            <pre class="hidden">{{ prod.project.total_price = (prod.project.unit_price * prod.project.amount) }}</pre>
-            <inputNumber v-model="prod.project.total_price" />
+          <div class="card flex gap-3 justify-center items-center py-2">
+            <Button
+              class="py-2 text-center pl-3 pr-5 rounded text-red-500"
+              label="ยกเลิก "
+              icon="pi pi-times"
+              @click="cancleProduct"
+            />
+            <Button
+              class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
+              :class="edittingProduct ? 'bg-orange-600' : ''"
+              :label="edittingProduct ? 'แก้ไข' : 'เพิ่ม'"
+              icon="pi pi-check"
+              @click="addProduct"
+            />
           </div>
         </div>
-        <div v-for="(pro, proIndex) in prod.product_detail" :key="proIndex">
-
-        </div>
-      </div> -->
+        
+      </div>
 
       <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
         <p>ส่วนลด</p>
@@ -774,41 +832,75 @@
       </div>
 
       <div class="flex flex-col gap-y-2">
+
+        <div v-if="prod.project.isVat && !sumVat">
+          <p>ราคารวม
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat && sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat && !sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="!prod.project.isVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice)
+            }}</span>
+          </p>
+        </div>
         
-        <span v-if="sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(sumProductsPrice) || 0
-          }}</span></span
-        >
-        <span v-if="!sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(notSumVatsumProductsPrice) || 0
-          }}</span></span
-        >
-        
-        <span
-          >ส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
-        >
-        <span
-          >ราคาหลังหักส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >ราคารวม VAT
-          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
-        >
-        <span v-if="isWithholding"
-          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
-          <span class="border-b px-2">{{
-            formatCurrency(withholdingPrice) || 0
-          }}</span></span
-        >
+        <p>
+          ส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(discount) || 0 }}
+          </span>
+        </p>
+        <p>
+          ราคาหลังหักส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(netPrices) || 0 }}
+          </span>
+        </p>
+        <p v-if="prod.project.isVat">
+          VAT 7% 
+          <span class="border-b px-2">
+            {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
+          </span>
+        </p>
+        <pre class="hidden">
+          {{
+            prod.project.total_net = prod.project.isVat && sumVat ? prod.project.total + prod.project.vat_price : prod.project.isVat && !sumVat ? prod.project.total
+            : 0
+          }}
+        </pre>
+        <p v-if="selectedCompany?.isVat">
+          ราคารวม VAT
+          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span>
+        </p>
+        <span v-if="isWithholding">
+          หัก ณ ที่จ่าย {{ withholdingPercent }}%
+            <p class="border-b px-2">
+              {{
+                formatCurrency(withholdingPrice) || 0
+              }}
+            </p>
+          </span>
         <span class="font-bold py-3"
           >ราคาสุทธิ
           <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
@@ -1492,7 +1584,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import { Documents } from "@/service/ProductService";
@@ -1534,6 +1626,7 @@ const isWithholding = ref(false);
 const sumVat = ref(true);
 const discount = ref(0);
 const product = ref({});
+const subProduct = ref({});
 const products = ref([]);
 const selectedCompany = ref();
 const selectedSignature = ref();
@@ -1559,6 +1652,26 @@ const edittingProduct = ref()
 const files = ref([])
 const transfer = ref('bank')
 const sign = ref(false)
+
+const choosesumVat = ref('Vat นอก');
+
+const choosedVat = () => {
+  
+}
+
+watch(() => prod.value.project.isVat, (newValue, oldValue) => {
+  if(!newValue) {
+    prod.value.project.vat_price = 0
+  }
+})
+
+const changesumVat = () => {
+  if (prod.value.project.isVat && choosesumVat.value === 'Vat นอก') {
+    sumVat.value = true
+  } else {
+    sumVat.value = false
+  }
+};
 
 const pushProduct = () => {
   prod.value.product_detail.push({})
@@ -1705,10 +1818,10 @@ const formatDateRef = (isoDateString) => {
 
 const withholdingPrice = computed(() => {
   if (isWithholding.value && sumVat.value) {
-    const result = (netPrices.value * withholdingPercent.value) / 100;
+    const result = ((netPrices.value) * withholdingPercent.value ) / 100;
     return result;
   } else if (isWithholding.value && !sumVat.value) {
-    const result = (notSumVatsumProductsPrice.value * withholdingPercent.value) / 100;
+    const result = ((netPrices.value) * withholdingPercent.value ) / 100;
     return result;
   } else {
     return 0;
@@ -1759,10 +1872,10 @@ const sumProductsPrice = computed(() => {
 });
 
 const notSumVatsumProductsPrice = computed(()=>{
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
+  if (prod.value.project.isVat && sumVat.value) {
     const result = sumProductsPrice.value
     return result;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
+  } else if (prod.value.project.isVat && !sumVat.value){
     const result = sumProductsPrice.value
     return result;
   } else {
@@ -1771,12 +1884,12 @@ const notSumVatsumProductsPrice = computed(()=>{
 })
 
 const netPrices = computed(() => {
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
-    return sumProductsPrice.value - discount.value;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    return notSumVatsumProductsPrice.value - discount.value;
+  if (prod.value.project.isVat && sumVat.value) {
+    return (sumProductsPrice.value+prod.value.project.total) - discount.value;
+  } else if (prod.value.project.isVat && !sumVat.value){
+    return (sumProductsPrice.value+prod.value.project.total-prod.value.project.vat_price) - discount.value;
   } else {
-    return sumProductsPrice.value - discount.value;
+    return (sumProductsPrice.value+prod.value.project.total) - discount.value;
   }
 });
 
@@ -1789,11 +1902,11 @@ const vat = computed(() => {
 });
 
 const netVat = computed(() => {
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
-    const result = vat.value + netPrices.value;
+  if (prod.value.project.isVat && sumVat.value) {
+    const result = vat.value + netPrices.value + prod.value.project.vat_price;
     return result;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = vat.value + netPrices.value;
+  } else if (prod.value.project.isVat && !sumVat.value){
+    const result = vat.value + netPrices.value + prod.value.project.vat_price;
     return result;
   } else {
     return netPrices.value;
@@ -1850,6 +1963,8 @@ const openNew = () => {
   quotationDialog.value = true;
   product.value.product_text = [""];
 };
+
+const isPrice = ref(true);
 
 const hideDialog = () => {
   product.value = {};
@@ -1946,6 +2061,8 @@ const deleteQuotation = async () => {
   }
 };
 
+const isAmount = ref(true)
+
 const withHolding = (product) => {
   const percent = product.vat.percen_deducted
   const price = totalPrice(product)
@@ -1999,10 +2116,11 @@ const deleteSelectedQuotations = async () => {
 const createNewQuotation = async () => {
   loading.value = true;
   let product_pics = [];
-  products.value.forEach((product) => {
-    product_pics = [...product.product_logo]
+
+  /*  products.value.forEach((product) => {
+    product_pics.push()
     product.product_logo = []
-  });
+  }); */
 
   const data = {
     customer_number: customer.value.customer_number,
@@ -2019,6 +2137,7 @@ const createNewQuotation = async () => {
     },
     product_head: product_head.value || '',
     product_detail: products.value,
+    project: prod.value.project,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
     percen_payment: isWithholding.value ? withholdingPercent.value : null,
@@ -2052,7 +2171,24 @@ const createNewQuotation = async () => {
       if (imgId && imgId.length > 0) {
         product_detail.forEach(async (image, index) => {
           try {
-            const response = await axios.put('/')
+            const response = await axios.put(
+              `${import.meta.env.VITE_API_URL}/quotation/uploadPicProduct/${qtId}/${imgId}`,
+              image,
+              {
+                headers: {
+                  'auth-token' : import.meta.env.VITE_TOKEN
+                }
+              }
+            )
+            if (response.data.status) {
+              console.log(response.data)
+              toast.add({
+                severity: "success",
+                summary: "สำเร็จ",
+                detail: "อัพรูปใบเสนอราคาแล้ว",
+                life: 3000,
+              });
+            }
           }
           catch (e) {
             console.log(e);
@@ -2087,6 +2223,7 @@ const createNewQuotation = async () => {
   finally {
     quotationDialog.value = false;
     loading.value = false;
+    prod.value.project = {};
     refresh();
   }
 }
