@@ -708,7 +708,7 @@
           <div class="field">
             <div class="flex gap-2 items-center">
               <label class="font-semibold text-lg">หัวข้อที่</label>
-              <input type="number" v-model="product.product_no" class="border-b text-center rounded w-20" />
+              <input type="text" v-model="product.product_no" class="border-b text-center rounded w-20" />
             </div>
             
             <div class="card flex justify-content-center">
@@ -717,7 +717,7 @@
             
             <div class="flex gap-2 items-center">
               <label class="font-semibold py-3 text-lg">รายละเอียดที่ <span>{{ product.product_no }}.</span></label>
-              <input type="number" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
+              <input type="text" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
             </div>
             
             <div
@@ -860,7 +860,7 @@
         <div v-if="!prod.project.isVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice)
+              formatCurrency(sumProductsPrice+(prod.project.total || 0))
             }}</span>
           </p>
         </div>
@@ -889,7 +889,7 @@
             : 0
           }}
         </pre>
-        <p v-if="selectedCompany?.isVat">
+        <p v-if="prod.project.isVat">
           ราคารวม VAT
           <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span>
         </p>

@@ -101,7 +101,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th v-if="data.data.customer_branch?.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.project.name" :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
                       <p>VAT 7%</p>
                       <small class="font-normal"></small>
                     </th>
@@ -115,7 +115,7 @@
                   <tr class="border">
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2 font-bold">
-                        โครงการ project {{ mainProd?.length }}
+                        โครงการ project
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
@@ -173,17 +173,18 @@
                   </tr>
                   <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
-                      <p v-if="product.product_name" :class="index===0 && data.data.project.name">
-                        {{ data.data.no }}
+                      <p v-if="product.product_name">
+                        {{ product.product_no }}
+                      </p>
+                      <p v-else>
+                        {{ product.product_text_no }}
                       </p>
                     </td>
                     <td class=".td border">
                       <div class="flex flex-col">
                         <article class="text-wrap w-[200px]">
-                            <p v-if="product.product_head" class="pb-3 font-bold">{{ product.product_head }}</p>
-                            <p v-else class="pb-3 font-bold">{{ product.product_name }}</p>
+                            <p class="pb-3 font-bold">{{ product.product_name }}</p>
                             <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
-                              <!-- {{ index + 1 }}.{{ pindex + 1 }}) {{ p }} -->
                               {{ p }}
                               <img 
                               v-if="product.product_logo[pindex]" 
