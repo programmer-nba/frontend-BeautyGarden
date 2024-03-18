@@ -151,9 +151,11 @@
         >
           <template #body="slotProps">
             {{ 
-              slotProps.data.customer_branch?.isVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data)) 
-              : formatCurrency(slotProps.data.total - slotProps.data.discount) 
+              slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
+              : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
+              : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
             }}
           </template>
         </Column>
@@ -170,8 +172,8 @@
               :class="slotProps.data.customer_branch.isVat 
               ? 'bg-yellow-200 rounded p-1' : ''">
                 {{ 
-                  slotProps.data.customer_branch.isVat && slotProps.data.sumVat ? "VAT นอก" 
-                  : slotProps.data.customer_branch.isVat && !slotProps.data.sumVat ? "VAT ใน"
+                  slotProps.data.customer_branch.isVat && slotProps.data.sumVat ? "VAT" 
+                  : slotProps.data.customer_branch.isVat && !slotProps.data.sumVat ? "VAT"
                   : "-" 
               }}
               </span>
@@ -1955,6 +1957,7 @@ const resetData = () => {
   products.value = []
   product.value = {}
   remark.value = []
+  isWithholding.value = false;
 }
 
 const openNew = () => {
