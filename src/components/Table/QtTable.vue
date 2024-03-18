@@ -613,6 +613,7 @@
                     <div>
                       <div>
                         <p class="text-clip font-semibold overflow-hidden w-[100px]">
+                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
                           {{ item.product_name }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
@@ -637,14 +638,14 @@
                         </p>
                       </div>
                     </div>
-                    <div class="flex flex-column md:align-items-end gap-5">
-                      <span class="text-xl font-semibold text-900"
+                    <div class="flex items-center md:items-end gap-5">
+                      <span v-if="item.product_price > 0" class="font-semibold text-900"
                         >
                         {{
                           formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
                         }}.-</span
                       >
-                      <div class="flex h-fit">
+                      <div class="flex flex-col h-fit">
                         <Button
                           icon="pi pi-pencil"
                           outlined
@@ -1219,8 +1220,68 @@
       </span>
       <br />
       <div class="card">
-        <p>หัวข้อโครงการ</p>
-        <inputText v-model="product_head" class="border" />
+        <div class="bg-slate-200 px-2 py-5 rounded shadow-md">
+          <div>
+            <div>
+              <p class="font-bold">ชื่อโครงการ (Project)</p>
+              <inputText v-model="prod.project.name" class="px-2" />
+            </div>
+            <div>
+              <p>จำนวน</p>
+              <div class="flex gap-2">
+                <inputNumber v-model="prod.project.amount" />
+                <inputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+              </div>
+            </div>
+            <div>
+              <p>ราคา/หน่วย</p>
+              <inputNumber v-model="prod.project.price" />
+            </div>
+            <pre class="hidden">
+              {{ 
+                prod.project.isVat && sumVat
+                ? prod.project.vat_price = prod.project.total*0.07
+                : prod.project.isVat && !sumVat
+                ? prod.project.vat_price = prod.project.total*7/107
+                : 0
+              }}
+            </pre>
+
+            <div class="py-3" v-if="sumVat">
+              <p>ราคาสินค้า/บริการ</p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && !sumVat">
+              <p>ราคาสินค้า/บริการ</p> 
+              <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0">
+              <p>VAT 7%</p> 
+              <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
+            </div>
+            
+            <div class="py-3" v-if="!sumVat">
+              <p>ราคาสินค้า/บริการ 
+                <span class="px-2 text-sm bg-yellow-300">
+                  {{ 'รวม Vat' }}
+                </span>
+              </p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && sumVat">
+              <p>ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
+                {{ 'รวม Vat' }}
+              </span></p> 
+              <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
+            </div>
+
+          </div>
+        </div>
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -1229,18 +1290,16 @@
                   class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
                   :class="{ 'surface-border': index !== 0 }"
                 >
-                  
                   <div class="overflow-x-auto w-[120px]">
                     <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
                       <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
                         <img
                           class="w-full h-full object-cover"
                           :src="pic"
-                          :alt="index"
+                          :alt="picindex"
                         />
                       </div>
                     </div>
-                    
                   </div>
               
                   <div
@@ -1249,6 +1308,7 @@
                     <div>
                       <div>
                         <p class="text-clip font-semibold overflow-hidden w-[100px]">
+                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
                           {{ item.product_name }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
@@ -1261,33 +1321,26 @@
                           </p>
                         </div>
                         <p
-                          v-if="selectedCompany?.isVat"
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
                           {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
-                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
-                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
+                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
                             : null 
                           }}
                         </p>
-                        <p
-                          v-else
-                          class="font-normal text-xs text-clip overflow-hidden w-[100px]"
-                        >
-                          {{ formatCurrency(item.product_price) }} x
-                          {{ item.product_amount }} {{ item.unit }}
-                        </p>
                       </div>
                     </div>
-                    <div class="flex flex-column md:align-items-end gap-5">
-                      <span class="text-xl font-semibold text-900"
-                        >{{
-                          formatCurrency((item.product_price * item.product_amount)+((item.vat_price || 0) * item.product_amount))
+                    <div class="flex items-center md:items-end gap-5">
+                      <span v-if="item.product_price > 0" class="font-semibold text-900"
+                        >
+                        {{
+                          formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
                         }}.-</span
                       >
-                      <div class="flex h-fit">
+                      <div class="flex flex-col h-fit">
                         <Button
                           icon="pi pi-pencil"
                           outlined
@@ -1346,11 +1399,20 @@
           </div>
         </div>
         <div class="field">
-          <label class="font-semibold text-lg">หัวข้อย่อย</label>
+          <div class="flex gap-2 items-center">
+            <label class="font-semibold text-lg">หัวข้อที่</label>
+            <input type="text" v-model="product.product_no" class="border-b text-center rounded w-20" />
+          </div>
+          
           <div class="card flex justify-content-center">
             <InputText class="px-2 py-2" v-model="product.product_name" />
           </div>
-          <label class="font-semibold py-3 text-lg">รายละเอียด</label>
+          
+          <div class="flex gap-2 items-center">
+            <label class="font-semibold py-3 text-lg">รายละเอียดที่ <span>{{ product.product_no }}.</span></label>
+            <input type="text" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
+          </div>
+          
           <div
             v-for="(text, textInputIndex) in product.product_text"
             class="card flex flex-col gap-y-5 items-center justify-center"
@@ -1358,9 +1420,10 @@
             <Textarea
               v-model="product.product_text[textInputIndex]"
               autoResize
+              placeholder="รายละเอียด..."
               rows="5"
               cols="50"
-              class="border-2 my-2"
+              class="border-2 mb-2"
             />
           </div>
           <div class="flex gap-2">
@@ -1376,60 +1439,63 @@
             @click="product.product_text.push('')"
           />
           </div>
-          
         </div>
-        <div class="field grid w-full px-5">
-          <div class="field grid">
-            <label for="price">ราคา/หน่วย</label>
-            <InputNumber
-              class="p-2 w-full"
-              id="price"
-              v-model="product.product_price"
-              mode="currency"
-              currency="THB"
-            />
+        
+          <pre class="hidden">{{ !isPrice ? product.product_price = 0 : product.product_price = product.product_price }}</pre>
+          <div class="field grid w-full px-5">
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">รายละเอียดราคา</label>
+                <InputSwitch v-model="isPrice" />
+              </div>
+              <InputNumber
+                class="p-2 w-full"
+                id="price"
+                v-model="product.product_price"
+                mode="currency"
+                currency="THB"
+                :disabled="!isPrice"
+              />
+            </div>
+            <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">จำนวน</label>
+                <InputSwitch v-model="isAmount" />
+              </div>
+              <InputNumber
+                class="p-2"
+                id="quantity"
+                v-model="product.product_amount"
+                integeronly
+                :disabled="!isAmount"
+              />
+            </div>
+            <div class="field grid">
+              <label for="unit">หน่วย</label>
+              <InputText
+                class="px-2"
+                id="unit"
+                v-model="product.unit"
+                :disabled="!isAmount"
+              />
+            </div>
+            <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
+              <p>VAT</p>
+              <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+              <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
+            </div>
+            <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+              <label for="quantity" class="font-semibold">รวม</label>
+              <p class="font-semibold px-2">
+                {{ 
+                  sumVat
+                  ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
+                  : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
+                }} บาท
+              </p>
+            </div>
           </div>
-          <div class="field grid">
-            <label for="quantity">จำนวน</label>
-            <InputNumber
-              class="p-2"
-              id="quantity"
-              v-model="product.product_amount"
-              integeronly
-            />
-          </div>
-          <div class="field grid">
-            <label for="unit">หน่วย</label>
-            <InputText
-              class="px-2"
-              id="unit"
-              v-model="product.unit"
-            />
-          </div>
-          <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
-            <p>VAT</p>
-            <InputSwitch v-model="product.isVat" @change="changeProductVat" />
-            <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
-          </div>
-          <div v-if="selectedCompany?.isVat" class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
-            <label for="quantity" class="font-semibold">รวม</label>
-            <p class="font-semibold px-2">
-              {{ 
-                sumVat
-                ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
-                : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
-              }} บาท
-            </p>
-          </div>
-          <div v-else class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
-            <label for="quantity" class="font-semibold">รวม</label>
-            <p class="font-semibold px-2">
-              {{ 
-                formatCurrency((product.product_amount * product.product_price)) 
-              }} บาท
-            </p>
-          </div>
-        </div>
 
         <div class="card flex gap-3 justify-center items-center py-2">
           <Button
@@ -1459,41 +1525,75 @@
       </div>
 
       <div class="flex flex-col gap-y-2">
+
+        <div v-if="prod.project.isVat && !sumVat">
+          <p>ราคารวม
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat && sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat && !sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="!prod.project.isVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0))
+            }}</span>
+          </p>
+        </div>
         
-        <span v-if="sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(sumProductsPrice) || 0
-          }}</span></span
-        >
-        <span v-if="!sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(notSumVatsumProductsPrice) || 0
-          }}</span></span
-        >
-        
-        <span
-          >ส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
-        >
-        <span
-          >ราคาหลังหักส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >ราคารวม VAT
-          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
-        >
-        <span v-if="isWithholding"
-          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
-          <span class="border-b px-2">{{
-            formatCurrency(withholdingPrice) || 0
-          }}</span></span
-        >
+        <p>
+          ส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(discount) || 0 }}
+          </span>
+        </p>
+        <p>
+          ราคาหลังหักส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(netPrices) || 0 }}
+          </span>
+        </p>
+        <p v-if="prod.project.isVat">
+          VAT 7% 
+          <span class="border-b px-2">
+            {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
+          </span>
+        </p>
+        <pre class="hidden">
+          {{
+            prod.project.total_net = prod.project.isVat && sumVat ? prod.project.total + prod.project.vat_price : prod.project.isVat && !sumVat ? prod.project.total
+            : 0
+          }}
+        </pre>
+        <p v-if="prod.project.isVat">
+          ราคารวม VAT
+          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span>
+        </p>
+        <span v-if="isWithholding">
+          หัก ณ ที่จ่าย {{ withholdingPercent }}%
+            <p class="border-b px-2">
+              {{
+                formatCurrency(withholdingPrice) || 0
+              }}
+            </p>
+          </span>
         <span class="font-bold py-3"
           >ราคาสุทธิ
           <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
@@ -1513,9 +1613,9 @@
       </div>
 
       <template #footer>
-        <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+        <Button label="ยกเลิก" icon="pi pi-times" text @click="hideDialog" />
         <Button
-          label="Save"
+          label="บันทึก"
           icon="pi pi-check"
           :loading="loading"
           text
@@ -1978,37 +2078,38 @@ const hideDialog = () => {
   submitted.value = false;
 };
 
-const editQuotation = (prod) => {
-  quotation.value = { ...prod };
+const editQuotation = (prodd) => {
+  quotation.value = { ...prodd };
   console.log("qt", quotation.value);
 
-  start_date.value = prod.start_date;
-  end_date.value = prod.end_date;
+  start_date.value = prodd.start_date;
+  end_date.value = prodd.end_date;
 
   const company = cpStore.myCompanies.find(
-    (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
+    (item) => item.Branch_company_name === prodd.customer_branch.Branch_company_name
   );
   selectedCompany.value = company;
 
   const customered = customers.value.find(
-    (item) => item.customer_name === prod.customer_detail.customer_name
+    (item) => item.customer_name === prodd.customer_detail.customer_name
   );
   selectedCustomer.value = customered;
   refCustomer();
 
-  isWithholding.value = prod.vat.percen_deducted ? true : false;
-  withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
-  discount.value = prod.discount;
-  products.value = prod.product_detail;
-  remark.value = prod.remark;
-  bank.value = prod.bank ? company.bank.find((item) => item.number === prod.bank.status) : null;
-  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
-  product_head.value = prod.product_head || ''
+  isWithholding.value = prodd.vat.percen_deducted ? true : false;
+  withholdingPercent.value = prodd.vat.percen_deducted ? prodd.vat.percen_deducted : null;
+  discount.value = prodd.discount;
+  products.value = prodd.product_detail;
+  remark.value = prodd.remark;
+  bank.value = prodd.bank ? company.bank.find((item) => item.number === prodd.bank.status) : null;
+  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prodd.signature.name);
+  product_head.value = prodd.product_head || ''
+  prod.value.project = prodd.project
   quotationEditDialog.value = true
   product.value = {}
   product.value.product_text = [""]
-  sumVat.value = prod.sumVat
-  transfer.value = prod.transfer || 'cash'
+  sumVat.value = prodd.sumVat
+  transfer.value = prodd.transfer || 'cash'
 };
 
 const totalPrice = (product) => {
@@ -2273,7 +2374,8 @@ const editingQuotation = async () => {
       customer_type: customer.value.customer_type,
     },
     product_head: product_head.value || '',
-    //product_detail: products.value,
+    product_detail: products.value,
+    project: prod.value.project,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
     percen_payment: isWithholding.value ? withholdingPercent.value : null,
