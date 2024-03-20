@@ -177,7 +177,7 @@
                         {{ product.product_no }}
                       </p>
                       <p v-else>
-                        {{ product.product_no }}.{{ product.product_text_no }}
+                        
                       </p>
                     </td>
                     <td class=".td border">

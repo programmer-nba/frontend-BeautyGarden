@@ -63,6 +63,8 @@
           <template #header>
             <div class="flex flex-wrap gap-2 items-center justify-between">
               <p class="m-0">รายการ <span class="mx-5 font-bold text-green-700">{{ pays?.length }}</span></p>
+              <SelectButton v-model="dateFilter" :options="['วันนี้', '7 วันที่ผ่านมา', 'เดือนนี้', 'ทั้งหมด']" aria-labelledby="basic" />
+              {{ new Date().getDate() }}
               <span class="p-input-icon-right border rounded">
                 <i class="pi pi-search" />
                 <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหารายการ..." />
@@ -97,6 +99,7 @@
             <template #body="slotProps">
               <div>
                 <p>{{ formatDateDisplay(slotProps.data.date) }}</p>
+                {{ new Date(slotProps.data.date).getDate() }} {{ new Date(slotProps.data.date).getMonth()+1 }} {{ new Date(slotProps.data.date).getYear() }}
               </div>
             </template>
           </Column>
@@ -570,6 +573,7 @@
     fetchSuppliers()
   })
   
+  const dateFilter = ref('วันนี้')
   const suppliers = ref([])
   const openPay = ref(false);
   const loading = ref(false);

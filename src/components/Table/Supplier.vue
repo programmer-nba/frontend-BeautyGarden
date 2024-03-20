@@ -370,7 +370,7 @@
             <div class="grid grid-cols-12">
               <div class="col-span-full border grid grid-cols-12">
                 <div class="border-r col-span-2">
-                  <p class="text-center">เลขที่บิล</p>
+                  <p class="text-center">ลำดับ/เลขที่บิล</p>
                 </div>
                 <div class="border-r col-span-4">
                   <p class="text-center">รายการ</p>
@@ -386,24 +386,31 @@
                 </div>
               </div>
               <div class="col-span-full grid grid-cols-12 border-b border-l border-r min-h-10">
-                <div v-if="selectedSupplier.remark.length < 1" class="col-span-full flex items-center justify-center">
+                <div v-if="selectedBill.length < 1" class="col-span-full flex items-center justify-center">
                   <p class="text-center">ไม่มีรายการ</p>
                 </div>
-                <div class="col-span-full border grid grid-cols-12" v-else v-for="(his, hisIndex) in selectedSupplier.remark" :key="hisIndex">
-                  <div class="border-r col-span-2 h-10">
-                    <p class="text-center">-</p>
+                <div class="col-span-full border grid grid-cols-12" v-else v-for="(bill, billIndex) in selectedBill" :key="bill._id">
+                  <div class="border-r col-span-2 min-h-10 h-auto flex justify-center items-center">
+                    <p class="text-center">{{ billIndex + 1 }}{{ bill.code ? `/${bill.code}` : null }}</p>
                   </div>
-                  <div class="border-r col-span-4 h-10">
-                    <p class="text-center">-</p>
+                  <div class="border-r col-span-4 min-h-10 h-auto flex flex-col justify-center items-center">
+                    <div v-for="(product, productIndex) in bill.product_detail" class="text-start">
+                      <p>
+                        <span class="font-bold">{{ product.product_name }}</span>
+                        <span class="px-3 text-sm">({{ product.product_price }} x {{ product.product_amount }}{{ product.unit }})</span>
+                        <span class="font-bold">{{ formatCurrency(product.product_total) }}</span>
+                        <span class="px-3">{{ product.product_cost_type ? `(${product.product_cost_type})` : null }}</span>
+                      </p>
+                    </div>
                   </div>
-                  <div class="border-r col-span-2 h-10">
-                    <p class="text-center">-</p>
+                  <div class="border-r col-span-2 min-h-10 h-auto flex justify-center items-center">
+                    <p class="text-center">{{ formatCurrency(bill.net) }}</p>
                   </div>
-                  <div class="border-r col-span-2 h-10">
-                    <p class="text-center">-</p>
+                  <div class="border-r col-span-2 min-h-10 h-auto flex justify-center items-center">
+                    <p class="text-center">{{ formatThaiDate(bill.date) }}</p>
                   </div>
-                  <div class="col-span-2 h-10">
-                    <p class="text-center">-</p>
+                  <div class="col-span-2 min-h-10 h-auto flex justify-center items-center">
+                    <Image v-if="bill.bill_img" :src="bill.bill_img" :alt="'bill-'+billIndex" width="40" preview />
                   </div>
                 </div>
               </div>
@@ -419,6 +426,9 @@
   import { FilterMatchMode } from "primevue/api";
   import { useToast } from "primevue/usetoast";
   import { Suppliers } from "@/service/Supplier";
+  import { formatThaiDate } from "@/functions/DateTime";
+  import { formatCurrency } from "@/functions/Currency";
+  import axios from 'axios';
   
   onMounted(async () => {
     Suppliers.getSuppliers().then((data) => (suppliers.value = data.data));
@@ -439,6 +449,7 @@
   const deleteSuppliersDialog = ref(false);
   const selectedSuppliers = ref();
   const uploadfiles = ref([]);
+  const selectedBill = ref([]);
   const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
@@ -456,6 +467,7 @@
   const seeSupplier = (data) => {
     openSupplier.value = true;
     selectedSupplier.value = data;
+    getBills()
     console.log("data", selectedSupplier.value);
   };
   
@@ -636,5 +648,31 @@
         return null;
     }
   };
+
+  const getBills = async () => {
+    loading.value = true;
+    const supName = selectedSupplier.value.supplier_company_name;
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/getBySup/${supName}`,
+        {
+          headers: {
+            'auth-token' : import.meta.env.VITE_TOKEN
+          }
+        }
+      )
+      console.log(data.data)
+      if (data.status) {
+        console.log(data.data)
+        selectedBill.value = data.data
+      }
+    }
+    catch (err) {
+      console.log(err)
+    }
+    finally {
+      loading.value = false;
+    };
+  }
   </script>
   

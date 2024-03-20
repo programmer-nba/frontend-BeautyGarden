@@ -614,7 +614,7 @@
                       <div>
                         <p class="text-clip font-semibold overflow-hidden w-[100px]">
                           <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
-                          {{ item.product_name }}
+                          {{ item.product_name || null }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
                           <p
@@ -1308,8 +1308,8 @@
                     <div>
                       <div>
                         <p class="text-clip font-semibold overflow-hidden w-[100px]">
-                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
-                          {{ item.product_name }}
+                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : null }}</span> 
+                          {{ item.product_name || null }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
                           <p
