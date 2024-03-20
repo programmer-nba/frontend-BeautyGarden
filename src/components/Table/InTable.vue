@@ -745,7 +745,7 @@
               <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0">
+            <div class="py-2" v-if="prod.project.isVat && prod.project?.vat_price!==0">
               <p>VAT 7%</p> 
               <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
             </div>
@@ -1161,7 +1161,7 @@
             {{ formatCurrency(netPrices) || 0 }}
           </span>
         </p>
-        <p v-if="prod.project.isVat">
+        <p v-if="prod.project.isVat || selectedCompany?.isVat">
           VAT 7% 
           <span class="border-b px-2">
             {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
@@ -1173,7 +1173,7 @@
             : 0
           }}
         </pre>
-        <p v-if="prod.project.isVat">
+        <p v-if="prod.project.isVat || selectedCompany?.isVat">
           ราคารวม VAT
           <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span>
         </p>
@@ -1813,7 +1813,7 @@
 
       <div class="flex flex-col gap-y-2">
 
-        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
+        <div v-if="prod.project.isVat || selectedCompany.isVat && !sumVat">
           <p>ราคารวม
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
@@ -1821,7 +1821,7 @@
           </p>
         </div>
 
-        <div v-if="prod.project.isVat || selectedCompany?.isVat && sumVat">
+        <div v-if="prod.project.isVat || selectedCompany.isVat && sumVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
@@ -1829,7 +1829,7 @@
           </p>
         </div>
 
-        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
+        <div v-if="prod.project.isVat || selectedCompany.isVat && !sumVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
@@ -1837,7 +1837,7 @@
           </p>
         </div>
 
-        <div v-if="!prod.project.isVat || !selectedCompany?.isVat">
+        <div v-if="!prod.project.isVat || !selectedCompany.isVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0))
@@ -1857,7 +1857,7 @@
             {{ formatCurrency(netPrices) || 0 }}
           </span>
         </p>
-        <p v-if="selectedCompany.isVat">
+        <p v-if="selectedCompany?.isVat">
           VAT 7% 
           <span class="border-b px-2">
             {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
@@ -2065,6 +2065,15 @@ const prod = ref({
   project: {},
   product_detail: []
 });
+
+const choosesumVat = ref('Vat นอก');
+const changesumVat = () => {
+  if (prod.value.project.isVat && choosesumVat.value === 'Vat นอก') {
+    sumVat.value = true
+  } else {
+    sumVat.value = false
+  }
+};
 
 watch(() => prod.value.project.isVat, (newValue, oldValue) => {
   if(!newValue) {
@@ -2311,10 +2320,10 @@ const vat = computed(() => {
 });
 
 const netVat = computed(() => {
-  if (prod.value.project.isVat || selectedCompany.value.isVat && sumVat.value) {
+  if ((prod.value.project.isVat || selectedCompany.value?.isVat) && sumVat.value) {
     const result = vat.value + netPrices.value + (prod.value.project.vat_price || 0);
     return result;
-  } else if (prod.value.project.isVat || selectedCompany.value.isVat && !sumVat.value){
+  } else if ((prod.value.project.isVat || selectedCompany.value?.isVat) && !sumVat.value){
     const result = vat.value + netPrices.value + (prod.value.project.vat_price || 0);
     return result;
   } else {

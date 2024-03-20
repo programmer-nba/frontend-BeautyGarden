@@ -1758,10 +1758,6 @@ const sign = ref(false)
 
 const choosesumVat = ref('Vat นอก');
 
-const choosedVat = () => {
-  
-}
-
 watch(() => prod.value.project.isVat, (newValue, oldValue) => {
   if(!newValue) {
     prod.value.project.vat_price = 0
