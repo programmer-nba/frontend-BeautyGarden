@@ -207,6 +207,8 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
+            <pre class="hidden">
+              {{ slotProps.data.project.vat_price = slotProps.data.isVat ? slotProps.data.project?.vat_price : 0 }}</pre>
             <span
               :class="
               totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) <= 0
@@ -1813,7 +1815,7 @@
 
       <div class="flex flex-col gap-y-2">
 
-        <div v-if="prod.project.isVat || selectedCompany.isVat && !sumVat">
+        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
           <p>ราคารวม
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
@@ -1821,7 +1823,7 @@
           </p>
         </div>
 
-        <div v-if="prod.project.isVat || selectedCompany.isVat && sumVat">
+        <div v-if="prod.project.isVat || selectedCompany?.isVat && sumVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
@@ -1829,7 +1831,7 @@
           </p>
         </div>
 
-        <div v-if="prod.project.isVat || selectedCompany.isVat && !sumVat">
+        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
@@ -1837,7 +1839,7 @@
           </p>
         </div>
 
-        <div v-if="!prod.project.isVat || !selectedCompany.isVat">
+        <div v-if="!prod.project.isVat || !selectedCompany?.isVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0))
@@ -1869,7 +1871,7 @@
             : 0
           }}
         </pre>
-        <p v-if="prod.project.isVat || selectedCompany.isVat">
+        <p v-if="prod.project.isVat || selectedCompany?.isVat">
           ราคารวม VAT
           <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span>
         </p>
@@ -2418,7 +2420,7 @@ const editInvoice = (prodd) => {
   end_date.value = prodd.end_date;
 
   const company = cpStore.myCompanies.find(
-    (item) => item.Branch_company_name === prodd.customer_branch.Branch_company_name
+    (item) => item.Branch_company_name === prodd.customer_branch?.Branch_company_name
   );
   selectedCompany.value = company;
 
