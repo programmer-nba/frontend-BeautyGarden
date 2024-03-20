@@ -669,6 +669,7 @@
           </template>
         </DataView>
       </div>
+
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1983,7 +1984,7 @@ const notSumVatsumProductsPrice = computed(()=>{
   } else {
     return 0;
   }
-})
+});
 
 const netPrices = computed(() => {
   if (prod.value.project.isVat && sumVat.value) {

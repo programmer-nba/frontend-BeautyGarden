@@ -191,9 +191,11 @@
         >
           <template #body="slotProps">
             {{ 
-              slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data)) 
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data)) 
+              slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
+              : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
+              : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
             }}
           </template>
         </Column>
@@ -212,10 +214,11 @@
               : ''
               "
             >{{ 
-              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) - (slotProps.data.paid || 0) <= 0
+              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) <= 0
               ? 'ครบแล้ว'
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) - (slotProps.data.paid || 0)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
             }}</span>
+            
           </template>
         </Column>
         
@@ -609,18 +612,24 @@
       </div>
       <br />
 
-      <p class="font-bold py-5 border-t">รายละเอียดสินค้า/บริการ</p>
-
-      <span class="my-2" v-if="selectedCompany?.isVat">
+      <!-- <span class="my-2" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
-      </span>
+      </span> -->
+
+      <div v-if="selectedCompany?.isVat"  class="flex justify-between bg-slate-200 px-3 py-2">
+        <div class="flex items-center">
+          <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
+          <label for="isVat" class="ml-2"> VAT 7% </label>
+        </div>
+        <SelectButton class="w-1/2" @change="changesumVat()" v-show="prod.project.isVat" v-model="choosesumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
+      </div>
 
       <!-- <div class="py-4 px-2 bg-slate-100 rounded">
         <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
         <InputText id="product_head" v-model="product_head" />
       </div> -->
 
-      <div class="card">
+      <!-- <div class="card">
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -696,8 +705,152 @@
             </div>
           </template>
         </DataView>
+      </div> -->
+      <div class="card">
+        <div class="bg-slate-200 px-2 py-5 rounded shadow-md">
+          <div>
+            <div>
+              <p class="font-bold">ชื่อโครงการ (Project)</p>
+              <inputText v-model="prod.project.name" class="px-2" />
+            </div>
+            <div>
+              <p>จำนวน</p>
+              <div class="flex gap-2">
+                <inputNumber v-model="prod.project.amount" />
+                <inputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+              </div>
+            </div>
+            <div>
+              <p>ราคา/หน่วย</p>
+              <inputNumber v-model="prod.project.price" />
+            </div>
+            <pre class="hidden">
+              {{ 
+                prod.project.isVat && sumVat
+                ? prod.project.vat_price = prod.project.total*0.07
+                : prod.project.isVat && !sumVat
+                ? prod.project.vat_price = prod.project.total*7/107
+                : 0
+              }}
+            </pre>
+
+            <div class="py-3" v-if="sumVat">
+              <p>ราคาสินค้า/บริการ</p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && !sumVat">
+              <p>ราคาสินค้า/บริการ</p> 
+              <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0">
+              <p>VAT 7%</p> 
+              <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
+            </div>
+            
+            <div class="py-3" v-if="!sumVat">
+              <p>ราคาสินค้า/บริการ 
+                <span class="px-2 text-sm bg-yellow-300">
+                  {{ 'รวม Vat' }}
+                </span>
+              </p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && sumVat">
+              <p>ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
+                {{ 'รวม Vat' }}
+              </span></p> 
+              <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
+            </div>
+
+          </div>
+        </div>
+        <DataView :value="products">
+          <template #list="slotProps">
+            <div class="grid grid-nogutter">
+              <div v-for="(item, index) in slotProps.items" :key="index">
+                <div
+                  class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
+                  :class="{ 'surface-border': index !== 0 }"
+                >
+                  <div class="overflow-x-auto w-[120px]">
+                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
+                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
+                        <img
+                          class="w-full h-full object-cover"
+                          :src="pic"
+                          :alt="picindex"
+                        />
+                      </div>
+                    </div>
+                  </div>
+              
+                  <div
+                    class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
+                  >
+                    <div>
+                      <div>
+                        <p class="text-clip font-semibold overflow-hidden w-[100px]">
+                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
+                          {{ item.product_name || null }}
+                        </p>
+                        <div class="w-[100px] overflow-y-hidden">
+                          <p
+                            v-for="(proText, textIndex) in item.product_text"
+                            class="text-clip overflow-hidden w-[100px]"
+                            :key="textIndex"
+                          >
+                            {{ proText }}
+                          </p>
+                        </div>
+                        <p
+                          class="font-normal text-xs text-clip overflow-hidden w-[100px]"
+                        >
+                          {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
+                          {{ item.product_amount }} {{ item.unit }}
+                          {{
+                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
+                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
+                            : null 
+                          }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex items-center md:items-end gap-5">
+                      <span v-if="item.product_price > 0" class="font-semibold text-900"
+                        >
+                        {{
+                          formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
+                        }}.-</span
+                      >
+                      <div class="flex flex-col h-fit">
+                        <Button
+                          icon="pi pi-pencil"
+                          outlined
+                          rounded
+                          class="hover:bg-yellow-200"
+                          @click="editProduct(item)"
+                        ></Button>
+                        <Button
+                          icon="pi pi-trash"
+                          outlined
+                          rounded
+                          class="hover:bg-red-200"
+                          @click="removeProduct(index)"
+                        ></Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </DataView>
       </div>
-      
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -713,7 +866,7 @@
         />
       </div>
 
-      <div
+      <!-- <div
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
       >
@@ -812,8 +965,146 @@
             @click="addProduct"
           />
         </div>
-      </div>
+      </div> -->
 
+      <div
+        v-if="openProductForm"
+        class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
+      >
+
+        <div class="card flex justify-center">
+          <div class="card">
+            <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
+                <template #content>
+                  
+                  <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
+                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
+                      <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                      <i @click="product?.product_logo.splice(picindex, 1)" class="pi pi-times" style="color: red"></i>
+                  </div>
+                  </div>
+                </template>
+            </FileUpload>
+          </div>
+        </div>
+
+        <!--sub details-->
+        <div>
+          <div class="field">
+            <div class="flex gap-2 items-center">
+              <label class="font-semibold text-lg">หัวข้อที่</label>
+              <input type="text" v-model="product.product_no" class="border-b text-center rounded w-20" />
+            </div>
+            
+            <div class="card flex justify-content-center">
+              <InputText class="px-2 py-2" v-model="product.product_name" />
+            </div>
+            
+            <div class="flex gap-2 items-center">
+              <label class="font-semibold py-3 text-lg">รายละเอียดที่ <span>{{ product.product_no }}.</span></label>
+              <input type="text" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
+            </div>
+            
+            <div
+              v-for="(text, textInputIndex) in product.product_text"
+              class="card flex flex-col gap-y-5 items-center justify-center"
+            >
+              <Textarea
+                v-model="product.product_text[textInputIndex]"
+                autoResize
+                placeholder="รายละเอียด..."
+                rows="5"
+                cols="50"
+                class="border-2 mb-2"
+              />
+            </div>
+            <div class="flex gap-2">
+              <Button
+              label="ลดบรรทัด"
+              class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
+              @click="product.product_text.pop()"
+              :disabled="product.product_text.length < 2"
+            />
+            <Button
+              label="เพิ่มบรรทัดใหม่"
+              class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
+              @click="product.product_text.push('')"
+            />
+            </div>
+          </div>
+          <pre class="hidden">{{ !isPrice ? product.product_price = 0 : product.product_price = product.product_price }}</pre>
+          <div class="field grid w-full px-5">
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">รายละเอียดราคา</label>
+                <InputSwitch v-model="isPrice" />
+              </div>
+              <InputNumber
+                class="p-2 w-full"
+                id="price"
+                v-model="product.product_price"
+                mode="currency"
+                currency="THB"
+                :disabled="!isPrice"
+              />
+            </div>
+            <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">จำนวน</label>
+                <InputSwitch v-model="isAmount" />
+              </div>
+              <InputNumber
+                class="p-2"
+                id="quantity"
+                v-model="product.product_amount"
+                integeronly
+                :disabled="!isAmount"
+              />
+            </div>
+            <div class="field grid">
+              <label for="unit">หน่วย</label>
+              <InputText
+                class="px-2"
+                id="unit"
+                v-model="product.unit"
+                :disabled="!isAmount"
+              />
+            </div>
+            <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
+              <p>VAT</p>
+              <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+              <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
+            </div>
+            <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+              <label for="quantity" class="font-semibold">รวม</label>
+              <p class="font-semibold px-2">
+                {{ 
+                  sumVat
+                  ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
+                  : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
+                }} บาท
+              </p>
+            </div>
+          </div>
+          <div class="card flex gap-3 justify-center items-center py-2">
+            <Button
+              class="py-2 text-center pl-3 pr-5 rounded text-red-500"
+              label="ยกเลิก "
+              icon="pi pi-times"
+              @click="cancleProduct"
+            />
+            <Button
+              class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
+              :class="edittingProduct ? 'bg-orange-600' : ''"
+              :label="edittingProduct ? 'แก้ไข' : 'เพิ่ม'"
+              icon="pi pi-check"
+              @click="addProduct"
+            />
+          </div>
+        </div>
+        
+      </div>
       <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
         <p>ส่วนลด</p>
         <InputNumber
@@ -825,41 +1116,75 @@
       </div>
 
       <div class="flex flex-col gap-y-2">
+
+        <div v-if="prod.project.isVat && !sumVat">
+          <p>ราคารวม
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat && sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat && !sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="!prod.project.isVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0))
+            }}</span>
+          </p>
+        </div>
         
-        <span v-if="sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(sumProductsPrice) || 0
-          }}</span></span
-        >
-        <span v-if="!sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(notSumVatsumProductsPrice) || 0
-          }}</span></span
-        >
-        
-        <span
-          >ส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
-        >
-        <span
-          >ราคาหลังหักส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >ราคารวม VAT
-          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
-        >
-        <span v-if="isWithholding"
-          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
-          <span class="border-b px-2">{{
-            formatCurrency(withholdingPrice) || 0
-          }}</span></span
-        >
+        <p>
+          ส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(discount) || 0 }}
+          </span>
+        </p>
+        <p>
+          ราคาหลังหักส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(netPrices) || 0 }}
+          </span>
+        </p>
+        <p v-if="prod.project.isVat">
+          VAT 7% 
+          <span class="border-b px-2">
+            {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
+          </span>
+        </p>
+        <pre class="hidden">
+          {{
+            prod.project.total_net = prod.project.isVat && sumVat ? prod.project.total + prod.project.vat_price : prod.project.isVat && !sumVat ? prod.project.total
+            : 0
+          }}
+        </pre>
+        <p v-if="prod.project.isVat">
+          ราคารวม VAT
+          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span>
+        </p>
+        <span v-if="isWithholding">
+          หัก ณ ที่จ่าย {{ withholdingPercent }}%
+            <p class="border-b px-2">
+              {{
+                formatCurrency(withholdingPrice) || 0
+              }}
+            </p>
+          </span>
         <span class="font-bold py-3"
           >ราคาสุทธิ
           <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
@@ -893,7 +1218,7 @@
     <Dialog
       v-model:visible="invoiceEditDialog"
       :style="{ width: '450px' }"
-      header="Invoice Details"
+      header="แก้ไขใบแจ้งหนี้"
       :modal="true"
       class="p-fluid"
     >
@@ -1215,6 +1540,68 @@
       </div> -->
 
       <div class="card">
+        <div class="bg-slate-200 px-2 py-5 rounded shadow-md">
+          <div>
+            <div>
+              <p class="font-bold">ชื่อโครงการ (Project)</p>
+              <inputText v-model="prod.project.name" class="px-2" />
+            </div>
+            <div>
+              <p>จำนวน</p>
+              <div class="flex gap-2">
+                <inputNumber v-model="prod.project.amount" />
+                <inputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+              </div>
+            </div>
+            <div>
+              <p>ราคา/หน่วย</p>
+              <inputNumber v-model="prod.project.price" />
+            </div>
+            <pre class="hidden">
+              {{ 
+                prod.project.isVat && sumVat
+                ? prod.project.vat_price = prod.project.total*0.07
+                : prod.project.isVat && !sumVat
+                ? prod.project.vat_price = prod.project.total*7/107
+                : 0
+              }}
+            </pre>
+
+            <div class="py-3" v-if="sumVat">
+              <p>ราคาสินค้า/บริการ</p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && !sumVat">
+              <p>ราคาสินค้า/บริการ</p> 
+              <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0">
+              <p>VAT 7%</p> 
+              <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
+            </div>
+            
+            <div class="py-3" v-if="!sumVat">
+              <p>ราคาสินค้า/บริการ 
+                <span class="px-2 text-sm bg-yellow-300">
+                  {{ 'รวม Vat' }}
+                </span>
+              </p>
+              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <inputNumber v-model="prod.project.total" />
+            </div>
+
+            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && sumVat">
+              <p>ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
+                {{ 'รวม Vat' }}
+              </span></p> 
+              <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
+            </div>
+
+          </div>
+        </div>
         <DataView :value="products">
           <template #list="slotProps">
             <div class="grid grid-nogutter">
@@ -1223,21 +1610,26 @@
                   class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
                   :class="{ 'surface-border': index !== 0 }"
                 >
-                  <div class="w-[75px] relative">
-                    <img
-                      v-if="item.product_logo64"
-                      class="object-contain block xl:block mx-auto border-round w-full"
-                      :src="item.product_logo64"
-                      :alt="index"
-                    />
+                  <div class="overflow-x-auto w-[120px]">
+                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
+                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
+                        <img
+                          class="w-full h-full object-cover"
+                          :src="pic"
+                          :alt="picindex"
+                        />
+                      </div>
+                    </div>
                   </div>
+              
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
                     <div>
                       <div>
                         <p class="text-clip font-semibold overflow-hidden w-[100px]">
-                          {{ item.product_name }}
+                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : null }}</span> 
+                          {{ item.product_name || null }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
                           <p
@@ -1254,20 +1646,21 @@
                           {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
                           {{ item.product_amount }} {{ item.unit }}
                           {{
-                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VATนอก' + ')' 
-                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VATใน' + ')' 
+                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
+                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
                             : null 
                           }}
                         </p>
                       </div>
                     </div>
-                    <div class="flex flex-column md:align-items-end gap-5">
-                      <span class="text-xl font-semibold text-900"
-                        >{{
-                          formatCurrency((item.product_amount * item.product_price)+((item.vat_price || 0)*item.product_amount))
+                    <div class="flex items-center md:items-end gap-5">
+                      <span v-if="item.product_price > 0" class="font-semibold text-900"
+                        >
+                        {{
+                          formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
                         }}.-</span
                       >
-                      <div class="flex h-fit">
+                      <div class="flex flex-col h-fit">
                         <Button
                           icon="pi pi-pencil"
                           outlined
@@ -1419,41 +1812,75 @@
       </div>
 
       <div class="flex flex-col gap-y-2">
+
+        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
+          <p>ราคารวม
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat || selectedCompany?.isVat && sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
+            }}</span>
+          </p>
+        </div>
+
+        <div v-if="!prod.project.isVat || !selectedCompany?.isVat">
+          <p>ราคาสินค้า/บริการ
+            <span class="border-b px-2">{{
+              formatCurrency(sumProductsPrice+(prod.project.total || 0))
+            }}</span>
+          </p>
+        </div>
         
-        <span v-if="sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(sumProductsPrice) || 0
-          }}</span></span
-        >
-        <span v-if="!sumVat"
-          >ราคาสินค้า
-          <span class="border-b px-2">{{
-            formatCurrency(notSumVatsumProductsPrice) || 0
-          }}</span></span
-        >
-        
-        <span
-          >ส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(discount) || 0 }}</span></span
-        >
-        <span
-          >ราคาหลังหักส่วนลด
-          <span class="border-b px-2">{{ formatCurrency(netPrices) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >VAT 7% <span class="border-b px-2">{{ formatCurrency(vat) || 0 }}</span></span
-        >
-        <span v-if="selectedCompany?.isVat"
-          >ราคารวม VAT
-          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span></span
-        >
-        <span v-if="isWithholding"
-          >หัก ณ ที่จ่าย {{ withholdingPercent }}%
-          <span class="border-b px-2">{{
-            formatCurrency(withholdingPrice) || 0
-          }}</span></span
-        >
+        <p>
+          ส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(discount) || 0 }}
+          </span>
+        </p>
+        <p>
+          ราคาหลังหักส่วนลด
+          <span class="border-b px-2">
+            {{ formatCurrency(netPrices) || 0 }}
+          </span>
+        </p>
+        <p v-if="selectedCompany.isVat">
+          VAT 7% 
+          <span class="border-b px-2">
+            {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
+          </span>
+        </p>
+        <pre class="hidden">
+          {{
+            prod.project.total_net = prod.project.isVat && sumVat ? prod.project.total + prod.project.vat_price : prod.project.isVat && !sumVat ? prod.project.total
+            : 0
+          }}
+        </pre>
+        <p v-if="prod.project.isVat || selectedCompany.isVat">
+          ราคารวม VAT
+          <span class="border-b px-2">{{ formatCurrency(netVat) || 0 }}</span>
+        </p>
+        <span v-if="isWithholding">
+          หัก ณ ที่จ่าย {{ withholdingPercent }}%
+            <p class="border-b px-2">
+              {{
+                formatCurrency(withholdingPrice) || 0
+              }}
+            </p>
+          </span>
         <span class="font-bold py-3"
           >ราคาสุทธิ
           <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
@@ -1565,7 +1992,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import { Documents } from "@/service/ProductService";
@@ -1634,6 +2061,16 @@ const files = ref([])
 const transfer = ref('bank')
 const inputHeader = ref('ใบแจ้งหนี้')
 const sign = ref(false)
+const prod = ref({
+  project: {},
+  product_detail: []
+});
+
+watch(() => prod.value.project.isVat, (newValue, oldValue) => {
+  if(!newValue) {
+    prod.value.project.vat_price = 0
+  }
+})
 
 const reStore = useInvoiceStore()
 const cpStore = useCompanyStore()
@@ -1714,6 +2151,7 @@ const referQuotation = async () => {
     company.value = selectedCompany.value
     openProductForm.value = false
     products.value = refQuotation.value.product_detail
+    prod.value.project = {...refQuotation.value.project}
     discount.value = refQuotation.value.discount
     selectedSignature.value = refQuotation.value.signature
     bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
@@ -1728,6 +2166,7 @@ const referQuotationInput = async () => {
   if ( refQuotation.value && !refQuotation.value.customer_detail ) {
     refQuotation.value = quotations.value.find(item=>item.quotation===refQuotation.value)
     product_head.value = refQuotation.value.product_head
+    prod.value.project = {...refQuotation.value.project}
     console.log('rfQT', refQuotation.value)   
     console.log('customers', customers.value)
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
@@ -1756,6 +2195,8 @@ const seeInvoice = (data) => {
   const body = document.body;
   body.style.backgroundColor = 'white';
 }
+
+const isPrice = ref(true);
 
 const changeProductVat = () => {
   if (product.value.isVat && sumVat.value) {
@@ -1840,26 +2281,26 @@ const sumProductsPrice = computed(() => {
 });
 
 const notSumVatsumProductsPrice = computed(()=>{
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
+  if (prod.value.project.isVat && sumVat.value) {
     const result = sumProductsPrice.value
     return result;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
+  } else if (prod.value.project.isVat && !sumVat.value){
     const result = sumProductsPrice.value
     return result;
   } else {
     return 0;
   }
-})
+});
 
 const netPrices = computed(() => {
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
-    return sumProductsPrice.value - discount.value;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    return notSumVatsumProductsPrice.value - discount.value;
+  if (prod.value.project.isVat && sumVat.value) {
+    return (sumProductsPrice.value+prod.value.project.total) - discount.value;
+  } else if (prod.value.project.isVat && !sumVat.value){
+    return (sumProductsPrice.value+prod.value.project.total-prod.value.project.vat_price) - discount.value;
   } else {
-    return sumProductsPrice.value - discount.value;
+    return (sumProductsPrice.value+prod.value.project.total) - discount.value;
   }
-})
+});
 
 const vat = computed(() => {
   const all_vat = products.value.map(item=>{
@@ -1870,11 +2311,11 @@ const vat = computed(() => {
 });
 
 const netVat = computed(() => {
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
-    const result = vat.value + netPrices.value;
+  if (prod.value.project.isVat || selectedCompany.value.isVat && sumVat.value) {
+    const result = vat.value + netPrices.value + (prod.value.project.vat_price || 0);
     return result;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = vat.value + netPrices.value;
+  } else if (prod.value.project.isVat || selectedCompany.value.isVat && !sumVat.value){
+    const result = vat.value + netPrices.value + (prod.value.project.vat_price || 0);
     return result;
   } else {
     return netPrices.value;
@@ -1958,44 +2399,47 @@ const hideDialog = () => {
   submitted.value = false;
 }
 
-const editInvoice = (prod) => {
+const editInvoice = (prodd) => {
   resetData()
-  invoice.value = { ...prod };
+  console.log('prodddd', prodd)
+  invoice.value = { ...prodd };
   console.log("re", invoice.value);
-  inputHeader.value = prod.header || 'ใบแจ้งหนี้'
-  start_date.value = prod.start_date;
-  end_date.value = prod.end_date;
+  inputHeader.value = prodd.header || 'ใบแจ้งหนี้'
+  start_date.value = prodd.start_date;
+  end_date.value = prodd.end_date;
 
   const company = cpStore.myCompanies.find(
-    (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
+    (item) => item.Branch_company_name === prodd.customer_branch.Branch_company_name
   );
   selectedCompany.value = company;
 
   const customered = customers.value.find(
-    (item) => item.customer_name === prod.customer_detail.customer_name
+    (item) => item.customer_name === prodd.customer_detail.customer_name
   );
   selectedCustomer.value = customered;
   refCustomer();
-  product_head.value = prod.product_head
-  isWithholding.value = prod.vat.percen_deducted ? true : false;
-  withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
-  discount.value = prod.discount;
-  products.value = prod.product_detail;
-  remark.value = prod.remark;
-  bank.value = company ? company.bank.find((item) => item.number === prod.bank.status) : null;
-  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prod.signature.name);
+  product_head.value = prodd.product_head
+  isWithholding.value = invoice.value.vat?.percen_deducted ? true : false;
+  withholdingPercent.value = invoice.value.vat?.percen_deducted ? invoice.value.vat?.percen_deducted : null;
+  discount.value = prodd.discount;
+  products.value = prodd.product_detail;
+  remark.value = prodd.remark;
+  bank.value = company ? company.bank.find((item) => item.number === prodd.bank.status) : null;
+  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prodd.signature.name);
   invoiceEditDialog.value = true;
   discount.value = 0
+  prod.value.project = prodd.project
   product.value = {}
   product.value.product_text = [""]
-  sumVat.value = prod.sumVat
-  end_period.value = prod.end_period
+  sumVat.value = prodd.sumVat
+  end_period.value = prodd.end_period
   refQuotation.value = quotations.value.find(qt=>qt.quotation===invoice.value.quotation)
 }
 
 const totalPrice = (product) => {
   const price = product.product_detail.map((item)=>{
-    return (item.product_price*item.product_amount) - ((item.vat_price || 0) *item.product_amount)
+    return !product.sumVat ? (item.product_price*item.product_amount) - ((item.vat_price || 0) *item.product_amount) 
+    : (item.product_price*item.product_amount)
   })
   const all_price = price.length > 0 ? price.reduce((a,b) => a + b, 0) : 0
   return all_price
@@ -2110,11 +2554,11 @@ const deleteSelectedInvoices = async () => {
 
 const createNewInvoice = async () => {
   loading.value = true;
-  let img = [];
+  /* let img = [];
   let qtId = null;
   products.value.forEach((product) => {
     product.product_logo64 = "";
-  });
+  }); */
   const data = {
     header: inputHeader.value,
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
@@ -2133,6 +2577,7 @@ const createNewInvoice = async () => {
       customer_contact: customer.value ? customer.value.customer_contact : null,
       customer_contact_number: customer.value ? customer.value.customer_contact_number : null,
     },
+    project: prod.value.project,
     product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
@@ -2158,96 +2603,109 @@ const createNewInvoice = async () => {
     transfer: transfer.value
   };
   console.log(data);
+  let product_detail = [];
+  let inId = null;
   try {
     const response = await Documents.createNewInvoice(data);
-    if (response.data) {
-      img = response.data.product_detail;
-      qtId = response.data._id;
-      const imgId = img.map((id) => id._id);
-      if (imgId.length > 0 && qtId) {
-        uploadfiles.value.forEach(async (file, index) => {
-          const formData = new FormData();
-          formData.append("imgCollection", file);
-          const res = await Documents.uploadFileInvoice(imgId[index], qtId, formData);
-          reStore.getInvoices()
-          refresh()
-          invoiceDialog.value = false;
-          toast.add({
-            severity: "success",
-            summary: "Successful",
-            detail: "สร้างใบแจ้งหนี้แล้ว",
-            life: 3000,
-          });
-          loading.value = false;
-          invoiceDialog.value = false;
-          refresh()
-        });
+    if (response.data.data) {
+      product_detail = [...response.data.product_detail];
+      inId = response.data._id;
+      /* img = response.data.product_detail;
+      qtId = response.data._id; */
+      const imgId = product_detail.map((id) => id._id);
+      if (imgId.length > 0) {
+        product_detail.forEach(async (image, index) => {
+          try {
+              const response = await axios.put(
+                `${import.meta.env.VITE_API_URL}/quotation/uploadPicProduct/${qtId}/${imgId}`,
+                image,
+                {
+                  headers: {
+                    'auth-token' : import.meta.env.VITE_TOKEN
+                  }
+                }
+              )
+              if (response.data.status) {
+                console.log(response.data)
+                toast.add({
+                  severity: "success",
+                  summary: "สำเร็จ",
+                  detail: "อัพรูปใบเสนอราคาแล้ว",
+                  life: 3000,
+                });
+              }
+            }
+            catch (e) {
+              console.log(e);
+              toast.add({
+                severity: "error",
+                summary: "สร้างใบเสนอราคาแล้ว",
+                detail: "ไม่สามารถอัพโหลดรูปภาพ",
+                life: 3000,
+              });
+            }
+        })
       } else {
-        reStore.getInvoices()
-        refresh()
-        invoiceDialog.value = false;
+        console.log(response.data.data.product_detail);
         toast.add({
           severity: "success",
           summary: "Successful",
           detail: "สร้างใบแจ้งหนี้แล้ว",
           life: 3000,
         });
-        loading.value = false;
-        refresh()
       }
-      refresh()
-    } else {
-      reStore.getInvoices()
-      refresh()
-      invoiceDialog.value = false;
-      toast.add({
-        severity: "error",
-        summary: "มีบางอย่างผิดพลาด",
-        detail: "สร้างใบแจ้งหนี้ล้มเหลว",
-        life: 3000,
-      });
-      invoiceDialog.value = false;
-      loading.value = false;
-      refresh()
-    }
-    loading.value = false;
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "สร้างใบแจ้งหนี้แล้ว",
-      life: 3000,
-    });
-    refresh()
-  } catch (err) {
+    } 
+  } 
+  catch (err) {
     console.log(err);
-    invoiceDialog.value = false;
-    loading.value = false;
     toast.add({
       severity: "error",
       summary: "มีบางอย่างผิดพลาด",
       detail: "สร้างใบแจ้งหนี้ล้มเหลว",
       life: 3000,
-    });
+    })
+  }
+  finally {
+    invoiceDialog.value = false;
+    loading.value = false;
+    prod.value.project = {};
+    refresh();
+  }
+}
+
+const editingProductInvoice = async () => {
+  loading.value = true;
+  const data = {
+    product_detail: products.value
+  }
+  try {
+    const response = await Documents.editInvoice(invoice.value._id, data);
+    if (response.data) {
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "อัพเดทใบแจ้งหนี้แล้ว",
+        life: 3000,
+      });
+    } 
+  } 
+  catch(err) {
+    console.log(err);
+  }
+  finally {
+    loading.value = false;
+    invoiceEditDialog.value = false;
     refresh()
   }
-  invoiceDialog.value = false;
-  loading.value = false;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "สร้างใบแจ้งหนี้แล้ว",
-    life: 3000,
-  });
-  refresh()
-}
+};
 
 const editingInvoice = async () => {
   loading.value = true;
-  let img = [];
+  /* let img = [];
   let qtId = null;
   products.value.forEach((product) => {
     product.product_logo64 = "";
-  });
+  }); */
   console.log(refQuotation.value)
   const data = {
     header: inputHeader.value,
@@ -2267,6 +2725,7 @@ const editingInvoice = async () => {
       customer_contact_number: customer.value.customer_contact_number,
     } : null,
     product_head: product_head.value,
+    project: prod.value.project,
     product_detail: products.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
@@ -2291,61 +2750,29 @@ const editingInvoice = async () => {
   console.log(data)
   try {
     const response = await Documents.editInvoice(invoice.value._id, data);
-  if (response.data) {
-    img = response.data.product_detail;
-    qtId = response.data._id;
-    const imgId = img.map((id) => id._id);
-    if (imgId.length > 0 && qtId) {
-      uploadfiles.value.forEach(async (file, index) => {
-        const formData = new FormData();
-        formData.append("imgCollection", file);
-        const res = await Documents.uploadFileInvoice(imgId[index], qtId, formData);
-        if (res) {
-          reStore
-            .getInvoices()
-            .then((data) => {
-              originalInvoices.value = data.data.reverse()
-              invoices.value = originalInvoices.value
-            });
-          invoiceDialog.value = false;
-          toast.add({
-            severity: "success",
-            summary: "Successful",
-            detail: "แก้ไขใบแจ้งหนี้แล้ว",
-            life: 3000,
-          });
-          loading.value = false;
-        }
-      });
-    } else {
-      reStore.getInvoices()
-      refresh()
-      invoiceEditDialog.value = false;
+    if (response.data) {
       toast.add({
         severity: "success",
         summary: "Successful",
-        detail: "แก้ไขใบแจ้งหนี้แล้ว",
+        detail: "อัพเดทใบแจ้งหนี้ราคาแล้ว",
         life: 3000,
       });
-      loading.value = false;
-    }
-  } else {
-    invoiceEditDialog.value = false;
+      await editingProductInvoice()
+    } 
+  } 
+  catch(err) {
+    console.log(err);
     toast.add({
       severity: "error",
-      summary: "มีบางอย่างผิดพลาด",
-      detail: "แก้ไขใบแจ้งหนี้ล้มเหลว",
+      summary: "ERROR",
+      detail: "อัพเดทใบแจ้งหนี้ล้มเหลว",
       life: 3000,
     });
-    loading.value = false;
-  }
-  } catch(err){
-console.log(err)
   }
   finally {
     loading.value = false;
     invoiceEditDialog.value = false;
-    refresh()
+    refresh();
   }
 }
 

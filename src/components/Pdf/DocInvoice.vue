@@ -125,6 +125,65 @@
                   </tr>
                 </thead>
                 <tbody>
+                  <tr v-if="data.data.project.name" class="border">
+                    <td class=".td border" style="text-align: center">
+                      <div class="flex justify-center h-full py-2 font-bold">
+                        โครงการ project
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: center">
+                      <div class="flex justify-start font-bold h-full py-2">
+                        {{ data.data.project.name }}
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: center">
+                      <div class="flex justify-center h-full py-2">
+                        {{ data.data.project.amount?.toLocaleString() }} {{ data.data.project.unit }}
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: center">
+                      <div class="flex justify-center h-full py-2">
+                        <pre class="hidden">
+                          {{
+                            data.data.sumVat 
+                            ? data.data.project.vat_price = data.data.project?.price*0.07 
+                            : data.data.project.vat_price = data.data.project?.price*7/107
+                          }}
+                        </pre>
+                        {{ 
+                          data.data.sumVat ? formatCurrency(data.data.project?.price)
+                          : formatCurrency(data.data.project?.price-data.data.project?.vat_price)
+                        }}
+                      </div>
+                    </td>
+                    <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: center">
+                      <div class="flex justify-center h-full py-2">
+                        <pre class="hidden">{{ 
+                            data.data.project.isVat && data.data.sumVat 
+                            ? data.data.project.vat_price = data.data.project.total*0.07 
+                            : data.data.project.isVat && !data.data.sumVat 
+                            ? data.data.project.vat_price = data.data.project.total*7/107
+                            : data.data.project.vat_price = 0 
+                          }}
+                        </pre>
+                        {{ data.data.project.isVat ? formatCurrency(data.data.project.vat_price) : '0.00' }}
+                      </div>
+                    </td>
+                    <pre class="hidden">
+                      {{ 
+                        data.data.project.isVat && data.data.sumVat 
+                        ? data.data.project.total_net = data.data.project.total + data.data.project.vat_price
+                        : data.data.project.isVat && !data.data.sumVat
+                        ? data.data.project.total_net = data.data.project.total
+                        : data.data.project.total_net = data.data.project.total
+                      }}
+                    </pre>
+                    <td class=".td border" style="text-align: center">
+                      <div class="flex justify-center h-full py-2">
+                        {{ formatCurrency(data.data.project.total_net) }}
+                      </div>
+                    </td>
+                  </tr>
                   <!-- <tr class="border">
                     <td class="border">
                       
@@ -149,7 +208,12 @@
                   </tr> -->
                   <tr class="border py-2" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
-                      {{ index + 1 }}
+                      <p v-if="product.product_name">
+                        {{ product.product_no }}
+                      </p>
+                      <p v-else>
+                        
+                      </p>
                     </td>
                     <td class=".td border">
                       <div class="flex flex-col-reverse">
@@ -219,7 +283,7 @@
                     <tbody>
                       <tr class="flex justify-between w-full">
                         <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
-                        <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
+                        <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)) }}</span>บาท</td>
                       </tr>
                       <tr class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด</span></td>
@@ -227,20 +291,39 @@
                       </tr>
                       <tr class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount) }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ 
+                          formatCurrency(totalPrice+(data.data.project.total || 0)
+                          -data.data.discount
+                          +(vat+(data.data.project.vat_price || 0))) 
+                        }}</span>บาท</td>
                       </tr>
                       
                       <tr class="flex justify-between bg-sky-200 w-full mt-2 pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                        <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
+                        <td style="text-align: right">
+                          <strong class="pr-3" v-if="data.data?.project?.isVat || data.data?.customer_branch?.isVat">
+                            {{ 
+                              formatCurrency(totalPrice+(data.data.project.total || 0)
+                              -data.data.discount
+                              +(vat+(data.data.project.vat_price || 0))) 
+                            }}
+                          </strong>
+                          <strong class="pr-3" v-else>
+                            {{ 
+                              formatCurrency(totalPrice+(data.data.project.total || 0)
+                              -data.data.discount
+                              ) 
+                            }}
+                          </strong>
+                        บาท</td>
                       </tr>
                     </tbody>
                 </table>
@@ -248,7 +331,7 @@
                   <tbody>
                     <tr class="flex justify-between w-full">
                       <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
-                      <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
+                      <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     <tr class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด</span></td>
@@ -256,19 +339,19 @@
                     </tr>
                     <tr class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+((data.data.project.total || 0)-(data.data.project.vat_price|| 0))-data.data.discount) }}</span>บาท</td>
                     </tr>
                     <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     <tr v-if="data.data.customer_branch?.isVat" class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     <tr class="flex justify-between bg-sky-200 w-full mt-2 pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
                       <td style="text-align: left"><strong class="pl-5">ยอดชำระทั้งสิ้น</strong></td>
-                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</strong>บาท</td>
+                      <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat+(data.data.project.total_net || 0)) }}</strong>บาท</td>
                     </tr>
                   </tbody>
                 </table>
@@ -279,9 +362,9 @@
               :style="{ backgroundColor: `#${data.color}` }">
               <p class="font-bold">
                 ( {{ 
-                  data.data.vat?.percen_deducted
-                  ? formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน' 
-                  : formatNumberToText((totalPrice-data.data.discount+vat)) + 'ถ้วน'
+                  data.data.customer_branch?.isVat
+                  ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat)) + 'ถ้วน' 
+                  : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount)) + 'ถ้วน'
                 }} )
               </p>
           </div>
@@ -374,7 +457,9 @@ const vat = computed(()=>{
 
 const withHolding = computed(()=>{
   const percent = data.data.vat.percen_deducted
-  const price = totalPrice.value
+  const price = 
+  data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
+  : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
   const result = percent > 0 ? price*percent/100 : 0
   return result
 })

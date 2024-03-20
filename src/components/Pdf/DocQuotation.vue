@@ -260,7 +260,8 @@
                     <tbody class="h-full">
                       <tr class="flex justify-between w-full pb-1">
                         <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
-                        <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)) }}</span>บาท</td>
+                        <td class="" style="text-align: right"><span class="pr-3">
+                          {{ formatCurrency(totalPrice+(data.data.project.total || 0)) }}</span>บาท</td>
                       </tr>
                       
                       <tr class="flex justify-between w-full pb-1">
