@@ -1744,25 +1744,45 @@
           />
         </div>
         <div class="field grid w-full px-5">
-          <div class="field grid">
-            <label for="price">ราคา/หน่วย</label>
-            <InputNumber
-              class="p-2"
-              id="price"
-              v-model="product.product_price"
-              mode="currency"
-              currency="THB"
-            />
-          </div>
-          <div class="field grid">
-            <label for="quantity">จำนวน</label>
-            <InputNumber
-              class="p-2"
-              id="quantity"
-              v-model="product.product_amount"
-              integeronly
-            />
-          </div>
+          <pre class="hidden">{{ !isPrice ? product.product_price = 0 : product.product_price = product.product_price }}</pre>
+          <div class="field grid w-full px-5">
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">รายละเอียดราคา</label>
+                <InputSwitch v-model="isPrice" />
+              </div>
+              <InputNumber
+                class="p-2 w-full"
+                id="price"
+                v-model="product.product_price"
+                mode="currency"
+                currency="THB"
+                :disabled="!isPrice"
+              />
+            </div>
+          <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
+            <div class="field grid">
+              <div class="flex items-center mt-3 gap-2">
+                <label for="quantity">จำนวน</label>
+                <InputSwitch v-model="isAmount" />
+              </div>
+              <InputNumber
+                class="p-2"
+                id="quantity"
+                v-model="product.product_amount"
+                integeronly
+                :disabled="!isAmount"
+              />
+            </div>
+            <div class="field grid">
+              <label for="unit">หน่วย</label>
+              <InputText
+                class="px-2"
+                id="unit"
+                v-model="product.unit"
+                :disabled="!isAmount"
+              />
+            </div>
           <div class="field grid">
             <label for="unit">หน่วย</label>
             <InputText
@@ -1800,6 +1820,7 @@
             icon="pi pi-check"
             @click="addProduct"
           />
+        </div>
         </div>
       </div>
 
@@ -2063,6 +2084,7 @@ const files = ref([])
 const transfer = ref('bank')
 const inputHeader = ref('ใบแจ้งหนี้')
 const sign = ref(false)
+const isAmount = ref(true);
 const prod = ref({
   project: {},
   product_detail: []
