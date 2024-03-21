@@ -1653,6 +1653,7 @@
         
         <div class="py-3 flex flex-col">
           <strong>รายละเอียด</strong>
+          <pre class="hidden">{{ paid_detail = receipt.invoiceRef_detail.paid_detail || '' }}</pre>
           <textarea v-model="paid_detail" class="border">
           </textarea>
         </div>
@@ -1838,7 +1839,7 @@ async function editReceiptRefInvoice(id) {
     amount_price: amount_price.value || 0,
     remark: remark.value || [],
     transfer: transfer.value,
-    project: refInvoice.value.project,
+    //project: refInvoice.value ? refInvoice.value.project,
     paid_detail: paid_detail.value,
     isSign: isSign.value
   };

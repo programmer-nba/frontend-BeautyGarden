@@ -194,7 +194,7 @@
                     <tbody class="h-full">
                       <tr class="flex justify-between w-full">
                         <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5">ราคาสินค้า/บริการ</span></td>
-                        <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
+                        <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice + (data.data.project?.total || 0)) }}</span>บาท</td>
                       </tr>
                       <tr class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5">ส่วนลด</span></td>
@@ -202,33 +202,33 @@
                       </tr>
                       <tr class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5">ราคาหลังหักส่วนลด</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project?.total || 0)-data.data.discount) }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5">VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+((data.data.project?.total || 0)*0.07)) }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5">ราคารวม VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat+((data.data.project?.total || 0)*0.07)) }}</span>บาท</td>
                       </tr>
                       
                       <tr v-if="data.data.vat.percen_deducted && data.data?.isVat" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project?.total || 0)-data.data.discount+vat+((data.data.project?.total || 0)*0.07)) }}</span>บาท</td>
                       </tr>
                       <tr v-if="!data.data.vat.percen_deducted && data.data?.isVat" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project?.total || 0)-data.data.discount+vat+((data.data.project?.total || 0)*0.07)) }}</span>บาท</td>
                       </tr>
 
                       <tr v-if="data.data.vat.percen_deducted && data.data?.isVat" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project?.total || 0)-data.data.discount+vat+((data.data.project?.total || 0)*0.07)) }}</span>บาท</td>
                       </tr>
                       <tr v-if="!data.data.vat.percen_deducted && !data.data?.isVat" class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><span class="pl-5">ยอดทั้งหมด</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+(data.data.project?.total || 0)) }}</span>บาท</td>
                       </tr>
 
                       <tr class="flex justify-between w-full pt-2 border-t" :style="{ backgroundColor: `#${data.color}` }">
@@ -238,15 +238,24 @@
                       <tr class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><span class="pl-5">ยอดค้างก่อนชำระ</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ 
-                          data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
-                          : !data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          
+                          data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)+((data.data.project?.total || 0)*0.07)-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          : !data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount+vat+((data.data.project?.total || 0)*0.07))-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          
+                          : data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)+((data.data.project?.total || 0)*0.07)-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          : !data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount+vat+((data.data.project?.total || 0)*0.07))-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          
                           : data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                           : !data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          
                           : '-'
+
                         }}</span>บาท</td>
                       </tr>
                       <tr class="flex justify-between w-full pt-2 border-t" :style="{ backgroundColor: `#${data.color}` }">
