@@ -1561,6 +1561,7 @@ export const Documents = {
         }
     },
     async editInvoice(id, formData) {
+        console.log('formData', formData)
         try {
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/invoice/EditInvoice/${id}`,
                 formData,

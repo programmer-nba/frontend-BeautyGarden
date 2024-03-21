@@ -30,13 +30,19 @@
                   <br />
                   <span v-if="data.data.isVat">เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_branch?.taxnumber }}</span><br />
                   <br />
-                  <span class="font-bold">ลูกค้า</span><br />
-                  <p>{{ data.data.customer_detail?.customer_name }} {{ 
-                    data.data.customer_detail?.customer_lastname && data.data.customer_detail?.customer_lastname!=='undefined' 
-                    ? '(' + data.data.customer_detail?.customer_lastname + ')'
-                    : null 
-                  }}</p>
-                  <p>{{ data.data.customer_detail?.customer_address }}</p>
+                  <span class="font-bold">
+                    ลูกค้า
+                  </span>
+                  <br />
+                  <p>
+                    {{ data.data.customer_detail?.customer_name }} 
+                    {{ 
+                      data.data.customer_detail?.customer_lastname && data.data.customer_detail?.customer_lastname!=='undefined' 
+                      ? '(' + data.data.customer_detail?.customer_lastname + ')'
+                      : null 
+                    }}
+                  </p>
+                  <p>{{ data.data.customer_detail?.customer_address !== 'undefined' ? data.data.customer_detail?.customer_address : null }}</p>
                   <p>{{ data.data.customer_detail?.customer_email !== 'undefined' ? data.data.customer_detail?.customer_email : null }}</p>
                   <span v-if="data.data.isVat">เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}</span><br /><br />
                 </div>

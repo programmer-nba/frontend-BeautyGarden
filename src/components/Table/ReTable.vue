@@ -1547,6 +1547,14 @@
           class="w-full md:w-14rem"
         />
       </div>
+      <pre class="hidden">
+        {{refInvoice?.total}}/
+        {{refInvoice?.discount}}/
+        {{refInvoice?.project.total}} =
+        {{ net_raw = (refInvoice?.total + refInvoice?.project.total) - refInvoice?.discount }}
+        {{ prod_vat = calVat(refInvoice?.product_detail) + ((refInvoice?.project.total || 0)*0.07) }}
+        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw + prod_vat : net_raw }}
+      </pre>
       <div v-if="invoices && invoices.length > 0" class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
           <p>วันที่ออกใบเสร็จ</p>
@@ -1582,6 +1590,7 @@
         </div>
         <div class="py-3">
           <strong>จำนวนเงิน</strong>
+          <pre class="hidden">{{ amount_price = result }}</pre>
           <InputGroup class="border rounded">
             <InputGroupAddon><span class="font-bold px-2">THB</span></InputGroupAddon>
             <InputNumber v-model="amount_price" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" />
@@ -1743,6 +1752,7 @@ const edittingProduct = ref();
 const paid_detail = ref('')
 const isSign = ref(false)
 const sign = ref(false)
+const project = ref({});
 
 // Create with reference invoice
 const refInvoice = ref();
@@ -1788,6 +1798,7 @@ async function createNewReceiptRefInvoice() {
     start_date: start_date.value || new Date(),
     amount_price: amount_price.value || 0,
     remark: remark.value || [],
+    project: refInvoice.value.project,
     transfer: transfer.value,
     paid_detail: paid_detail.value,
     isSign: isSign.value
@@ -1827,6 +1838,7 @@ async function editReceiptRefInvoice(id) {
     amount_price: amount_price.value || 0,
     remark: remark.value || [],
     transfer: transfer.value,
+    project: refInvoice.value.project,
     paid_detail: paid_detail.value,
     isSign: isSign.value
   };
@@ -1897,6 +1909,7 @@ const referQuotation = () => {
         refQuotation.value.customer_branch.Branch_company_name
     );
     product_head.value = refQuotation.value.product_head
+    project.value = refQuotation.value.project,
     isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
     withholdingPercent.value = refQuotation.value.vat.percen_deducted
     company.value = selectedCompany.value;
@@ -1931,6 +1944,7 @@ const referQuotationInput = () => {
     openProductForm.value = false;
     products.value = refQuotation.value.product_detail;
     discount.value = refQuotation.value.discount;
+    project.value = refQuotation.value.project;
     selectedSignature.value = refQuotation.value.signature;
     bank.value = company.value.bank.find(
       (item) => item.number === refQuotation.value.bank.status
@@ -2191,6 +2205,7 @@ const editReceipt = (prod) => {
   receipt.value = { ...prod };
   console.log("re", receipt.value);
   isSign.value = prod.isSign
+  project.value = receipt.value.project || {}
   start_date.value = prod.start_date;
   end_date.value = prod.end_date;
 
@@ -2200,7 +2215,7 @@ const editReceipt = (prod) => {
   selectedCompany.value = company;
 
   const customered = customers.value.find(
-    (item) => item.customer_taxnumber === prod.customer_detail.tax_id
+    (item) => item.customer_name === prod.customer_detail.customer_name
   );
   selectedCustomer.value = customered;
   console.log('cus', selectedCustomer.value)
@@ -2335,8 +2350,8 @@ const deleteSelectedReceipts = async () => {
 
 const createNewReceipt = async () => {
   loading.value = true;
-  let img = [];
-  let qtId = null;
+  //let img = [];
+  //let qtId = null;
   products.value.forEach((product) => {
     product.product_logo64 = "";
   });
@@ -2356,6 +2371,7 @@ const createNewReceipt = async () => {
       customer_type: customer.value ? customer.value.customer_type : null,
     },
     isSign: isSign.value,
+    project: project.value,
     product_head: product_head.value,
     product_detail: products.value,
     discount: discount.value,
@@ -2383,10 +2399,10 @@ const createNewReceipt = async () => {
   try {
     const response = await Documents.createNewReceipt(data);
     if (response.data) {
-      img = response.data.product_detail;
-      qtId = response.data._id;
-      const imgId = img.map((id) => id._id);
-      if (imgId.length > 0 && qtId) {
+      //img = response.data.product_detail;
+      //qtId = response.data._id;
+      //const imgId = img.map((id) => id._id);
+      /* if (imgId.length > 0 && qtId) {
         uploadfiles.value.forEach(async (file, index) => {
           const formData = new FormData();
           formData.append("imgCollection", file);
@@ -2416,68 +2432,44 @@ const createNewReceipt = async () => {
         });
         loading.value = false;
         refresh();
-      }
-      refresh();
-    } else {
-      reStore.getReceipts();
-      refresh();
-      receiptDialog.value = false;
+      } */
       toast.add({
-        severity: "error",
-        summary: "มีบางอย่างผิดพลาด",
-        detail: "สร้างใบเสร็จรับเงินล้มเหลว",
+        severity: "success",
+        summary: "Successful",
+        detail: "สร้างใบเสร็จรับเงินแล้ว",
         life: 3000,
       });
-      receiptDialog.value = false;
-      loading.value = false;
       refresh();
-    }
-    loading.value = false;
-    toast.add({
-      severity: "success",
-      summary: "Successful",
-      detail: "สร้างใบเสร็จรับเงินแล้ว",
-      life: 3000,
-    });
-    refresh();
+    } 
   } catch (err) {
     console.log(err);
-    receiptDialog.value = false;
-    loading.value = false;
     toast.add({
       severity: "error",
       summary: "มีบางอย่างผิดพลาด",
       detail: "สร้างใบเสร็จรับเงินล้มเหลว",
       life: 3000,
     });
-    refresh();
   }
   finally {
     loading.value = false
+    receiptDialog.value = false
+    refresh()
   }
-  receiptDialog.value = false;
-  loading.value = false;
-  toast.add({
-    severity: "success",
-    summary: "Successful",
-    detail: "สร้างใบเสร็จรับเงินแล้ว",
-    life: 3000,
-  });
-  refresh();
 };
 
 const editingReceipt = async () => {
   loading.value = true;
-  let img = [];
-  let qtId = null;
-  products.value.forEach((product) => {
+  //let img = [];
+  //let qtId = null;
+  /* products.value.forEach((product) => {
     product.product_logo64 = "";
-  });
-  console.log(refQuotation.value);
+  }); */
+  //console.log(refQuotation.value);
   const data = {
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,
     customer_number: customer.value ? customer.value.customer_number : null,
+    project: project.value,
     branchId: selectedCompany.value ? selectedCompany.value._id : null,
     signatureID: selectedSignature.value ? selectedSignature.value._id : "",
     customer_detail: {
@@ -2510,11 +2502,10 @@ const editingReceipt = async () => {
           status: "",
         },
   };
-  console.log(data);
   try {
     const response = await Documents.editReceipt(receipt.value?._id, data);
     if (response.data) {
-      img = response.data.product_detail;
+      /* img = response.data.product_detail;
       qtId = response.data._id;
       const imgId = img.map((id) => id._id);
       if (imgId.length > 0 && qtId) {
@@ -2545,19 +2536,22 @@ const editingReceipt = async () => {
           life: 3000,
         });
         loading.value = false;
-      }
-    } else {
-      receiptEditDialog.value = false;
+      } */
       toast.add({
-        severity: "error",
-        summary: "มีบางอย่างผิดพลาด",
-        detail: "แก้ไขใบเสร็จรับเงินล้มเหลว",
+        severity: "success",
+        summary: "Successful",
+        detail: "แก้ไขใบเสร็จรับเงินแล้ว",
         life: 3000,
       });
-      loading.value = false;
     }
   } catch (err) {
     console.log(err);
+    toast.add({
+        severity: "error",
+        summary: "error",
+        detail: "แก้ไขใบเสร็จรับเงินล้มเหลว",
+        life: 3000,
+      });
   } finally {
     loading.value = false;
     receiptEditDialog.value = false;
@@ -2579,5 +2573,14 @@ const getStatusLabel = (status) => {
       return null;
   }
 };
+
+const calVat = (pd) => {
+  if (!pd) return
+  const vat_list = pd.map(i=>{
+    return i.vat_price || 0
+  })
+  const result = vat_list.reduce((a,b)=>a+b,0)
+  return result
+}
 
 </script>

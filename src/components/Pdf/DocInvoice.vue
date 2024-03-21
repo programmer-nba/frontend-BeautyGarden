@@ -64,7 +64,7 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เครดิต : </span>
-                    {{ formatDate(data.data.credit) }}
+                    {{ data.data.credit > 0 ? data.data.credit + ' วัน' : '-' }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันครบกำหนด Date due : </span>
@@ -72,18 +72,18 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง : </span>
-                    {{ formatDate(data.data.quotation) }}
+                    {{ data.data.quotation }}
                   </div>
                   <br />
                   <hr />
                   <br />
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">ผู้ติดต่อ : </span>
-                    {{ data.data.customer_branch?.contact_name }}
+                    {{ data.data.customer_branch?.contact_name || '-' }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เบอร์โทร : </span>
-                    {{ data.data.customer_branch?.contact_number }}
+                    {{ data.data.customer_branch?.contact_number || '-' }}
                   </div>
                   <br />
                   <hr />

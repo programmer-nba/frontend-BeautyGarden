@@ -2740,6 +2740,7 @@ const editingInvoice = async () => {
     product.product_logo64 = "";
   }); */
   console.log(refQuotation.value)
+  console.log(selectedCompany.value)
   const data = {
     header: inputHeader.value,
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
@@ -2787,10 +2788,10 @@ const editingInvoice = async () => {
       toast.add({
         severity: "success",
         summary: "Successful",
-        detail: "อัพเดทใบแจ้งหนี้ราคาแล้ว",
+        detail: "อัพเดทใบแจ้งหนี้แล้ว",
         life: 3000,
       });
-      await editingProductInvoice()
+      //await editingProductInvoice()
     } 
   } 
   catch(err) {
