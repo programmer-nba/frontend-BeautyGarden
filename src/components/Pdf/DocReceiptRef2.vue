@@ -135,14 +135,21 @@
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
                         {{ 
-                          data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency(totalPrice-data.data.discount+vat)
-                          : !data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency(totalPrice-data.data.discount+vat)
+                          data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                          ? formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount+vat+((data.data.project.total || 0)*0.07))
+                          : !data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                          ? formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount+vat+((data.data.project.total || 0)*0.07))
+
+                          : data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                          ? formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount)
+                          : !data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                          ? formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount)
+
                           : data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount))
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount))
                           : !data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount))
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount))
+
                           : '-'
                         }}
                       </div>
@@ -150,14 +157,21 @@
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
                         {{ 
-                          data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
-                          : !data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount+vat+((data.data.project.total || 0)*0.07))-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          : !data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount+vat+((data.data.project.total || 0)*0.07))-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+
+                          : data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          : !data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+
                           : data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                           : !data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+
                           : '-'
                         }}
                       </div>
@@ -245,9 +259,9 @@
                           ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount+vat+((data.data.project?.total || 0)*0.07))-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                           
                           : data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
-                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)+((data.data.project?.total || 0)*0.07)-data.data.discount+vat)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
                           : !data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
-                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount+vat+((data.data.project?.total || 0)*0.07))-data.data.invoiceRef_detail?.paid+data.data.amount_price)
+                          ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount-data.data.invoiceRef_detail?.paid+data.data.amount_price))
                           
                           : data.data.vat.percen_deducted && !data.data?.isVat
                           ? formatCurrency((totalPrice+(data.data.project?.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid+data.data.amount_price)
@@ -256,25 +270,40 @@
                           
                           : '-'
 
-                        }}</span>บาท</td>
+                          }}
+                        </span>บาท</td>
                       </tr>
                       <tr class="flex justify-between w-full pt-2 border-t" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left"><strong class="pl-5">ยอดชำระ</strong></td>
                         <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.amount_price) }}</strong>บาท</td>
                       </tr>
                       <tr class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
-                        <td style="text-align: left"><span class="pl-5">ยอดค้างสุทธิ</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ 
-                          data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid)
-                          : !data.data.vat.percen_deducted && data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount+vat)-data.data.invoiceRef_detail?.paid)
-                          : data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount)-data.data.invoiceRef_detail?.paid)
-                          : !data.data.vat.percen_deducted && !data.data?.isVat
-                          ? formatCurrency((totalPrice-data.data.discount)-data.data.invoiceRef_detail?.paid)
-                          : '-'
-                        }}</span>บาท</td>
+                        <td style="text-align: left">
+                          <span class="pl-5">
+                            ยอดค้างสุทธิ5
+                          </span>
+                        </td>
+                        <td style="text-align: right"><span class="pr-3">
+                            {{ 
+                              data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                              ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount+vat+((data.data.project.total || 0)*0.07))-data.data.invoiceRef_detail?.paid)
+                              : !data.data.vat.percen_deducted && data.data?.isVat && data.data.sumVat
+                              ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount+vat+((data.data.project.total || 0)*0.07))-data.data.invoiceRef_detail?.paid)
+
+                              : data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                              ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid)
+                              : !data.data.vat.percen_deducted && data.data?.isVat && !data.data.sumVat
+                              ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid)
+
+                              : data.data.vat.percen_deducted && !data.data?.isVat
+                              ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid)
+                              : !data.data.vat.percen_deducted && !data.data?.isVat
+                              ? formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.invoiceRef_detail?.paid)
+
+                              : '-'
+                            }}
+                          </span>บาท
+                        </td>
                       </tr>
                     </tbody>
                 </table>
