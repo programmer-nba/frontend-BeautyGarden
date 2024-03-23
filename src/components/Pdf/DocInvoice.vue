@@ -374,7 +374,7 @@
                       </td>
                     </tr>
                   </tbody>
-              </table>
+                </table>
               </div>
               <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-sky-200 text-center border-b border-r border-l flex justify-center items-center"
                 :style="{ backgroundColor: `#${data.color}` }">
