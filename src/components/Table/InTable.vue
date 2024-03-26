@@ -215,7 +215,8 @@
               ? 'text-green-700 font-bold bg-green-100 rounded px-2 py-0.5'
               : ''
               "
-            >{{ 
+            >
+            {{ 
               slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) <= 0
               ? 'ครบแล้ว'
               : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
