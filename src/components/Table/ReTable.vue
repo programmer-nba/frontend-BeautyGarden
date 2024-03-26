@@ -330,18 +330,33 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            
+
             <div>
-              <h1>เลือกบัญชีธนาคาร</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="bank"
-                  :options="selectedCompany.bank"
-                  optionLabel="name"
-                  placeholder="เลือกบัญชีธนาคาร"
-                  class="w-full md:w-14rem"
-                >
-                </Dropdown>
+              <p class="pb-2">ช่องทางการชำระเงิน</p>
+              <div class="card flex justify-center bg-slate-200 rounded py-2">
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
+                        <label for="cash" class="ml-2">เงินสด</label>
+                    </div>
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
+                        <label for="bank" class="ml-2">เงินโอน</label>
+                    </div>
+                </div>
+              </div>
+              <div class="pt-2" v-if="transfer==='bank'">
+                <h1>เลือกบัญชีธนาคาร</h1>
+                <div class="card flex justify-content-center">
+                  <Dropdown
+                    v-model="bank"
+                    :options="selectedCompany.bank"
+                    optionLabel="name"
+                    placeholder="เลือกบัญชีธนาคาร"
+                    class="w-full md:w-14rem"
+                  >
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>
@@ -947,18 +962,33 @@
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
             <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
             <br />
-            
+
             <div>
-              <h1>เลือกบัญชีธนาคาร</h1>
-              <div class="card flex justify-content-center">
-                <Dropdown
-                  v-model="bank"
-                  :options="selectedCompany.bank"
-                  optionLabel="name"
-                  placeholder="เลือกบัญชีธนาคาร"
-                  class="w-full md:w-14rem"
-                >
-                </Dropdown>
+              <p class="pb-2">ช่องทางการชำระเงิน</p>
+              <div class="card flex justify-center bg-slate-200 rounded py-2">
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
+                        <label for="cash" class="ml-2">เงินสด</label>
+                    </div>
+                    <div class="flex items-center">
+                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
+                        <label for="bank" class="ml-2">เงินโอน</label>
+                    </div>
+                </div>
+              </div>
+              <div class="pt-2" v-if="transfer==='bank'">
+                <h1>เลือกบัญชีธนาคาร</h1>
+                <div class="card flex justify-content-center">
+                  <Dropdown
+                    v-model="bank"
+                    :options="selectedCompany.bank"
+                    optionLabel="name"
+                    placeholder="เลือกบัญชีธนาคาร"
+                    class="w-full md:w-14rem"
+                  >
+                  </Dropdown>
+                </div>
               </div>
             </div>
           </div>

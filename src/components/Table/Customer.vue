@@ -78,10 +78,9 @@
           field="customer_number"
           header="รหัสลูกค้า"
           sortable
-          style="min-width: 12rem"
-          class="border-b"
+          class="border-b max-w-[100px]"
         ></Column>
-        <Column field="customer_name" header="ชื่อลูกค้า" sortable style="min-width: 16rem" class="border-b">
+        <Column field="customer_name" header="ชื่อลูกค้า" sortable class="border-b max-w-[250px]">
           <template #body="slotProps">
             {{
               slotProps.data.customer_lastname &&
@@ -89,6 +88,25 @@
                 ? `${slotProps.data.customer_name} (${slotProps.data.customer_lastname})`
                 : `${slotProps.data.customer_name}`
             }}
+          </template>
+        </Column>
+        <Column field="customer_position" header="ที่อยู่" sortable class="border-b max-w-[300px]">
+          <template #body="slotProps">
+            {{
+              slotProps.data.customer_position 
+              ? slotProps.data.customer_position 
+              : "-"
+            }}
+
+            <p class="text-gray-500 text-xs hover:underline">
+              <a :href="slotProps.data.customer_map" target="_blank">
+                {{
+                  slotProps.data.customer_map 
+                  ? `map: ${slotProps.data.customer_map}`
+                  : null
+                }}
+              </a>
+            </p>
           </template>
         </Column>
         <Column
@@ -295,8 +313,10 @@
         <img src="@/assets/spinner.svg" alt="Spinner" />
       </div>
       <div class="card">
-        <div class="field">
-          <label for="customer_taxnumber">ชื่อลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_taxnumber">
+            <strong>ชื่อลูกค้า</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_taxnumber"
@@ -309,9 +329,9 @@
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
-        <div class="field">
+        <div class="field py-2">
           <div>
-            <p>สำนักงานใหญ่/สาขา</p>
+            <strong>สำนักงานใหญ่/สาขา</strong>
             <InputSwitch @change="changeMain" v-model="isMain" />
           </div>
           <InputText
@@ -322,8 +342,8 @@
             :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
           />
         </div>
-        <div class="field">
-          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+        <div class="field py-2">
+          <label for="customer_taxnumber"><strong>เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</strong></label>
           <InputText
             class="p-2"
             id="customer_taxnumber"
@@ -336,8 +356,8 @@
             >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
           >
         </div>
-        <div class="field">
-          <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_phone"><strong>เบอร์ติดต่อลูกค้า</strong></label>
           <InputText
             class="p-2"
             id="customer_phone"
@@ -350,8 +370,8 @@
             >เบอร์ติดต่อลูกค้า</small
           >
         </div>
-        <div class="field">
-          <label for="customer_position">ที่อยู่ลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_position"><strong>ที่อยู่ลูกค้า</strong></label>
           <InputText
             class="p-2"
             id="customer_position"
@@ -361,8 +381,21 @@
             :class="{ 'p-invalid': submitted && !customer.customer_position }"
           />
         </div>
-        <div class="field">
-          <label for="customer_email">อีเมล์ลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_position"><strong>map link</strong><i class="pi pi-map pl-5"><a class="px-2 hover:underline" target="_blank" href="https://www.google.com/maps">ค้นหาใน google map</a></i></label>
+          <InputText
+            class="p-2"
+            id="customer_map"
+            v-model.trim="customer.customer_map"
+            required="false"
+            autofocus
+            :class="{ 'p-invalid': submitted && !customer.customer_map }"
+          />
+        </div>
+        <div class="field py-2">
+          <label for="customer_email">
+            <strong>อีเมล์ลูกค้า</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_email"
@@ -372,9 +405,11 @@
             :class="{ 'p-invalid': submitted && !customer.customer_email }"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <div>
-            <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
+            <label for="inventoryStatus" class="mb-3">
+              <strong>ประเภทลูกค้า</strong>
+            </label>
             <Dropdown
               id="inventoryStatus"
               v-model.trim="customer.customer_type"
@@ -401,8 +436,10 @@
             </Dropdown>
           </div>
         </div>
-        <div class="field">
-          <label for="customer_contact">ผู้ติดต่อ</label>
+        <div class="field py-2">
+          <label for="customer_contact">
+            <strong>ผู้ติดต่อ</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_contact"
@@ -412,8 +449,10 @@
             :class="{ 'p-invalid': submitted && !customer.customer_contact }"
           />
         </div>
-        <div class="field">
-          <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
+        <div class="field py-2">
+          <label for="customer_contact_number">
+            <strong>เบอร์ผู้ติดต่อ</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_contact_number"
@@ -498,6 +537,12 @@
         </span>
         <span><strong>เลขประจำตัวผู้เสียภาษี TAX ID : </strong>{{ selectedCustomer?.customer_taxnumber }}</span>
         <span><strong>ที่อยู่ : </strong>{{ selectedCustomer?.customer_position }}</span>
+        <span><strong>map : </strong>
+          <a :href="selectedCustomer?.customer_map" target="_blank" class="hover:underline" v-if="selectedCustomer.customer_map">
+            {{ selectedCustomer?.customer_map }}
+          </a>
+          <span v-else>-</span>
+        </span>
         <span><strong>ประเภทลูกค้า : </strong>{{ selectedCustomer?.customer_type }}</span>
         <span><strong>อีเมล์ Email : </strong>{{ selectedCustomer?.customer_email }}</span>
         <span><strong>เบอร์โทร : </strong>{{ selectedCustomer?.customer_phone }}</span>
@@ -655,6 +700,7 @@ const createNewCustomer = async () => {
   loading.value = true;
   const formData = new FormData();
   formData.append("customer_name", customer.value.customer_name);
+  formData.append("customer_map", customer.value.customer_map);
   formData.append("customer_lastname", customer.value.customer_lastname);
   formData.append("customer_phone", customer.value.customer_phone);
   formData.append("customer_position", customer.value.customer_position);
@@ -693,6 +739,7 @@ const editingCustomer = async () => {
 
   const formData = new FormData();
   formData.append("customer_name", customer.value.customer_name);
+  formData.append("customer_map", customer.value.customer_map);
   formData.append("customer_lastname", customer.value.customer_lastname);
   formData.append("customer_phone", customer.value.customer_phone);
   formData.append("customer_position", customer.value.customer_position);
