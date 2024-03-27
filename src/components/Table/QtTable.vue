@@ -515,7 +515,6 @@
       <!-- <span class="my-4" v-if="selectedCompany?.isVat">
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span> -->
-      
       <div v-if="selectedCompany?.isVat"  class="flex justify-between bg-slate-200 px-3 py-2">
         <div class="flex items-center">
           <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
@@ -1217,9 +1216,13 @@
         </div>
       </div>
       <br />
-      <span class="my-4" v-if="selectedCompany?.isVat">
-        <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
-      </span>
+      <div v-if="selectedCompany?.isVat"  class="flex justify-between bg-slate-200 px-3 py-2">
+        <div class="flex items-center">
+          <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
+          <label for="isVat" class="ml-2"> VAT 7% </label>
+        </div>
+        <SelectButton class="w-1/2" @change="changesumVat()" v-show="prod.project.isVat" v-model="choosesumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
+      </div>
       <br />
       <div class="card">
         <div class="bg-slate-200 px-2 py-5 rounded shadow-md">
