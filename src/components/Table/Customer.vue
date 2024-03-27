@@ -1,6 +1,7 @@
 <template>
   <div>
     <Toast />
+    
     <div class="card">
       <Toolbar class="mb-4">
         <template #start>
@@ -147,7 +148,7 @@
     <Dialog
       v-model:visible="customerDialog"
       :style="{ width: '450px' }"
-      header="Customer Details"
+      header="เพิ่มลูกค้าใหม่"
       :modal="true"
       class="p-fluid"
     >
@@ -158,8 +159,10 @@
         <img src="@/assets/spinner.svg" alt="Spinner" />
       </div>
       <div class="card">
-        <div class="field">
-          <label for="customer_taxnumber">ชื่อลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_taxnumber">
+            <strong>ชื่อลูกค้า</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_taxnumber"
@@ -172,19 +175,21 @@
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
-        <div class="field">
-          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
+        <div class="field py-2">
+          <div>
+            <strong>สำนักงานใหญ่/สาขา</strong>
+            <InputSwitch @change="changeMain" v-model="isMain" />
+          </div>
           <InputText
             class="p-2"
-            id="customer_lastname"
             v-model.trim="customer.customer_lastname"
             required="true"
             autofocus
             :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
           />
         </div>
-        <div class="field">
-          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+        <div class="field py-2">
+          <label for="customer_taxnumber"><strong>เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</strong></label>
           <InputText
             class="p-2"
             id="customer_taxnumber"
@@ -197,8 +202,8 @@
             >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
           >
         </div>
-        <div class="field">
-          <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_phone"><strong>เบอร์ติดต่อลูกค้า</strong></label>
           <InputText
             class="p-2"
             id="customer_phone"
@@ -211,8 +216,8 @@
             >เบอร์ติดต่อลูกค้า</small
           >
         </div>
-        <div class="field">
-          <label for="customer_position">ที่อยู่ลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_position"><strong>ที่อยู่ลูกค้า</strong></label>
           <InputText
             class="p-2"
             id="customer_position"
@@ -222,8 +227,21 @@
             :class="{ 'p-invalid': submitted && !customer.customer_position }"
           />
         </div>
-        <div class="field">
-          <label for="customer_email">อีเมล์ลูกค้า</label>
+        <div class="field py-2">
+          <label for="customer_position"><strong>map link</strong><i class="pi pi-map pl-5"><a class="px-2 hover:underline" target="_blank" href="https://www.google.com/maps">ค้นหาใน google map</a></i></label>
+          <InputText
+            class="p-2"
+            id="customer_map"
+            v-model.trim="customer.customer_map"
+            required="false"
+            autofocus
+            :class="{ 'p-invalid': submitted && !customer.customer_map }"
+          />
+        </div>
+        <div class="field py-2">
+          <label for="customer_email">
+            <strong>อีเมล์ลูกค้า</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_email"
@@ -233,9 +251,11 @@
             :class="{ 'p-invalid': submitted && !customer.customer_email }"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <div>
-            <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
+            <label for="inventoryStatus" class="mb-3">
+              <strong>ประเภทลูกค้า</strong>
+            </label>
             <Dropdown
               id="inventoryStatus"
               v-model.trim="customer.customer_type"
@@ -262,8 +282,10 @@
             </Dropdown>
           </div>
         </div>
-        <div class="field">
-          <label for="customer_contact">ผู้ติดต่อ</label>
+        <div class="field py-2">
+          <label for="customer_contact">
+            <strong>ผู้ติดต่อ</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_contact"
@@ -273,8 +295,10 @@
             :class="{ 'p-invalid': submitted && !customer.customer_contact }"
           />
         </div>
-        <div class="field">
-          <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
+        <div class="field py-2">
+          <label for="customer_contact_number">
+            <strong>เบอร์ผู้ติดต่อ</strong>
+          </label>
           <InputText
             class="p-2"
             id="customer_contact_number"
@@ -302,7 +326,7 @@
     <Dialog
       v-model:visible="customerEditDialog"
       :style="{ width: '450px' }"
-      header="Customer Details"
+      header="แก้ไขข้อมูลลูกค้า"
       :modal="true"
       class="p-fluid"
     >
@@ -528,6 +552,7 @@
         <Button label="ยืนยัน" icon="pi pi-check" text @click="deleteSelectedCustomers" />
       </template>
     </Dialog>
+
     <Dialog v-model:visible="openCustomer" modal :header="selectedCustomer?.customer_number" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
       <div class="flex flex-col gap-y-2">
         <span><strong>ชื่อลูกค้า : </strong>{{ selectedCustomer?.customer_name }} 
@@ -549,7 +574,7 @@
         <span><strong>ผู้ติดต่อ : </strong>{{ selectedCustomer?.customer_contact }}</span>
         <span><strong>เบอร์โทรผู้ติดต่อ : </strong>{{ selectedCustomer?.customer_contact_number }}</span>
       </div>
-  </Dialog>
+    </Dialog>
   </div>
 </template>
 

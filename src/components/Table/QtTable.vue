@@ -524,6 +524,7 @@
       </div>
       
       <br />
+
       <div class="card">
         <div class="bg-slate-200 px-2 py-5 rounded shadow-md">
           <div>
@@ -700,7 +701,7 @@
                     <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
                       <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
                       <i @click="product?.product_logo.splice(picindex, 1)" class="pi pi-times" style="color: red"></i>
-                  </div>
+                    </div>
                   </div>
                 </template>
             </FileUpload>

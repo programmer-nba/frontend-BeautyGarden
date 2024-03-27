@@ -273,7 +273,7 @@
                       </tr>
                       
                       <tr class="flex justify-between w-full">
-                        <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด {{ formatCurrency(data.data.discount*100/totalPrice) || '-' }} (%)</span></td>
+                        <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount) || '0.00' }}</span>บาท</td>
                       </tr>
                       <tr class="flex justify-between w-full">
@@ -310,7 +310,7 @@
                       <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)) }}</span>บาท</td>
                     </tr>
                     <tr class="flex justify-between w-full">
-                      <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด {{ formatCurrency(data.data.discount*100/totalPrice) || '-' }} (%)</span></td>
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount*100/totalPrice) || 0 }}</span>บาท</td>
                     </tr>
                   
