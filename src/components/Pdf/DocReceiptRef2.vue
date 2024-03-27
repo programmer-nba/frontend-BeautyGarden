@@ -495,27 +495,42 @@ const formatNumberToText = (number) => {
 
   function convertIntegerToThaiText(num) {
     let result = "";
+    let previousDigitWasZero = false;
     for (let i = 0; i < num.length; i++) {
       const digit = parseInt(num[i]);
       if (digit !== 0) {
-        if (i === num.length - 2 && digit === 2) {
-          // If in the tens position and digit is 2, use "ยี่"
+        if (i === num.length - 2 && digit === 2 && !previousDigitWasZero) {
+          // If in the tens position and digit is 2, and the previous digit is not zero
           result += "ยี่" + thaiPlaces[num.length - i - 1];
         } else {
           result += thaiNumerals[digit] + thaiPlaces[num.length - i - 1];
         }
+        previousDigitWasZero = false;
+      } else {
+        previousDigitWasZero = true;
       }
     }
     return result;
   }
 
   function convertDecimalToThaiText(num) {
+    if (parseInt(num) === 0) {
+      return "";
+    }
     let result = "";
-    for (let i = 0; i < num.length; i++) {
-      const digit = parseInt(num[i]);
-      if (digit !== 0) {
-        result += thaiNumerals[digit] + "สิบ";
+    const tensDigit = parseInt(num[0]);
+    const onesDigit = parseInt(num[1]);
+    if (tensDigit !== 0) {
+      if (tensDigit === 1) {
+        result += "สิบ";
+      } else if (tensDigit === 2) {
+        result += "ยี่สิบ";
+      } else {
+        result += thaiNumerals[tensDigit] + "สิบ";
       }
+    }
+    if (onesDigit !== 0) {
+      result += thaiNumerals[onesDigit];
     }
     return result;
   }
@@ -523,11 +538,11 @@ const formatNumberToText = (number) => {
   const thaiIntegerText = convertIntegerToThaiText(integerPart);
   const thaiDecimalText = convertDecimalToThaiText(decimalPart);
 
-  const thaiText =
-    thaiIntegerText +
-    (thaiIntegerText !== "" ? "บาท" : "") +
-    thaiDecimalText +
-    (thaiDecimalText !== "" ? "สตางค์" : "");
+  let thaiText = thaiIntegerText + (thaiIntegerText !== "" ? "บาท" : "");
+
+  if (decimalPart !== "0") {
+    thaiText += thaiDecimalText + "สตางค์";
+  }
 
   return thaiText || "ศูนย์บาท";
 };
