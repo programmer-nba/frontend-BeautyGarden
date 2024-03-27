@@ -359,7 +359,20 @@ const totalPrice = computed(()=>{
   return result
 })
 
-const formatNumberToText = (number) => {
+function formatNumber() {
+  const inputElement = document.getElementById('numberInput');
+  const formattedNumberElement = document.getElementById('formattedNumber');
+  const number = parseFloat(inputElement.value);
+  
+  if (!isNaN(number)) {
+    const formattedNumber = formatNumberToText(number);
+    formattedNumberElement.textContent = formattedNumber;
+  } else {
+    formattedNumberElement.textContent = '';
+  }
+}
+
+function formatNumberToText(number) {
   const thaiNumerals = [
     "ศูนย์",
     "หนึ่ง",
@@ -374,9 +387,8 @@ const formatNumberToText = (number) => {
   ];
   const thaiPlaces = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
 
-  const numArray = number.toString().split(".");
-  const integerPart = numArray[0];
-  const decimalPart = numArray[1] || "0";
+  const integerPart = Math.floor(number);
+  const decimalPart = (number - integerPart).toFixed(2).slice(-2);
 
   function convertIntegerToThaiText(num) {
     let result = "";
@@ -385,7 +397,6 @@ const formatNumberToText = (number) => {
       const digit = parseInt(num[i]);
       if (digit !== 0) {
         if (i === num.length - 2 && digit === 2 && !previousDigitWasZero) {
-          // If in the tens position and digit is 2, and the previous digit is not zero
           result += "ยี่" + thaiPlaces[num.length - i - 1];
         } else {
           result += thaiNumerals[digit] + thaiPlaces[num.length - i - 1];
@@ -399,9 +410,6 @@ const formatNumberToText = (number) => {
   }
 
   function convertDecimalToThaiText(num) {
-    if (parseInt(num) === 0) {
-      return "";
-    }
     let result = "";
     const tensDigit = parseInt(num[0]);
     const onesDigit = parseInt(num[1]);
@@ -420,17 +428,16 @@ const formatNumberToText = (number) => {
     return result;
   }
 
-  const thaiIntegerText = convertIntegerToThaiText(integerPart);
+  const thaiIntegerText = convertIntegerToThaiText(integerPart.toString());
   const thaiDecimalText = convertDecimalToThaiText(decimalPart);
 
-  let thaiText = thaiIntegerText + (thaiIntegerText !== "" ? "บาท" : "");
-
-  if (decimalPart !== "0") {
-    thaiText += thaiDecimalText + "สตางค์";
-  }
+  const thaiText =
+    thaiIntegerText +
+    (thaiIntegerText !== "" ? "บาท" : "") +
+    (decimalPart !== "00" ? thaiDecimalText + "สตางค์" : "");
 
   return thaiText || "ศูนย์บาท";
-};
+}
 
 const data = defineProps(['data', 'color'])
 
