@@ -10,8 +10,14 @@
               <div class="flex flex-wrap gap-3 justify-start pb-2 items-center">
                 <div>
                   <img
-                    v-if="data.data.customer_branch?.Branch_iden_number!=='-'"
-                    :src="`https://drive.google.com/thumbnail?id=${data.data.customer_branch?.Branch_iden_number}`"
+                    v-if="data.data.customer_branch?.isVat"
+                    :src="logoVat"
+                    alt="..."
+                    class="rounded-full w-[75px] h-[75px] align-middle border-none"
+                  />
+                  <img
+                    v-else
+                    :src="logoNoVat"
                     alt="..."
                     class="rounded-full w-[75px] h-[75px] align-middle border-none"
                   />
@@ -431,6 +437,8 @@
 import { onMounted, computed } from 'vue';
 import ssn_1 from '@/assets/img/ssn-1.png'
 import ssn_2 from '@/assets/img/ssn-2.png'
+import logoVat from '@/assets/img/ssgdc.jpg'
+import logoNoVat from '@/assets/img/ssgd.png'
 
 onMounted(()=>{
   setTimeout(print, 2000)
