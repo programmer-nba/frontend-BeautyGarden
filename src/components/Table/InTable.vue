@@ -458,8 +458,8 @@
               />
             </div>
             <span class="font-bold"
-              >{{ customer.customer_name }}
-              {{ customer.customer_lastname ? `(${customer.customer_lastname})` : "" }}
+              >{{ customer?.customer_name }}
+              {{ customer?.customer_lastname ? `(${customer?.customer_lastname})` : "" }}
             </span>
           </div>
         </div>
@@ -471,9 +471,9 @@
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
-            :class="{ 'p-invalid': !customer.customer_name }"
+            :class="{ 'p-invalid': !customer?.customer_name }"
           />
-          <small class="p-error" v-if="!customer.customer_name"
+          <small class="p-error" v-if="!customer?.customer_name"
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
@@ -2096,6 +2096,7 @@ const refresh = () => {
 
 const referQuotation = async () => {
   if ( refQuotation.value && refQuotation.value.customer_detail ) {
+    console.log(refQuotation.value)
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
     selectedCustomer.value = customer.value
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
@@ -2120,7 +2121,7 @@ const referQuotationInput = async () => {
     prod.value.project = {...refQuotation.value.project}
     console.log('rfQT', refQuotation.value)   
     console.log('customers', customers.value)
-    customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
+    customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail?.customer_name)
     selectedCustomer.value = customer.value
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
     company.value = selectedCompany.value
@@ -2298,7 +2299,7 @@ const customBase64Uploader = async (event) => {
 
 const refCustomer = () => {
   if (selectedCustomer.value) {
-    customer.value = selectedCustomer.value;
+    customer.value = {...selectedCustomer.value};
   }
 }
 
