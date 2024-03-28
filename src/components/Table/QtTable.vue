@@ -110,10 +110,10 @@
         >
           <template #body="slotProps">
             <div class="flex flex-col">
-              <p>{{ slotProps.data.customer_detail.customer_name }} </p>
+              <p>{{ slotProps.data.customer_detail?.customer_name }} </p>
               <p class="text-sm">{{ 
-                slotProps.data.customer_detail.customer_lastname&&slotProps.data.customer_detail.customer_lastname!=='undefined' 
-                ? `(${slotProps.data.customer_detail.customer_lastname})` 
+                slotProps.data.customer_detail?.customer_lastname&&slotProps.data.customer_detail?.customer_lastname!=='undefined' 
+                ? `(${slotProps.data.customer_detail?.customer_lastname})` 
                 : null }}
               </p>
             </div>
@@ -2093,7 +2093,7 @@ const editQuotation = (prodd) => {
   selectedCompany.value = company;
 
   const customered = customers.value.find(
-    (item) => item.customer_name === prodd.customer_detail.customer_name
+    (item) => item.customer_name === prodd.customer_detail?.customer_name
   );
   selectedCustomer.value = customered;
   refCustomer();
@@ -2362,6 +2362,7 @@ const editingProductQuotation = async () => {
 
 const editingQuotation = async () => {
   loading.value = true;
+  console.log(customer.value)
   const data = {
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
