@@ -10,7 +10,7 @@
               <div class="flex flex-wrap gap-3 justify-start pb-2 items-center">
                 <div>
                   <img
-                    v-if="data.data.customer_branch?.isVat"
+                    v-if="data.data.isVat"
                     :src="logoVat"
                     alt="..."
                     class="rounded-full w-[75px] h-[75px] align-middle border-none"
