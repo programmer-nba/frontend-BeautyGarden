@@ -854,6 +854,7 @@
           </template>
         </DataView>
       </div>
+
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -868,107 +869,6 @@
           "
         />
       </div>
-
-      <!-- <div
-        v-if="openProductForm"
-        class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
-      >
-        <div v-if="product?.product_logo64" class="card flex justify-content-center">
-          <Image :src="product?.product_logo64" alt="Image" width="250" preview />
-        </div>
-        <div class="card flex justify-center">
-          <FileUpload
-            class="p-fileupload-file-remove"
-            mode="basic"
-            name="demo[]"
-            :auto="true"
-            accept="image/*"
-            customUpload
-            @uploader="customBase64Uploader"
-          />
-        </div>
-        <div class="field">
-          <label>หัวข้อ</label>
-          <div class="card flex justify-content-center">
-            <InputText v-model="product.product_name" />
-          </div>
-          <label>รายละเอียด</label>
-          <div
-            v-for="(text, textInputIndex) in product.product_text"
-            class="card flex justify-content-center"
-          >
-            <Textarea
-              v-model="product.product_text[textInputIndex]"
-              autoResize
-              rows="5"
-              cols="50"
-            />
-          </div>
-          <Button
-            label="add"
-            class="bg-orange-300 px-2"
-            @click="product.product_text.push('')"
-          />
-        </div>
-        <div class="field grid w-full px-5">
-          <div class="field grid">
-            <label for="price">ราคา/หน่วย</label>
-            <InputNumber
-              class="p-2"
-              id="price"
-              v-model="product.product_price"
-              mode="currency"
-              currency="THB"
-            />
-          </div>
-          <div class="field grid">
-            <label for="quantity">จำนวน</label>
-            <InputNumber
-              class="p-2"
-              id="quantity"
-              v-model="product.product_amount"
-              integeronly
-            />
-          </div>
-          <div class="field grid">
-            <label for="unit">หน่วย</label>
-            <InputText
-              class="p-2"
-              id="unit"
-              v-model="product.unit"
-            />
-          </div>
-          <div class="flex items-center gap-2">
-            <p>VAT</p>
-            <InputSwitch v-model="product.isVat" @change="changeProductVat" />
-          </div>
-          <div class="field grid">
-            <label for="quantity">รวม</label>
-            <p class="font-semibold px-2">
-              {{ 
-                sumVat
-                ? formatCurrency((product.product_amount * product.product_price) + ((product.vat_price || 0)*product.product_amount)) 
-                : formatCurrency((product.product_amount * product.product_price) - ((product.vat_price || 0)*product.product_amount)) 
-              }} บาท
-            </p>
-          </div>
-        </div>
-
-        <div class="card flex gap-3 justify-center items-center py-2">
-          <Button
-            class="py-2 text-center pl-3 pr-5 rounded bg-red-600 text-white"
-            label="ยกเลิก "
-            icon="pi pi-times"
-            @click="cancleProduct"
-          />
-          <Button
-            class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
-            label="เพิ่ม"
-            icon="pi pi-check"
-            @click="addProduct"
-          />
-        </div>
-      </div> -->
 
       <div
         v-if="openProductForm"
@@ -1108,6 +1008,7 @@
         </div>
         
       </div>
+
       <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
         <p>ส่วนลด</p>
         <InputNumber
@@ -1533,14 +1434,13 @@
       </div>
       <br />
 
-      <span class="my-2" v-if="selectedCompany?.isVat">
-        <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
-      </span>
-
-      <!-- <div class="py-4 px-2 bg-slate-100 rounded">
-        <label for="product_head" class="font-semibold text-lg">หัวข้อหลัก</label>
-        <InputText id="product_head" v-model="product_head" />
-      </div> -->
+      <div v-if="selectedCompany?.isVat"  class="flex justify-between bg-slate-200 px-3 py-2">
+        <div class="flex items-center">
+          <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
+          <label for="isVat" class="ml-2"> VAT 7% </label>
+        </div>
+        <SelectButton class="w-1/2" @change="changesumVat()" v-show="prod.project.isVat" v-model="choosesumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
+      </div>
 
       <div class="card">
         <div class="bg-slate-200 px-2 py-5 rounded shadow-md">
@@ -1581,7 +1481,7 @@
               <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0">
+            <div class="py-2" v-if="prod.project.isVat && prod.project?.vat_price!==0">
               <p>VAT 7%</p> 
               <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
             </div>
@@ -1631,7 +1531,7 @@
                     <div>
                       <div>
                         <p class="text-clip font-semibold overflow-hidden w-[100px]">
-                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : null }}</span> 
+                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
                           {{ item.product_name || null }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
@@ -1687,7 +1587,7 @@
           </template>
         </DataView>
       </div>
-      
+
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
           icon="pi pi-plus-circle"
@@ -1707,44 +1607,67 @@
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
       >
-        <div v-if="product?.product_logo64" class="card flex justify-content-center">
-          <Image :src="product?.product_logo64" alt="Image" width="250" preview />
-        </div>
+
         <div class="card flex justify-center">
-          <FileUpload
-            class="p-fileupload-file-remove"
-            mode="basic"
-            name="demo[]"
-            :auto="true"
-            accept="image/*"
-            customUpload
-            @uploader="customBase64Uploader"
-          />
-        </div>
-        <div class="field">
-          <label>หัวข้อ</label>
-          <div class="card flex justify-content-center">
-            <InputText v-model="product.product_name" />
+          <div class="card">
+            <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
+                <template #content>
+                  
+                  <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
+                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
+                      <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                      <i @click="product?.product_logo.splice(picindex, 1)" class="pi pi-times" style="color: red"></i>
+                  </div>
+                  </div>
+                </template>
+            </FileUpload>
           </div>
-          <label>รายละเอียด</label>
-          <div
-            v-for="(text, textInputIndex) in product.product_text"
-            class="card flex justify-content-center"
-          >
-            <Textarea
-              v-model="product.product_text[textInputIndex]"
-              autoResize
-              rows="5"
-              cols="50"
+        </div>
+
+        <!--sub details-->
+        <div>
+          <div class="field">
+            <div class="flex gap-2 items-center">
+              <label class="font-semibold text-lg">หัวข้อที่</label>
+              <input type="text" v-model="product.product_no" class="border-b text-center rounded w-20" />
+            </div>
+            
+            <div class="card flex justify-content-center">
+              <InputText class="px-2 py-2" v-model="product.product_name" />
+            </div>
+            
+            <div class="flex gap-2 items-center">
+              <label class="font-semibold py-3 text-lg">รายละเอียดที่ <span>{{ product.product_no }}.</span></label>
+              <input type="text" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
+            </div>
+            
+            <div
+              v-for="(text, textInputIndex) in product.product_text"
+              class="card flex flex-col gap-y-5 items-center justify-center"
+            >
+              <Textarea
+                v-model="product.product_text[textInputIndex]"
+                autoResize
+                placeholder="รายละเอียด..."
+                rows="5"
+                cols="50"
+                class="border-2 mb-2"
+              />
+            </div>
+            <div class="flex gap-2">
+              <Button
+              label="ลดบรรทัด"
+              class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
+              @click="product.product_text.pop()"
+              :disabled="product.product_text.length < 2"
             />
+            <Button
+              label="เพิ่มบรรทัดใหม่"
+              class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
+              @click="product.product_text.push('')"
+            />
+            </div>
           </div>
-          <Button
-            label="add"
-            class="bg-orange-300 px-2"
-            @click="product.product_text.push('')"
-          />
-        </div>
-        <div class="field grid w-full px-5">
           <pre class="hidden">{{ !isPrice ? product.product_price = 0 : product.product_price = product.product_price }}</pre>
           <div class="field grid w-full px-5">
             <div class="field grid">
@@ -1761,7 +1684,7 @@
                 :disabled="!isPrice"
               />
             </div>
-          <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
+            <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
             <div class="field grid">
               <div class="flex items-center mt-3 gap-2">
                 <label for="quantity">จำนวน</label>
@@ -1784,47 +1707,41 @@
                 :disabled="!isAmount"
               />
             </div>
-          <div class="field grid">
-            <label for="unit">หน่วย</label>
-            <InputText
-              class="p-2"
-              id="unit"
-              v-model="product.unit"
+            <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
+              <p>VAT</p>
+              <InputSwitch v-model="product.isVat" @change="changeProductVat" />
+              <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
+            </div>
+            <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+              <label for="quantity" class="font-semibold">รวม</label>
+              <p class="font-semibold px-2">
+                {{ 
+                  sumVat
+                  ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
+                  : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
+                }} บาท
+              </p>
+            </div>
+          </div>
+          <div class="card flex gap-3 justify-center items-center py-2">
+            <Button
+              class="py-2 text-center pl-3 pr-5 rounded text-red-500"
+              label="ยกเลิก "
+              icon="pi pi-times"
+              @click="cancleProduct"
+            />
+            <Button
+              class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
+              :class="edittingProduct ? 'bg-orange-600' : ''"
+              :label="edittingProduct ? 'แก้ไข' : 'เพิ่ม'"
+              icon="pi pi-check"
+              @click="addProduct"
             />
           </div>
-          <div class="flex items-center gap-2">
-            <p>VAT</p>
-            <InputSwitch v-model="product.isVat" @change="changeProductVat" />
-          </div>
-          <div class="field grid">
-            <label for="quantity">รวม</label>
-            <p class="font-semibold px-2">
-              {{ 
-                sumVat
-                ? formatCurrency((product.product_amount * product.product_price) + ((product.vat_price || 0)*product.product_amount)) 
-                : formatCurrency((product.product_amount * product.product_price) - ((product.vat_price || 0)*product.product_amount)) 
-              }} บาท
-            </p>
-          </div>
         </div>
-
-        <div class="card flex gap-3 justify-center items-center py-2">
-          <Button
-            class="py-2 text-center pl-3 pr-5 rounded bg-red-600 text-white"
-            label="ยกเลิก "
-            icon="pi pi-times"
-            @click="cancleProduct"
-          />
-          <Button
-            class="py-2 text-center px-3 rounded bg-emerald-600 text-white"
-            label="เพิ่ม"
-            icon="pi pi-check"
-            @click="addProduct"
-          />
-        </div>
-        </div>
+        
       </div>
-
+      
       <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
         <p>ส่วนลด</p>
         <InputNumber
@@ -1837,7 +1754,7 @@
 
       <div class="flex flex-col gap-y-2">
 
-        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
+        <div v-if="prod.project.isVat && !sumVat">
           <p>ราคารวม
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
@@ -1845,7 +1762,7 @@
           </p>
         </div>
 
-        <div v-if="prod.project.isVat || selectedCompany?.isVat && sumVat">
+        <div v-if="prod.project.isVat && sumVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
@@ -1853,7 +1770,7 @@
           </p>
         </div>
 
-        <div v-if="prod.project.isVat || selectedCompany?.isVat && !sumVat">
+        <div v-if="prod.project.isVat && !sumVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
@@ -1861,7 +1778,7 @@
           </p>
         </div>
 
-        <div v-if="!prod.project.isVat || !selectedCompany?.isVat">
+        <div v-if="!prod.project.isVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
               formatCurrency(sumProductsPrice+(prod.project.total || 0))
@@ -1881,7 +1798,7 @@
             {{ formatCurrency(netPrices) || 0 }}
           </span>
         </p>
-        <p v-if="selectedCompany?.isVat">
+        <p v-if="prod.project.isVat || selectedCompany?.isVat">
           VAT 7% 
           <span class="border-b px-2">
             {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}

@@ -391,7 +391,7 @@
                 </td>
                 <td style="text-align: left">
                     <span class="pl-5 font-semibold">
-                      มูลค่า ภาษีหัก ณ. ที่จ่าย <span class="px-2">{{ formatCurrency(withHolding) }}</span> บาท
+                      มูลค่า ภาษีหัก ณ. ที่จ่าย ({{ data.data.vat.percen_deducted }}%) <span class="px-2">{{ formatCurrency(withHolding) }}</span> บาท
                     </span>
                 </td>
               </tr>

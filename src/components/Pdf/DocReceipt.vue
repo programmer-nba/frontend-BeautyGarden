@@ -325,16 +325,23 @@
                       <tr class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงเหลือ</span></td>
                         <td style="text-align: right"><span class="pr-3">
+                          
                           {{ 
                             data.data.isVat
                             ? formatCurrency(
                               (totalPrice+(data.data.project.total || 0)
                               -data.data.discount+vat+((data.data.project.total || 0)*0.07))
                               -(data.data.invoiceRef_detail?.paid - data.data.amount_price)
-                              -data.data.invoiceRef_detail?.paid
+                              -data.data.amount_price
                             )
-                            : formatCurrency((totalPrice+(data.data.project.total || 0))-data.data.discount-(data.data.invoiceRef_detail?.paid - data.data.amount_price)-data.data.invoiceRef_detail?.paid)
+                            : formatCurrency(
+                              (totalPrice + (data.data.project.total || 0))
+                              - data.data.discount
+                              - (data.data.invoiceRef_detail?.paid 
+                              - data.data.amount_price)
+                              - data.data.amount_price)
                           }}
+                          
                         </span>บาท</td>
                       </tr>
 
@@ -402,7 +409,7 @@
                       <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.amount_price) }}</strong>บาท</td>
                     </tr>
                   </tbody>
-              </table>
+                </table>
               </div>
               <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-green-200 text-center py-2 border-b border-r border-l flex justify-center items-center"
               :style="{ backgroundColor: `#${data.color}` }">

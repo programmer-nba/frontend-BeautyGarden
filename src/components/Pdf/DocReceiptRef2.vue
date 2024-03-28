@@ -280,7 +280,7 @@
                       <tr class="flex justify-between w-full pb-2" :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left">
                           <span class="pl-5">
-                            ยอดค้างสุทธิ5
+                            ยอดค้างสุทธิ
                           </span>
                         </td>
                         <td style="text-align: right"><span class="pr-3">
