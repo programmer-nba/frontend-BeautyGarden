@@ -123,7 +123,7 @@
           field="customer_detail.customer_name"
           header="ชื่อลูกค้า"
           sortable
-          style="max-width: 12rem"
+          style="min-width: 12rem"
           class="border-b text-sm"
         ></Column>
         <Column
