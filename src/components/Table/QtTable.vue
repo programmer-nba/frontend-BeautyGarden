@@ -522,18 +522,18 @@
           <div>
             <div>
               <p class="font-bold">ชื่อโครงการ (Project)</p>
-              <inputText v-model="prod.project.name" class="px-2" />
+              <InputText v-model="prod.project.name" class="px-2" />
             </div>
             <div>
               <p>จำนวน</p>
               <div class="flex gap-2">
-                <inputNumber v-model="prod.project.amount" />
-                <inputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+                <InputNumber v-model="prod.project.amount" inputId="integeronly" />
+                <InputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
               </div>
             </div>
             <div>
               <p>ราคา/หน่วย</p>
-              <inputNumber v-model="prod.project.price" />
+              <InputNumber v-model="prod.project.price" inputId="locale-user" :minFractionDigits="2" :maxFractionDigits="2" />
             </div>
             <pre class="hidden">
               {{ 
@@ -1222,18 +1222,18 @@
           <div>
             <div>
               <p class="font-bold">ชื่อโครงการ (Project)</p>
-              <inputText v-model="prod.project.name" class="px-2" />
+              <InputText v-model="prod.project.name" class="px-2" />
             </div>
             <div>
               <p>จำนวน</p>
               <div class="flex gap-2">
-                <inputNumber v-model="prod.project.amount" />
-                <inputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+                <InputNumber v-model="prod.project.amount" inputId="integeronly" />
+                <InputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
               </div>
             </div>
             <div>
               <p>ราคา/หน่วย</p>
-              <inputNumber v-model="prod.project.price" />
+              <InputNumber v-model="prod.project.price" inputId="locale-user" :minFractionDigits="2" :maxFractionDigits="2" />
             </div>
             <pre class="hidden">
               {{ 
