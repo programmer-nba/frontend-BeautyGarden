@@ -51,7 +51,7 @@
         v-model:selection="selectedQuotations"
         dataKey="_id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -85,7 +85,7 @@
           field="quotation"
           header="เลขที่"
           sortable
-          style="min-width: 15rem"
+          style="min-width: 12rem"
           class="border-b"
         >
         <template #body="slotProps">
@@ -105,13 +105,13 @@
           field="customer_detail.customer_name"
           header="ชื่อลูกค้า"
           sortable
-          style="min-width: 16rem"
+          style="min-width: 15rem"
           class="border-b"
         >
           <template #body="slotProps">
-            <div class="flex flex-col">
+            <div class="flex flex-col text-xs">
               <p>{{ slotProps.data.customer_detail?.customer_name }} </p>
-              <p class="text-sm">{{ 
+              <p>{{ 
                 slotProps.data.customer_detail?.customer_lastname&&slotProps.data.customer_detail?.customer_lastname!=='undefined' 
                 ? `(${slotProps.data.customer_detail?.customer_lastname})` 
                 : null }}
@@ -124,10 +124,10 @@
           header="วันที่เริ่ม"
           class="border-b"
           sortable
-          style="min-width: 10rem"
+          style="min-width: 7rem"
         >
           <template #body="slotProps">
-            {{ formatDateRef(slotProps.data.start_date) }}
+            <p class="text-xs">{{ formatDateRef(slotProps.data.start_date) }}</p>
           </template>
         </Column>
         <Column
@@ -135,10 +135,10 @@
           header="วันที่สิ้นสุด"
           class="border-b"
           sortable
-          style="min-width: 10rem"
+          style="min-width: 9rem"
         >
           <template #body="slotProps">
-            {{ formatDateRef(slotProps.data.end_date) }}
+            <p class="text-xs">{{ formatDateRef(slotProps.data.end_date) }}</p>
           </template>
         </Column>
 
@@ -185,7 +185,7 @@
           header="หัก ณ ที่จ่าย"
           class="border-b"
           sortable
-          style="min-width: 10rem"
+          style="min-width: 9rem"
         >
           <template #body="slotProps">
             <div class="grid place-items-center w-full">
@@ -194,14 +194,6 @@
               </span>
             </div>
           </template>
-        </Column>
-        <Column
-          field="status[0]"
-          header="สถานะ"
-          sortable
-          style="min-width: 6rem"
-          class="border-b"
-        >
         </Column>
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">

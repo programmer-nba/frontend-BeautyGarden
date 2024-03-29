@@ -67,7 +67,7 @@
         v-model:selection="selectedInvoices"
         dataKey="_id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -107,15 +107,15 @@
           field="invoice"
           header="เลขที่"
           sortable
-          style="min-width: 15rem"
+          style="min-width: 12rem"
           class="border-b"
         >
         <template #body="slotProps">
-          <span class="text-sm">
+          <span class="text-xs">
             {{ slotProps.data.invoice }}
             <i 
               @click="onCoppy(slotProps.data.invoice)" 
-              class="pi pi-file-export cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
+              class="pi text-xs pi-file-export cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
               v-tooltip.top="'ใช้อ้างอิงใบเสร็จ'"
               >
             </i>
@@ -126,18 +126,18 @@
           field="customer_detail.customer_name"
           header="ชื่อลูกค้า"
           sortable
-          style="min-width: 16rem"
-          class="border-b"
+          style="min-width: 14rem"
+          class="border-b text-sm"
         ></Column>
         <Column
           field="start_date"
           header="วันที่เริ่ม"
           class="border-b"
           sortable
-          style="min-width: 10rem"
+          style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{ formatThaiDate(slotProps.data.start_date) }}
+            <p class="text-sm">{{ formatThaiDate(slotProps.data.start_date) }}</p>
           </template>
         </Column>
         <Column
@@ -148,15 +148,15 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            {{ formatThaiDate(slotProps.data.end_date) }}
+            <p class="text-sm">{{ formatThaiDate(slotProps.data.end_date) }}</p>
           </template>
         </Column>
         <Column
           field="end_date"
           header="เวลาคงเหลือ"
-          class="border-b"
+          class="border-b text-sm"
           sortable
-          style="min-width: 10rem"
+          style="min-width: 9rem"
         >
           <template #body="slotProps">
             <span 
@@ -184,7 +184,7 @@
 
         <Column
           field="total"
-          class="border-b"
+          class="border-b text-sm"
           header="จำนวนเต็ม"
           sortable
           style="min-width: 8rem"
@@ -201,7 +201,7 @@
         </Column>
         <Column
           field="total"
-          class="border-b"
+          class="border-b text-sm"
           header="คงค้าง"
           sortable
           style="min-width: 8rem"
@@ -230,7 +230,7 @@
           header="สถานะ"
           sortable
           style="min-width: 6rem"
-          class="border-b"
+          class="border-b text-xs"
         >
           <template #body="slotProps">
             งวด {{ slotProps.data.cur_period }} / {{ slotProps.data.end_period }}

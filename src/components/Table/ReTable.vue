@@ -64,7 +64,7 @@
         v-model:selection="selectedReceipts"
         dataKey="_id"
         :paginator="true"
-        :rows="10"
+        :rows="5"
         :filters="filters"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
@@ -98,16 +98,16 @@
           field="receipt"
           header="เลขที่"
           sortable
-          style="min-width: 12rem"
-          class="border-b"
+          style="min-width: 8rem"
+          class="border-b text-sm"
         >
         </Column>
         <Column
           field="invoice"
           header="อ้างอิง"
           sortable
-          style="min-width: 12rem"
-          class="border-b"
+          style="min-width: 8rem"
+          class="border-b text-sm"
         >
           <template #body="slotProps">
             {{ slotProps.data.invoice }}
@@ -123,15 +123,15 @@
           field="customer_detail.customer_name"
           header="ชื่อลูกค้า"
           sortable
-          style="max-width: 16rem"
-          class="border-b"
+          style="max-width: 12rem"
+          class="border-b text-sm"
         ></Column>
         <Column
           field="start_date"
           header="วันที่ออกเอกสาร"
-          class="border-b"
+          class="border-b text-sm"
           sortable
-          style="min-width: 10rem"
+          style="min-width: 8rem"
         >
           <template #body="slotProps">
             {{ formatDateRef(slotProps.data.start_date) }}
@@ -140,7 +140,7 @@
 
         <Column
           field="vat.totalVat_deducted"
-          class="border-b"
+          class="border-b text-sm"
           header="ราคา"
           sortable
           style="min-width: 8rem"
@@ -177,7 +177,7 @@
           header="VAT 7%"
           sortable
           style="min-width: 8rem"
-          class="border-b"
+          class="border-b text-sm"
         >
           <template #body="slotProps">
             <div class="grid place-items-center w-full">
@@ -193,7 +193,7 @@
         <Column
           field="vat.percen_deducted"
           header="หัก ณ ที่จ่าย"
-          class="border-b"
+          class="border-b text-sm"
           sortable
           style="min-width: 10rem"
         >
