@@ -1917,7 +1917,6 @@
         
         <div class="py-3 flex flex-col">
           <strong>รายละเอียด</strong>
-          <pre class="hidden">{{ paid_detail = receipt.invoiceRef_detail.paid_detail || '' }}</pre>
           <textarea v-model="paid_detail" class="border">
           </textarea>
         </div>
@@ -2578,6 +2577,7 @@ const editReceipt = (prod) => {
 const edittingReceiptRefInvoice = (prod) => {
   resetData();
   receipt.value = prod
+  paid_detail.value = prod.invoiceRef_detail.paid_detail
   editReceiptRefInvoiceDialog.value = true
 };
 
