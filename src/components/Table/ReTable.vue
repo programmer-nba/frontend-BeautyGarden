@@ -1817,7 +1817,7 @@
         {{refInvoice?.project.total}} =
         {{ net_raw = (refInvoice?.total + refInvoice?.project.total) - refInvoice?.discount }}
         {{ prod_vat = calVat(refInvoice?.product_detail) + ((refInvoice?.project.total || 0)*0.07) }}
-        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw + prod_vat : net_raw }}
+        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw : net_raw }}
       </pre>
       <div v-if="invoices && invoices.length > 0" class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center py-3">

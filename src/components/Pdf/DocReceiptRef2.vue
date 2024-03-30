@@ -92,6 +92,7 @@
                   <hr />
                 </div>
               </div>
+              
               <table class="border-b min-h-[80px] border h-full">
                 <thead>
                   <tr>

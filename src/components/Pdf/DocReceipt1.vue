@@ -234,7 +234,7 @@
                       >
                         {{ 
                           product.vat_price > 0
-                          ? formatCurrency(product.vat_price)
+                          ? formatCurrency(product.vat_price*product.product_amount)
                           : '0.00'
                         }}
                       </div>
