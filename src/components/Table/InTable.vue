@@ -2183,7 +2183,7 @@ function countDistinctDays(start_date, end_date) {
 
 const withholdingPrice = computed(() => {
   if (isWithholding.value && sumVat) {
-    const result = (netVat.value * withholdingPercent.value) / 100;
+    const result = ((sumProductsPrice.value + (prod.value.project.total || 0)) * withholdingPercent.value) / 100;
     return result;
   } else {
     return 0;
@@ -2680,6 +2680,7 @@ const editingInvoice = async () => {
     product_head: product_head.value,
     project: prod.value.project,
     product_detail: products.value,
+    sumVat: sumVat.value,
     discount: discount.value,
     percen_deducted: isWithholding.value ? withholdingPercent.value : null,
     percen_payment: isWithholding.value ? withholdingPercent.value : null,
