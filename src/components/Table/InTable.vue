@@ -2390,7 +2390,7 @@ const editInvoice = (prodd) => {
 
 const totalPrice = (product) => {
   const price = product.product_detail.map((item)=>{
-    return !product.sumVat ? (item.product_price*item.product_amount) - ((item.vat_price || 0) *item.product_amount) 
+    return !product.sumVat ? (item.product_price*item.product_amount)
     : (item.product_price*item.product_amount)
   })
   const all_price = price.length > 0 ? price.reduce((a,b) => a + b, 0) : 0
