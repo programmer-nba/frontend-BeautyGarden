@@ -2332,7 +2332,7 @@ const editingProductQuotation = async () => {
     product_detail: products.value
   }
   try {
-    const response = await Documents.editQuotation(quotation.value._id, data);
+    const response = await Documents.editProductQuotation(quotation.value._id, data);
     if (response.data) {
       toast.add({
         severity: "success",
@@ -2355,6 +2355,7 @@ const editingProductQuotation = async () => {
 const editingQuotation = async () => {
   loading.value = true;
   console.log(customer.value)
+  console.log(selectedCompany.value)
   const data = {
     customer_number: customer.value.customer_number,
     branchId: selectedCompany.value._id,
@@ -2400,7 +2401,7 @@ const editingQuotation = async () => {
         detail: "อัพเดทใบเสนอราคาแล้ว",
         life: 3000,
       });
-      await editingProductQuotation()
+      //await editingProductQuotation()
     } 
   } 
   catch(err) {
