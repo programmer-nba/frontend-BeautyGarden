@@ -265,7 +265,7 @@
                 <table class="h-full" v-if="data.data.sumVat">
                     <tbody class="h-full">
                       <tr class="flex justify-between w-full pb-1">
-                        <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
+                        <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ (ก่อน Vat)</span></td>
                         <td class="" style="text-align: right"><span class="pr-3">
                           {{ formatCurrency(totalPrice+(data.data.project.total || 0)) }}</span>บาท</td>
                       </tr>
@@ -328,7 +328,7 @@
                   <tbody>
                     
                     <tr class="flex justify-between w-full pb-1">
-                      <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
+                      <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ (ก่อน Vat)</span></td>
                       <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     <tr class="flex justify-between w-full pb-1">
