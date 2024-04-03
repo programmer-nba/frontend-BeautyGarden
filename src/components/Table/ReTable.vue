@@ -101,6 +101,14 @@
           style="min-width: 8rem"
           class="border-b text-sm"
         >
+          <template #body="slotProps">
+            <p v-if="slotProps.data.isBillVat" class="text-orange-500">
+              {{ slotProps.data.receiptVat }}
+            </p>
+            <p v-else>
+              {{ slotProps.data.receipt }}
+            </p>
+          </template>
         </Column>
         <Column
           field="invoice"
@@ -1747,8 +1755,14 @@
       <div class="confirmation-content">
         <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
         <span v-if="receipt"
-          >คุณแน่ใจว่าต้องการลบเอกสารนี้หรือไม่ ?<b>{{ receipt.receipt }}</b
-          >?</span
+          >คุณแน่ใจว่าต้องการลบเอกสารนี้หรือไม่ ?
+          <b v-if="receipt.isBillVat" class="text-orange-500">
+            {{ receipt.receiptVat }}
+          </b>
+          <b v-else>
+            {{ receipt.receipt }}
+          </b>?
+          </span
         >
       </div>
       <template #footer>
@@ -1911,7 +1925,12 @@
     >
       <div class="card flex flex-col gap-y-2 bg-sky-300 py-2 px-2 rounded-lg justify-content-center">
         <p>แก้ไขรายละเอียดใบเสร็จ</p>
-        <p>{{ receipt.invoice }}</p>
+        <p v-if="receipt.isBillVat">
+          {{ receipt.receiptVat }}
+        </p>
+        <p v-else>
+          {{ receipt.receipt }}
+        </p>
       </div>
       <div class="card">
         
@@ -2688,6 +2707,7 @@ const createNewReceipt = async () => {
   products.value.forEach((product) => {
     product.product_logo64 = "";
   });
+  console.log(start_date.value)
   const data = {
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
     //invoice: refInvoice.value.invoice,

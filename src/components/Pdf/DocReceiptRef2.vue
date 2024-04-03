@@ -67,7 +67,12 @@
                   <br />
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เลขที่ : </span>
-                    {{ data.data.receipt }}
+                    <p v-if="data.data.isBillVat">
+                      {{ data.data.receiptVat }}
+                    </p>
+                    <p v-else>
+                      {{ data.data.receipt }}
+                    </p>
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่เริ่ม Date : </span>
