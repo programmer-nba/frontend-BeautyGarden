@@ -28,7 +28,15 @@
                 <tbody>
                     <tr v-for="rep in invoice.status" :key="rep.receipt">
                         <td>
-                            {{ rep.receipt }}
+                            <p v-if="rep.isBillVat">
+                                {{ rep.receiptVat }}
+                            </p>
+                            <p v-else-if="rep.isBillVat === false">
+                                {{ rep.receiptNoVat }}
+                            </p>
+                            <p v-else>
+                                {{ rep.receipt }}
+                            </p>
                         </td>
                         <td>
                             {{ formatThaiDate(rep.createdAt) }}

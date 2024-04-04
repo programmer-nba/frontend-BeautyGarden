@@ -68,6 +68,9 @@
                     <p v-if="data.data.isBillVat">
                       {{ data.data.receiptVat }}
                     </p>
+                    <p v-else-if="data.data.isBillVat === false">
+                      {{ data.data.receiptNoVat }}
+                    </p>
                     <p v-else>
                       {{ data.data.receipt }}
                     </p>

@@ -105,7 +105,10 @@
             <p v-if="slotProps.data.isBillVat" class="text-orange-500">
               {{ slotProps.data.receiptVat }}
             </p>
-            <p v-else>
+            <p v-else-if="slotProps.data.isBillVat === false" class="text-black">
+              {{ slotProps.data.receiptNoVat }}
+            </p>
+            <p v-else class="text-gray-500">
               {{ slotProps.data.receipt }}
             </p>
           </template>
@@ -1759,6 +1762,9 @@
           <b v-if="receipt.isBillVat" class="text-orange-500">
             {{ receipt.receiptVat }}
           </b>
+          <b v-else-if="receipt.isBillVat === false">
+            {{ receipt.receiptNoVat }}
+          </b>
           <b v-else>
             {{ receipt.receipt }}
           </b>?
@@ -1927,6 +1933,9 @@
         <p>แก้ไขรายละเอียดใบเสร็จ</p>
         <p v-if="receipt.isBillVat">
           {{ receipt.receiptVat }}
+        </p>
+        <p v-else-if="receipt.isBillVat === false">
+          {{ receipt.receiptNoVat }}
         </p>
         <p v-else>
           {{ receipt.receipt }}
@@ -2749,7 +2758,7 @@ const createNewReceipt = async () => {
     sumVat: sumVat.value,
     transfer: transfer.value
   };
-  console.log(data);
+  console.log(data.start_date);
   try {
     const response = await Documents.createNewReceipt(data);
     if (response.data) {
