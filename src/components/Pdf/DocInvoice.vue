@@ -357,13 +357,7 @@
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     
-                    <tr class="flex justify-between w-full pb-2 pt-2" :style="{ backgroundColor: `#${data.color}` }">
-                      <td style="text-align: left"><strong class="pl-5">จำนวนเงินทั้งสิ้น</strong></td>
-                      <td style="text-align: right">
-                        <strong class="pr-3">{{ formatCurrency(totalPrice-data.data.discount+vat+(data.data.project.total_net || 0)) }}</strong>
-                        บาท
-                      </td>
-                    </tr>
+                    
                     <tr class="flex justify-between items-center w-full py-2 bg-sky-200 " :style="{ backgroundColor: `#${data.color}` }">
                       <td style="text-align: left">
                         <div class="flex flex-col items-center">
