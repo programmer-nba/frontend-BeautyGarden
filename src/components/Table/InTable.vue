@@ -67,11 +67,12 @@
         v-model:selection="selectedInvoices"
         dataKey="_id"
         :paginator="true"
-        :rows="5"
+        :rows="8"
         :filters="filters"
+        paginatorPosition="top"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="{first} - {last} / {totalRecords}"
+        currentPageReportTemplate="{currentPage} / {totalRecords}"
         :pt="{
           header: { style: `backgroundColor: #${color}` },
         }"
@@ -217,9 +218,9 @@
               "
             >
             {{ 
-              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) <= 0
+              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) <= 0
               ? 'ครบแล้ว'
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
+              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
             }}</span>
             
           </template>
