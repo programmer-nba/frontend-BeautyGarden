@@ -2144,6 +2144,12 @@ const credit = computed(()=>{
 const seeInvoice = (data) => {
   openInvoice.value = true;
   selectedInvoice.value = data;
+  const company = cpStore.myCompanies.find(
+    item => item.taxnumber === data.customer_branch.taxnumber
+  )
+
+  selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
+  selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
   console.log("data", selectedInvoice.value);
   const body = document.body;
   body.style.backgroundColor = 'white';
@@ -2778,6 +2784,12 @@ const seeInvoiceRef = (val, period) => {
 const seeInvoiceII = (data, period, prev_paid) => {
   openInvoiceII.value = true;
   selectedInvoice.value = data;
+  const company = cpStore.myCompanies.find(
+    item => item.taxnumber === data.customer_branch.taxnumber
+  )
+
+  selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
+  selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
   selectedInvoice.value.prev_paid = prev_paid
   selectedInvoice.value.thisperiod = period
   console.log("data", selectedInvoice.value);

@@ -1838,6 +1838,14 @@ const refresh = () => {
 const seeQuotation = (data) => {
   openQuotation.value = true;
   selectedQuotation.value = data;
+
+  const company = cpStore.myCompanies.find(
+    item => item.taxnumber === data.customer_branch.taxnumber
+  )
+
+  selectedQuotation.value.customer_branch.Branch_iden = company.Branch_iden
+  selectedQuotation.value.customer_branch.Branch_company_name = company.Branch_company_name
+
   console.log("data", selectedQuotation.value);
   const body = document.body;
   body.style.backgroundColor = 'white';
@@ -2080,10 +2088,11 @@ const editQuotation = (prodd) => {
   end_date.value = prodd.end_date;
 
   const company = cpStore.myCompanies.find(
-    (item) => item.Branch_company_name === prodd.customer_branch.Branch_company_name
+    item => item.taxnumber === prodd.customer_branch.taxnumber
   );
   selectedCompany.value = company;
-
+  console.log(company)
+  console.log(prodd.customer_branch.taxnumber)
   const customered = customers.value.find(
     (item) => item.customer_name === prodd.customer_detail?.customer_name
   );
@@ -2095,7 +2104,7 @@ const editQuotation = (prodd) => {
   discount.value = prodd.discount;
   products.value = prodd.product_detail;
   remark.value = prodd.remark;
-  bank.value = prodd.bank ? company.bank.find((item) => item.number === prodd.bank.status) : null;
+  bank.value = prodd.bank ? company?.bank?.find((item) => item.number === prodd.bank?.status) : null;
   selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prodd.signature.name);
   product_head.value = prodd.product_head || ''
   prod.value.project = prodd.project

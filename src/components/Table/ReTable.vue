@@ -2275,8 +2275,17 @@ const seeFullReceipt = (data) => {
   const customered = customers.value.find(
     (item) => item.customer_name === data.customer_detail.customer_name
   );
-  openFullReceipt.value = true;
+
   selectedReceipt.value = data;
+
+  const company = cpStore.myCompanies.find(
+    item => item.taxnumber === data.customer_branch.taxnumber
+  )
+
+  selectedReceipt.value.customer_branch.Branch_iden = company.Branch_iden
+  selectedReceipt.value.customer_branch.Branch_company_name = company.Branch_company_name
+
+  openFullReceipt.value = true;
   selectedReceipt.value.customer_detail.customer_address = customered.customer_position
   console.log("data", selectedReceipt.value);
   const body = document.body;
@@ -2289,6 +2298,15 @@ const seeSmallReceipt = (data) => {
   );
   openSmallReceipt.value = true;
   selectedReceipt.value = data;
+  const company = cpStore.myCompanies.find(
+    item => item.taxnumber === data.customer_branch.taxnumber
+  )
+
+  console.log(company)
+
+  selectedReceipt.value.customer_branch.Branch_iden = company.Branch_iden
+  selectedReceipt.value.customer_branch.Branch_company_name = company.Branch_company_name
+
   selectedReceipt.value.customer_detail.customer_address = customered.customer_position
   console.log("data", selectedReceipt.value);
   const body = document.body;
