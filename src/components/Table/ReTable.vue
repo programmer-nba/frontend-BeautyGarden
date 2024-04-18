@@ -2285,6 +2285,8 @@ const seeFullReceipt = (data) => {
   selectedReceipt.value.customer_branch.Branch_iden = company.Branch_iden
   selectedReceipt.value.customer_branch.Branch_company_name = company.Branch_company_name
 
+  selectedReceipt.value.customer_detail.tax_id = customered.customer_taxnumber
+
   openFullReceipt.value = true;
   selectedReceipt.value.customer_detail.customer_address = customered.customer_position
   console.log("data", selectedReceipt.value);
@@ -2308,6 +2310,8 @@ const seeSmallReceipt = (data) => {
   selectedReceipt.value.customer_branch.Branch_company_name = company.Branch_company_name
 
   selectedReceipt.value.customer_detail.customer_address = customered.customer_position
+  selectedReceipt.value.customer_detail.tax_id = customered.customer_taxnumber
+  
   console.log("data", selectedReceipt.value);
   const body = document.body;
   body.style.backgroundColor = "white";

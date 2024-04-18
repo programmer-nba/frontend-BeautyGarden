@@ -2148,6 +2148,11 @@ const seeInvoice = (data) => {
     item => item.taxnumber === data.customer_branch.taxnumber
   )
 
+  const customered = customers.value.find(
+    item => item.customer_name === data.customer_detail?.customer_name
+  );
+  selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber
+
   selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
   selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
   console.log("data", selectedInvoice.value);
@@ -2787,6 +2792,11 @@ const seeInvoiceII = (data, period, prev_paid) => {
   const company = cpStore.myCompanies.find(
     item => item.taxnumber === data.customer_branch.taxnumber
   )
+
+  const customered = customers.value.find(
+    item => item.customer_name === data.customer_detail?.customer_name
+  );
+  selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber
 
   selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
   selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
