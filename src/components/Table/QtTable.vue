@@ -1,6 +1,7 @@
 <template>
+  <Toast />
+  <ConfirmDialog></ConfirmDialog>
   <div class="h-full">
-    <Toast />
     <div
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openQuotation"
@@ -80,12 +81,12 @@
           </div>
         </template>
 
-        <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
+        <Column selectionMode="multiple" style="width: 2rem" :exportable="false"></Column>
         <Column
           field="quotation"
           header="เลขที่"
           sortable
-          style="min-width: 12rem"
+          style="max-width: 10rem"
           class="border-b"
         >
         <template #body="slotProps">
@@ -105,11 +106,12 @@
           field="customer_detail.customer_name"
           header="ชื่อลูกค้า"
           sortable
-          style="min-width: 15rem"
+          :style="{maxWidth: '12rem'}"
           class="border-b"
         >
           <template #body="slotProps">
-            <div class="flex flex-col text-xs">
+            <div class="flex flex-col text-xs h-[3rem] overflow-y-auto"
+            >
               <p>{{ slotProps.data.customer_detail?.customer_name }} </p>
               <p>{{ 
                 slotProps.data.customer_detail?.customer_lastname&&slotProps.data.customer_detail?.customer_lastname!=='undefined' 
@@ -124,7 +126,7 @@
           header="วันที่เริ่ม"
           class="border-b"
           sortable
-          style="min-width: 7rem"
+          style="max-width: 7rem"
         >
           <template #body="slotProps">
             <p class="text-xs">{{ formatDateRef(slotProps.data.start_date) }}</p>
@@ -135,7 +137,7 @@
           header="วันที่สิ้นสุด"
           class="border-b"
           sortable
-          style="min-width: 9rem"
+          style="max-width: 7rem"
         >
           <template #body="slotProps">
             <p class="text-xs">{{ formatDateRef(slotProps.data.end_date) }}</p>
@@ -147,7 +149,7 @@
           class="border-b"
           header="ราคา"
           sortable
-          style="min-width: 8rem"
+          style="max-width: 7rem"
         >
           <template #body="slotProps">
             {{ 
@@ -163,7 +165,7 @@
           field="sumVat"
           header="VAT 7%"
           sortable
-          style="min-width: 8rem"
+          style="max-width: 6rem"
           class="border-b"
         >
           <template #body="slotProps">
@@ -185,7 +187,7 @@
           header="หัก ณ ที่จ่าย"
           class="border-b"
           sortable
-          style="min-width: 9rem"
+          style="max-width: 9rem"
         >
           <template #body="slotProps">
             <div class="grid place-items-center w-full">
@@ -193,6 +195,43 @@
                 {{ slotProps.data.vat?.percen_deducted ? "หัก ณ ที่จ่าย" : "-" }}
               </span>
             </div>
+          </template>
+        </Column>
+        <Column
+          field="status"
+          class="border-b text-xs text-center"
+          header="ออกใบแจ้งหนี้"
+          sortable
+          style="max-width: 7rem"
+        >
+          <template #body="slotProps">
+            <p
+              :class="[
+                slotProps.data.status === 'invoiced' ? 'text-blue-500' 
+                : slotProps.data.status === 'rejected' ? 'text-red-500' 
+                : 'hidden'
+              ]"
+            >
+              {{ 
+                slotProps.data.status === 'invoiced' ? 'ออกใบแจ้งหนี้แล้ว' 
+                : slotProps.data.status === 'rejected' ? 'ยกเลิก' 
+                : ''
+              }}
+            </p>
+            <Button 
+              v-if="!['invoiced', 'rejected', 'accepted'].includes(slotProps.data.status)"
+              :label="!loading ? 'อัพเดท' : ''"
+              :loading="loading"
+              @click="openUpdateStatus = true"
+              class="bg-orange-500 text-white px-2 py-1 hidden"
+            />
+            <Button 
+              v-if="!['invoiced', 'rejected', 'accepted'].includes(slotProps.data.status)"
+              :label="!loading ? 'ออกใบแจ้งหนี้' : ''"
+              :loading="loading"
+              @click="exportInvoice(slotProps.data)"
+              class="bg-blue-500 text-white px-2 py-1"
+            />
           </template>
         </Column>
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
@@ -1680,6 +1719,13 @@
       </template>
     </Dialog>
 
+    <Dialog v-model:visible="openUpdateStatus" modal header=" " :style="{ width: '25rem' }">
+      <div class="flex gap-4 justify-center">
+        <Button @click="confirm2()" label="ยกเลิกงาน" class="text-white bg-red-500 px-2 py-1" outlined></Button>
+        <Button @click="confirm1()" label="ได้งาน" class="bg-green-500 text-white px-2 py-1"></Button>
+      </div>
+    </Dialog>
+
   </div>
 </template>
 
@@ -1694,6 +1740,9 @@ import { useCompanyStore } from "@/stores/company";
 import DocQuotation from "@/components/Pdf/DocQuotation.vue";
 import { copyToClipboard } from "@/functions/Coppy"
 import axios from 'axios';
+import { useConfirm } from "primevue/useconfirm";
+
+const confirm = useConfirm();
 
 const qtStore = useQuotationStore();
 const cpStore = useCompanyStore();
@@ -1825,7 +1874,11 @@ const statuses = ref(["Normal", "องค์กร", "หน่วยงาน�
 const percents = ref([3, 5]);
 
 const refresh = () => {
-  Documents.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+  loading.value = true
+  Documents.getQuotations().then( data => {
+    quotations.value = data.data.reverse()
+    loading.value = false
+  });
 
   const currentTimestamp = Date.now();
   const options = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
@@ -2084,6 +2137,12 @@ const hideDialog = () => {
   quotationEditDialog.value = false;
   submitted.value = false;
 };
+
+const emits = defineEmits(["referQt"])
+
+const exportInvoice = (data) => {
+  emits('referQt', data)
+}
 
 const editQuotation = (prodd) => {
   quotation.value = { ...prodd };
@@ -2548,6 +2607,45 @@ const fileToBase64 = async (file) => {
             resolve(reader.result);
         };
         reader.onerror = reject;
+    });
+};
+
+const openUpdateStatus = ref(false);
+const confirm1 = () => {
+    confirm.require({
+        message: 'ยืนยันใบเสนอราคานี้ ?',
+        header: ' ',
+        icon: 'pi pi-exclamation-triangle',
+        rejectClass: 'text-black',
+        rejectLabel: 'ยกเลิก',
+        acceptLabel: 'ยืนยัน',
+        acceptClass: 'text-green-700',
+        accept: () => {
+            openUpdateStatus.value = false
+            toast.add({ severity: 'success', summary: 'ยืนยันแล้ว', detail: 'ยืนยันใบเสนอราคาแล้ว', life: 3000 });
+        },
+        reject: () => {
+            openUpdateStatus.value = false
+        }
+    });
+};
+
+const confirm2 = () => {
+    confirm.require({
+        message: 'ยกเลิกใบเสนอราคานี้ ?',
+        header: ' ',
+        icon: 'pi pi-info-circle',
+        rejectLabel: 'ยกเลิก',
+        acceptLabel: 'ยืนยัน',
+        rejectClass: 'p-button-secondary p-button-outlined',
+        acceptClass: 'p-button-danger',
+        accept: () => {
+            openUpdateStatus.value = false
+            toast.add({ severity: 'success', summary: 'ยกเลิกแล้ว', detail: 'ยกเลิกใบเสนอราคาแล้ว', life: 3000 });
+        },
+        reject: () => {
+            openUpdateStatus.value = false
+        }
     });
 };
 

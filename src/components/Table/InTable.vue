@@ -374,9 +374,7 @@
               />
               <span class="font-bold"
                 >{{ selectedCompany?.Branch_company_name }}
-                {{
-                  selectedCompany?.Branch_iden ? `(${selectedCompany?.Branch_iden})` : ""
-                }}
+                
                 <Chip
                   class="px-2 text-xs ml-3"
                   :class="selectedCompany?.isVat ? 'bg-yellow-300' : 'hidden'"
@@ -1945,7 +1943,6 @@ import DocInvoice from "@/components/Pdf/DocInvoice.vue";
 import DocInvoiceII from "@/components/Pdf/DocInvoiceII.vue";
 import RefReceipt from '@/components/Dialog/RefReceipt.vue';
 import { formatThaiDate } from '@/functions/DateTime'
-import { copyToClipboard } from "@/functions/Coppy"
 import axios from "axios"
 
 onMounted(async () => {
@@ -1954,7 +1951,15 @@ onMounted(async () => {
     invoices.value = originalInvoices.value
   });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
-  Customers.getCustomers().then((data) => (customers.value = data.data));
+  Customers.getCustomers().then((data) => {
+    customers.value = data.data
+    if (refQt) {
+      refQuotation.value = refQt
+      refQuotation.value.quotation = refQt.quotation
+      referQuotation()
+      invoiceDialog.value = true
+    }
+  });
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
 })
@@ -2008,6 +2013,8 @@ const prod = ref({
   project: {},
   product_detail: []
 });
+
+const { refQt } = defineProps(["refQt"])
 
 const choosesumVat = ref('Vat นอก');
 const changesumVat = () => {
@@ -2100,7 +2107,7 @@ const referQuotation = async () => {
     console.log(refQuotation.value)
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
     selectedCustomer.value = customer.value
-    selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
+    selectedCompany.value = cpStore.myCompanies.find((item)=>item.taxnumber === refQuotation.value.customer_branch.taxnumber)
     company.value = selectedCompany.value
     openProductForm.value = false
     products.value = refQuotation.value.product_detail

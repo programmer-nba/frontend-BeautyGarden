@@ -47,6 +47,7 @@ import InputGroupAddon from 'primevue/inputgroupaddon';
 import TieredMenu from 'primevue/tieredmenu'
 import InputMask from 'primevue/inputmask'
 import SelectButton from 'primevue/selectbutton'
+import ConfirmDialog from 'primevue/confirmdialog';
 
 import App from './App.vue'
 import router from './router'
@@ -106,6 +107,7 @@ app.component('InputSwitch', InputSwitch)
 app.component('ConfirmPopup', ConfirmPopup)
 app.component('InputGroup', InputGroup)
 app.component('InputGroupAddon', InputGroupAddon)
+app.component('ConfirmDialog', ConfirmDialog)
 
 app.mount('#app')
 

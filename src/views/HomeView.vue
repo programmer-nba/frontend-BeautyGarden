@@ -13,8 +13,8 @@
       </div>
   
       <div class="pt-5 h-full overflow-y-auto">
-        <QtTable v-if="table==='quotation'" />
-        <InTable @refIv="refIv" @chooseRef="ontable('receipt')" v-if="table==='invoice'" />
+        <QtTable @referQt="referQt" v-if="table==='quotation'" />
+        <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" v-if="table==='invoice'" />
         <ReTable :ivref="ivref" v-if="table==='receipt'" />
       </div>
     </div>
@@ -32,6 +32,16 @@ import ReTable from '@/components/Table/ReTable.vue'
 import { ref } from 'vue'
 
 const table = ref('quotation')
+
+const refQt = ref()
+const referQt = (val) => {
+  console.log(val)
+  if (val) {
+    refQt.value = val
+    table.value==='invoice'
+    ontable('invoice')
+  }
+}
 
 const ivref = ref()
 const refIv = (val) => {
