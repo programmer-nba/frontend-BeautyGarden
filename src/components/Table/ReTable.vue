@@ -1832,12 +1832,14 @@
         />
       </div>
       <pre class="hidden">
+        {{ refInvoice?.isVat }}
+        {{ refInvoice?.sumVat }}
         {{refInvoice?.total}}/
         {{refInvoice?.discount}}/
         {{refInvoice?.project.total}} =
         {{ net_raw = (refInvoice?.total + refInvoice?.project.total) - refInvoice?.discount }}
         {{ prod_vat = calVat(refInvoice?.product_detail) + ((refInvoice?.project.total || 0)*0.07) }}
-        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw : net_raw }}
+        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw + prod_vat : net_raw }}
       </pre>
       <div v-if="invoices && invoices.length > 0" class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
@@ -3036,7 +3038,7 @@ const formatNumberToText = (number) => {
 const calVat = (pd) => {
   if (!pd) return
   const vat_list = pd.map(i=>{
-    return i.vat_price || 0
+    return (i.vat_price || 0)*i.product_amount
   })
   const result = vat_list.reduce((a,b)=>a+b,0)
   return result
