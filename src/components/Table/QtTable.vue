@@ -16,6 +16,7 @@
     <div v-if="!openQuotation" class="card">
       <Toolbar class="mb-4">
         <template #start>
+          <input v-model="customer_contact" type="text" class="border" >
           <Button
             label="เพิ่ม"
             icon="pi pi-plus"
@@ -1763,6 +1764,8 @@ const prod = ref({
   project: {},
   product_detail: []
 });
+
+const customer_contact = ref("")
 const lastRefreshed = ref();
 const openQuotation = ref(false);
 const loading = ref(false);
@@ -1871,7 +1874,7 @@ const filters = ref({
 const submitted = ref(false);
 const statuses = ref(["Normal", "องค์กร", "หน่วยงานราชการ", "ลูกค้ารายเดือน", "VIP"]);
 
-const percents = ref([3, 5]);
+const percents = ref([1, 3, 5]);
 
 const refresh = () => {
   loading.value = true
@@ -1891,18 +1894,22 @@ const refresh = () => {
 const seeQuotation = (data) => {
   openQuotation.value = true;
   selectedQuotation.value = data;
-
+  console.log(data);
   const company = cpStore.myCompanies.find(
     item => item.taxnumber === data.customer_branch.taxnumber
   )
 
   const customered = customers.value.find(
-    item => item.customer_name === data.customer_detail?.customer_name
+    item => item.customer_name === data.customer_detail?.customer_name && item.customer_lastname === data.customer_detail?.customer_lastname
   );
+
+  console.log(customered)
+  selectedQuotation.value.customer_detail.customer_address = customered.customer_position
   selectedQuotation.value.customer_detail.tax_id = customered.customer_taxnumber
 
   selectedQuotation.value.customer_branch.Branch_iden = company.Branch_iden
   selectedQuotation.value.customer_branch.Branch_company_name = company.Branch_company_name
+  selectedQuotation.value.customer_contact = customer_contact.value
 
   console.log("data", selectedQuotation.value);
   const body = document.body;

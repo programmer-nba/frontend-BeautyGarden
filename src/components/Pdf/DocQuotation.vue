@@ -39,15 +39,16 @@
                   </p>
                   <br />
                   <span class="font-bold">ลูกค้า</span>
-                  <p>{{ data.data.customer_detail?.customer_name }} {{ 
+                  <p>{{ data.data.customer_detail?.customer_name }} </p>
+                  <pre class="hidden">{{ 
                     data.data.customer_detail?.customer_lastname && data.data.customer_detail?.customer_lastname!=='undefined' 
                     ? '(' + data.data.customer_detail?.customer_lastname + ')'
                     : null 
-                  }}</p>
+                  }}</pre>
                   <p>{{ data.data.customer_detail?.customer_address }}</p>
                   <p>{{ data.data.customer_detail?.customer_email !== 'undefined' ? data.data.customer_detail?.customer_email : null }}</p>
                   <p v-if="data.data.customer_branch?.isVat">
-                    เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}
+                    เลขประจำตัวผู้เสียภาษี TAX ID : {{ data.data.customer_detail?.tax_id && data.data.customer_detail?.tax_id !== 'undefined' ? data.data.customer_detail?.tax_id : '' }}
                   </p>
                   <br/>
                 </div>
@@ -372,8 +373,8 @@
                 <p class="font-bold">
                   ( {{ 
                     data.data.customer_branch?.isVat
-                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat)) + 'ถ้วน' 
-                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount)) + 'ถ้วน'
+                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat))
+                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount))
                   }} )
                 </p>
               </div>
@@ -423,7 +424,8 @@
                       <div class="text-center w-full h-full text-sm flex flex-col mt-auto pt-10 items-center justify-end" style="text-align: bottom;">
                           <p>____________________</p>
                         <p class="break-words max-w-[300px]" v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''">
-                              ( {{ data.data.customer_detail.customer_name }} )
+                              <!-- ( {{ data.data.customer_detail.customer_name }} ) -->
+                              ( {{data.data.customer_contact}} )
                         </p>
                         <p v-if="!data.data.customer_detail.customer_name || data.data.customer_detail.customer_name.trim() ===''">
                           {{`(.................................)`}}
@@ -482,6 +484,12 @@ const withHolding = computed(()=>{
   const price = 
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
     : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
+
+  /* const price = 
+    data.data.sumVat 
+    ? totalPrice.value+(data.data.project.total || 0) -data.data.discount+(vat.value+(data.data.project.vat_price || 0))
+    : totalPrice.value+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat.value+(data.data.project.vat_price || 0) */
+
   const result = percent > 0 ? price*percent/100 : 0
   return result
 })

@@ -2049,7 +2049,7 @@ const filters = ref({
 })
 const submitted = ref(false);
 const statuses = ref(["Normal", "องค์กร", "หน่วยงานราชการ", "ลูกค้ารายเดือน", "VIP"]);
-const percents = ref([3, 5]);
+const percents = ref([1, 3, 5]);
 
 function countdownToEndDate(end_date) {
   // Convert the end date to a Date object
