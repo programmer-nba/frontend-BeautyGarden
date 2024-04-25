@@ -644,6 +644,21 @@
               <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
             </div>
 
+            <div class="flex justify-center">
+              <div>
+                <FileUpload name="demo[]" auto @uploader="projectUploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
+                    <template #content>
+                      <div v-if="prod.project.logo?.length > 0" class="flex flex-col justify-center">
+                        <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(prodpic, prodpicindex) in prod.project.logo" :key="prodpicindex">
+                          <Image :src="prodpic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                          <i @click="prod.project.logo.splice(prodpicindex, 1)" class="pi pi-times" style="color: red"></i>
+                        </div>
+                      </div>
+                    </template>
+                </FileUpload>
+              </div>
+            </div>
+
           </div>
         </div>
         <DataView :value="products">
@@ -753,7 +768,6 @@
           <div class="card">
             <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
                 <template #content>
-                  
                   <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
                     <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
                       <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
@@ -1365,6 +1379,21 @@
               <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
             </div>
 
+            <div class="flex justify-center">
+              <div>
+                <FileUpload name="demo[]" auto @uploader="projectUploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
+                    <template #content>
+                      <div v-if="prod.project.logo?.length > 0" class="flex flex-col justify-center">
+                        <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(prodpic, prodpicindex) in prod.project.logo" :key="prodpicindex">
+                          <Image :src="prodpic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
+                          <i @click="prod.project.logo.splice(prodpicindex, 1)" class="pi pi-times" style="color: red"></i>
+                        </div>
+                      </div>
+                    </template>
+                </FileUpload>
+              </div>
+            </div>
+
           </div>
         </div>
         <DataView :value="products">
@@ -1445,6 +1474,7 @@
                   </div>
                 </div>
               </div>
+              
             </div>
           </template>
         </DataView>
@@ -1808,7 +1838,9 @@ const onCoppy = (value) => {
 };
 
 const prod = ref({
-  project: {},
+  project: {
+    logo: []
+  },
   product_detail: []
 });
 
@@ -2576,6 +2608,13 @@ const customBase64Uploader = async (event) => {
   const file = event.files[0];
   const formattedFile = await fileToBase64(file)
   product.value.product_logo.push(formattedFile)
+  console.log(product.value.product_logo)
+};
+
+const projectUploader = async (event) => {
+  const file = event.files[0];
+  const formattedFile = await fileToBase64(file)
+  prod.value.project.logo.push(formattedFile)
   console.log(product.value.product_logo)
 };
 
