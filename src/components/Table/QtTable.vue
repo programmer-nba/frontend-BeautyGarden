@@ -16,7 +16,6 @@
     <div v-if="!openQuotation" class="card">
       <Toolbar class="mb-4">
         <template #start>
-          <input v-model="customer_contact" type="text" class="border" >
           <Button
             label="เพิ่ม"
             icon="pi pi-plus"
@@ -373,19 +372,33 @@
       <br />
       <hr />
       <br />
-      <div class="card">
+      <div class="border-b py-2">
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
-          <div class="card flex justify-content-center">
-            <Dropdown
-              @change="refCustomer"
-              v-model="selectedCustomer"
-              editable
-              :options="customers"
-              optionLabel="customer_name"
-              placeholder="เลือกลูกค้า"
-              class="w-full md:w-14rem p-2"
-            />
+          <div class="flex justify-center">
+            <Dropdown @change="refCustomer" v-model="selectedCustomer" :options="customers" filter optionLabel="customer_name" placeholder="เลือกลูกค้า" class="w-full md:w-14rem p-2">
+              <template #value="slotProps">
+                  <div v-if="slotProps.value" class="flex items-center">
+                      <div>
+                        <p>{{ slotProps.value.customer_name }}</p>
+                        <p>{{ slotProps.value.customer_lastname }}</p>
+                      </div>
+                  </div>
+                  <span v-else>
+                      {{ slotProps.placeholder }}
+                  </span>
+              </template>
+              <template #option="slotProps">
+                  <div class="flex items-center"> 
+                      <div>
+                        <p>
+                          {{ slotProps.option.customer_name }}
+                          <small>{{ slotProps.option.customer_lastname }}</small>
+                        </p>
+                      </div>
+                  </div>
+              </template>
+            </Dropdown>
           </div>
           <br />
           <div
@@ -398,12 +411,12 @@
             </span>
           </div>
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_name">ชื่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_name"
-            v-model="customer.customer_name"
+            v-model.trim="customer.customer_name"
             required="true"
             autofocus
             :class="{ 'p-invalid': submitted && !customer.customer_name }"
@@ -412,10 +425,24 @@
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
-        <div class="field">
+        <div class="field py-2">
+          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
+          <InputText
+            class="p-2 border"
+            id="customer_lastname"
+            v-model.trim="customer.customer_lastname"
+            required="true"
+            autofocus
+            :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
+          />
+          <small class="p-error" v-if="submitted && !customer.customer_name"
+            >กรุณาเพิ่มชื่อลูกค้า</small
+          >
+        </div>
+        <div class="field py-2">
           <label for="customer_number">รหัสลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
@@ -426,58 +453,46 @@
             >กรุณาเพิ่มรหัสลูกค้า</small
           >
         </div>
-        <div v-if="selectedCompany?.isVat" class="field">
+        <div v-if="selectedCompany?.isVat" class="field py-2">
           <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
             :class="{ 'p-invalid': !customer.customer_taxnumber }"
           />
-          <small class="p-error" v-if="!customer.customer_taxnumber"
-            >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
-          >
+          
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="!customer.customer_phone"
-            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
-          >
+          
         </div>
-        <div v-if="selectedCompany?.isVat" class="field">
-          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
-          <InputText
-            class="p-2"
-            id="customer_lastname"
-            v-model.trim="customer.customer_lastname"
-          />
-        </div>
-        <div class="field">
+        
+        <div class="field py-2">
           <label for="customer_position">ที่อยู่ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_position"
             v-model.trim="customer.customer_position"
             :class="{ 'p-invalid': !customer.customer_position }"
           />
-          <small class="p-error" v-if="!customer.customer_position"
-            >กรุณาเพิ่มที่อยู่ลูกค้า</small>
+          
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_email">อีเมล์ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_email"
             v-model.trim="customer.customer_email"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <div>
             <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
             <Dropdown
@@ -485,6 +500,7 @@
               v-model.trim="customer.customer_type"
               :options="statuses"
               placeholder="เลือกประเภทลูกค้า"
+              class="border"
             >
               <template #value="slotProps">
                 <div v-if="slotProps.value && slotProps.value.value">
@@ -505,7 +521,35 @@
               </template>
             </Dropdown>
           </div>
-          <div v-if="selectedCompany?.isVat" class="flex py-4 align-items-center">
+        </div>
+        <div class="field py-2">
+          <label for="customer_contact">ผู้ติดต่อ</label>
+          <InputText
+            class="p-2 border"
+            id="customer_contact"
+            v-model.trim="customer.customer_contact"
+            :class="{ 'p-invalid': !customer.customer_contact }"
+          />
+        </div>
+        <div class="field py-2">
+          <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
+          <InputText
+            class="p-2 border"
+            id="customer_contact_number"
+            v-model.trim="customer.customer_contact_number"
+            :class="{ 'p-invalid': !customer.customer_contact_number }"
+          />
+        </div>
+        <div class="field py-2">
+          <label for="customer_contact_sign">ชื่อผู้อนุมัติเอกสาร</label>
+          <InputText
+            class="p-2 border"
+            id="customer_contact_sign"
+            v-model.trim="customer.customer_contact_sign"
+          />
+        </div>
+        <div class="flex items-center gap-x-2">
+          <div class="flex my-4 p-2 items-center border rounded">
             <Checkbox
               v-model="isWithholding"
               inputId="withholding"
@@ -520,27 +564,9 @@
               v-model="withholdingPercent"
               :options="percents"
               placeholder="เลือกเปอร์เซ็น"
-              class="w-full md:w-14rem"
+              class="w-full md:w-14rem border"
             />
           </div>
-        </div>
-        <div class="field">
-          <label for="customer_contact">ผู้ติดต่อ</label>
-          <InputText
-            class="p-2"
-            id="customer_contact"
-            v-model.trim="customer.customer_contact"
-            :class="{ 'p-invalid': !customer.customer_contact }"
-          />
-        </div>
-        <div class="field">
-          <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
-          <InputText
-            class="p-2"
-            id="customer_contact_number"
-            v-model.trim="customer.customer_contact_number"
-            :class="{ 'p-invalid': !customer.customer_contact_number }"
-          />
         </div>
       </div>
       <br />
@@ -639,7 +665,6 @@
                       </div>
                     </div>
                   </div>
-              
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
@@ -1081,16 +1106,30 @@
       <div class="card">
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
-          <div class="card flex justify-content-center">
-            <Dropdown
-              @change="refCustomer"
-              v-model="selectedCustomer"
-              editable
-              :options="customers"
-              optionLabel="customer_name"
-              placeholder="เลือกลูกค้า"
-              class="w-full md:w-14rem p-2"
-            />
+          <div class="flex justify-center">
+            <Dropdown @change="refCustomer" v-model="selectedCustomer" :options="customers" filter optionLabel="customer_name" placeholder="เลือกลูกค้า" class="w-full md:w-14rem p-2">
+              <template #value="slotProps">
+                  <div v-if="slotProps.value" class="flex items-center">
+                      <div>
+                        <p>{{ slotProps.value.customer_name }}</p>
+                        <p>{{ slotProps.value.customer_lastname }}</p>
+                      </div>
+                  </div>
+                  <span v-else>
+                      {{ slotProps.placeholder }}
+                  </span>
+              </template>
+              <template #option="slotProps">
+                  <div class="flex items-center"> 
+                      <div>
+                        <p>
+                          {{ slotProps.option.customer_name }}
+                          <small>{{ slotProps.option.customer_lastname }}</small>
+                        </p>
+                      </div>
+                  </div>
+              </template>
+            </Dropdown>
           </div>
           <br />
           <div
@@ -1103,10 +1142,10 @@
             </span>
           </div>
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_name">ชื่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
@@ -1117,10 +1156,21 @@
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
-        <div class="field">
+        <div class="field py-2">
+          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
+          <InputText
+            class="p-2 border"
+            id="customer_lastname"
+            v-model.trim="customer.customer_lastname"
+            required="true"
+            autofocus
+            :class="{ 'p-invalid': submitted && !customer.customer_lastname }"
+          />
+        </div>
+        <div class="field py-2">
           <label for="customer_number">รหัสลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
@@ -1131,58 +1181,42 @@
             >กรุณาเพิ่มรหัสลูกค้า</small
           >
         </div>
-        <div v-if="selectedCompany?.isVat" class="field">
+        <div v-if="selectedCompany?.isVat" class="field py-2">
           <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
             :class="{ 'p-invalid': !customer.customer_taxnumber }"
           />
-          <small class="p-error" v-if="!customer.customer_taxnumber"
-            >กรุณาเพิ่มเลขประจำตัวผู้เสียภาษี หรือรหัสประชาชนลูกค้า</small
-          >
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="!customer.customer_phone"
-            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
-          >
         </div>
-        <div v-if="selectedCompany?.isVat" class="field">
-          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
-          <InputText
-            class="p-2"
-            id="customer_lastname"
-            v-model.trim="customer.customer_lastname"
-          />
-        </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_position">ที่อยู่ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_position"
             v-model.trim="customer.customer_position"
             :class="{ 'p-invalid': !customer.customer_position }"
           />
-          <small class="p-error" v-if="!customer.customer_position"
-            >กรุณาเพิ่มที่อยู่ลูกค้า</small>
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_email">อีเมล์ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_email"
             v-model.trim="customer.customer_email"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <div>
             <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
             <Dropdown
@@ -1190,6 +1224,7 @@
               v-model.trim="customer.customer_type"
               :options="statuses"
               placeholder="เลือกประเภทลูกค้า"
+              class="border"
             >
               <template #value="slotProps">
                 <div v-if="slotProps.value && slotProps.value.value">
@@ -1210,7 +1245,36 @@
               </template>
             </Dropdown>
           </div>
-          <div v-if="selectedCompany?.isVat" class="flex py-4 align-items-center">
+        </div>
+        <div class="field py-2">
+          <label for="customer_contact">ผู้ติดต่อ</label>
+          <InputText
+            class="p-2 border"
+            id="customer_contact"
+            v-model.trim="customer.customer_contact"
+            :class="{ 'p-invalid': !customer.customer_contact }"
+          />
+        </div>
+        <div class="field py-2">
+          <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
+          <InputText
+            class="p-2 border"
+            id="customer_contact_number"
+            v-model.trim="customer.customer_contact_number"
+            :class="{ 'p-invalid': !customer.customer_contact_number }"
+          />
+        </div>
+        <div class="field py-2">
+          <label for="customer_contact_number">ชื่อผู้ลงนาม</label>
+          <InputText
+            class="p-2 border"
+            id="customer_contact_sign"
+            v-model.trim="customer.customer_contact_sign"
+            :class="{ 'p-invalid': !customer.customer_contact_sign }"
+          />
+        </div>
+        <div class="flex items-center gap-x-2 border my-2 px-2 rounded bg-yellow-100">
+          <div class="flex py-4 items-center">
             <Checkbox
               v-model="isWithholding"
               inputId="withholding"
@@ -1228,24 +1292,7 @@
               class="w-full md:w-14rem"
             />
           </div>
-        </div>
-        <div class="field">
-          <label for="customer_contact">ผู้ติดต่อ</label>
-          <InputText
-            class="p-2"
-            id="customer_contact"
-            v-model.trim="customer.customer_contact"
-            :class="{ 'p-invalid': !customer.customer_contact }"
-          />
-        </div>
-        <div class="field">
-          <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
-          <InputText
-            class="p-2"
-            id="customer_contact_number"
-            v-model.trim="customer.customer_contact_number"
-            :class="{ 'p-invalid': !customer.customer_contact_number }"
-          />
+          %
         </div>
       </div>
       <br />
@@ -1900,12 +1947,13 @@ const seeQuotation = (data) => {
   )
 
   const customered = customers.value.find(
-    item => item.customer_name === data.customer_detail?.customer_name && item.customer_lastname === data.customer_detail?.customer_lastname
+    item => item.customer_name === data.customer_detail?.customer_name && item.customer_lastname === data.customer_detail?.customer_lastname || item.customer_name === data.customer_detail?.customer_name
   );
 
   console.log(customered)
   selectedQuotation.value.customer_detail.customer_address = customered.customer_position
   selectedQuotation.value.customer_detail.tax_id = customered.customer_taxnumber
+  //selectedQuotation.value.customer_detail.customer_address = customered.customer_taxnumber
 
   selectedQuotation.value.customer_branch.Branch_iden = company.Branch_iden
   selectedQuotation.value.customer_branch.Branch_company_name = company.Branch_company_name
@@ -1942,6 +1990,7 @@ const createNewCustomer = async () => {
   formData.append("customer_taxnumber", customer.value.customer_taxnumber);
   formData.append("customer_contact", customer.value.customer_contact);
   formData.append("customer_contact_number", customer.value.customer_contact_number);
+  formData.append("customer_contact_sign", customer.value.customer_contact_sign);
 
   const response = await Customers.createNewCustomer(formData);
   if (response.data) {
@@ -2164,9 +2213,11 @@ const editQuotation = (prodd) => {
   selectedCompany.value = company;
   console.log(company)
   console.log(prodd.customer_branch.taxnumber)
+
   const customered = customers.value.find(
-    (item) => item.customer_name === prodd.customer_detail?.customer_name
+    item => item.customer_name.trim() === prodd.customer_detail?.customer_name?.trim() && item.customer_lastname === prodd.customer_detail?.customer_lastname
   );
+
   selectedCustomer.value = customered;
   refCustomer();
 
@@ -2312,6 +2363,9 @@ const createNewQuotation = async () => {
       customer_email: customer.value.customer_email,
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
+      customer_contact: customer.value.customer_contact,
+      customer_contact_number: customer.value.customer_contact_number,
+      customer_contact_sign: customer.value.customer_contact_sign,
     },
     product_head: product_head.value || '',
     product_detail: products.value,
@@ -2448,6 +2502,9 @@ const editingQuotation = async () => {
       customer_email: customer.value.customer_email,
       customer_address: customer.value.customer_position,
       customer_type: customer.value.customer_type,
+      customer_contact: customer.value.customer_contact,
+      customer_contact_number: customer.value.customer_contact_number,
+      customer_contact_sign: customer.value.customer_contact_sign,
     },
     product_head: product_head.value || '',
     product_detail: products.value,
@@ -2481,7 +2538,6 @@ const editingQuotation = async () => {
         detail: "อัพเดทใบเสนอราคาแล้ว",
         life: 3000,
       });
-      //await editingProductQuotation()
     } 
   } 
   catch(err) {

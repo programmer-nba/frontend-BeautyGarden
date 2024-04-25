@@ -433,16 +433,30 @@
       <div class="card">
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
-          <div class="card flex justify-content-center">
-            <Dropdown
-              @change="refCustomer"
-              v-model="selectedCustomer"
-              editable
-              :options="customers"
-              optionLabel="customer_name"
-              placeholder="เลือกลูกค้า"
-              class="w-full md:w-14rem p-2"
-            />
+          <div class="flex justify-center">
+            <Dropdown @change="refCustomer" v-model="selectedCustomer" :options="customers" filter optionLabel="customer_name" placeholder="เลือกลูกค้า" class="w-full md:w-14rem p-2">
+              <template #value="slotProps">
+                  <div v-if="slotProps.value" class="flex items-center">
+                      <div>
+                        <p>{{ slotProps.value.customer_name }}</p>
+                        <p>{{ slotProps.value.customer_lastname }}</p>
+                      </div>
+                  </div>
+                  <span v-else>
+                      {{ slotProps.placeholder }}
+                  </span>
+              </template>
+              <template #option="slotProps">
+                  <div class="flex items-center"> 
+                      <div>
+                        <p>
+                          {{ slotProps.option.customer_name }}
+                          <small>{{ slotProps.option.customer_lastname }}</small>
+                        </p>
+                      </div>
+                  </div>
+              </template>
+            </Dropdown>
           </div>
           <br />
           <div
@@ -463,10 +477,10 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_name">ชื่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
@@ -477,10 +491,20 @@
           >
         </div>
 
-        <div class="field">
+        <div class="field py-2">
+          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
+          <InputText
+            class="p-2 border"
+            id="customer_lastname"
+            v-model.trim="customer.customer_lastname"
+            required="true"
+          />
+        </div>
+
+        <div class="field py-2">
           <label for="customer_number">รหัสลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
@@ -491,61 +515,46 @@
           >
         </div>
 
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
             required="false"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             required="false"
             :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="!customer.customer_phone"
-            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
-          >
         </div>
-        <div class="field">
-          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
-          <InputText
-            class="p-2"
-            id="customer_lastname"
-            v-model.trim="customer.customer_lastname"
-            required="false"
-          />
-        </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_position">ที่อยู่ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_position"
             v-model.trim="customer.customer_position"
             required="true"
             :class="{ 'p-invalid': !customer.customer_position }"
           />
-          <small class="p-error" v-if="!customer.customer_position"
-            >กรุณาเพิ่มที่อยู่ลูกค้า</small
-          >
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_email">อีเมล์ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_email"
             v-model.trim="customer.customer_email"
             required="false"
             :class="{ 'p-invalid': !customer.customer_email }"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <div>
             <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
             <Dropdown
@@ -553,6 +562,7 @@
               v-model.trim="customer.customer_type"
               :options="statuses"
               placeholder="เลือกประเภทลูกค้า"
+              class="border"
             >
               <template #value="slotProps">
                 <div v-if="slotProps.value && slotProps.value.value">
@@ -574,43 +584,58 @@
             </Dropdown>
           </div>
 
-          <div class="flex py-3 align-items-center">
-            <Checkbox
-              v-model="isWithholding"
-              inputId="ingredient1"
-              :binary="true"
-            />
-            <label for="ingredient1" class="ml-2"> หัก ณ ที่จ่าย </label>
-          </div>
-          <div v-if="isWithholding" class="card py-2 flex justify-content-center">
-            <Dropdown
-              v-model="withholdingPercent"
-              :options="percents"
-              placeholder="เลือกเปอร์เซ็น"
-              class="w-full md:w-14rem"
+          <div class="field py-2">
+            <label for="customer_contact">ผู้ติดต่อ</label>
+            <InputText
+              class="p-2 border"
+              id="customer_contact"
+              v-model.trim="customer.customer_contact"
+              required="false"
+              :class="{ 'p-invalid': !customer.customer_contact }"
             />
           </div>
+          <div class="field py-2">
+            <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
+            <InputText
+              class="p-2 border"
+              id="customer_contact_number"
+              v-model.trim="customer.customer_contact_number"
+              required="false"
+              :class="{ 'p-invalid': !customer.customer_contact_number }"
+            />
+          </div>
+
+          <div class="field py-2">
+            <label for="customer_contact_sign">ชื่อผู้ลงนาม</label>
+            <InputText
+              class="p-2 border"
+              id="customer_contact_sign"
+              v-model.trim="customer.customer_contact_sign"
+              required="false"
+            />
+          </div>
+
+          <div class="flex gap-x-2 items-center border my-4 px-2 rounded bg-yellow-100">
+            <div class="flex py-2 items-center">
+              <Checkbox
+                v-model="isWithholding"
+                inputId="ingredient1"
+                :binary="true"
+              />
+              <label for="ingredient1" class="ml-2"> หัก ณ ที่จ่าย </label>
+            </div>
+            <div v-if="isWithholding" class="card py-2 flex justify-center">
+              <Dropdown
+                v-model="withholdingPercent"
+                :options="percents"
+                placeholder="เลือกเปอร์เซ็น"
+                class="w-full md:w-14rem"
+              />
+            </div>
+            %
+          </div>
         </div>
-        <div class="field">
-          <label for="customer_contact">ผู้ติดต่อ</label>
-          <InputText
-            class="p-2"
-            id="customer_contact"
-            v-model.trim="customer.customer_contact"
-            required="false"
-            :class="{ 'p-invalid': !customer.customer_contact }"
-          />
-        </div>
-        <div class="field">
-          <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
-          <InputText
-            class="p-2"
-            id="customer_contact_number"
-            v-model.trim="customer.customer_contact_number"
-            required="false"
-            :class="{ 'p-invalid': !customer.customer_contact_number }"
-          />
-        </div>
+        
       </div>
       <br />
 
@@ -1253,16 +1278,30 @@
       <div class="card">
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
-          <div class="card flex justify-content-center">
-            <Dropdown
-              @change="refCustomer"
-              v-model="selectedCustomer"
-              editable
-              :options="customers"
-              optionLabel="customer_name"
-              placeholder="เลือกลูกค้า"
-              class="w-full md:w-14rem p-2"
-            />
+          <div class="flex justify-center">
+            <Dropdown @change="refCustomer" v-model="selectedCustomer" :options="customers" filter optionLabel="customer_name" placeholder="เลือกลูกค้า" class="w-full md:w-14rem p-2">
+              <template #value="slotProps">
+                  <div v-if="slotProps.value" class="flex items-center">
+                      <div>
+                        <p>{{ slotProps.value.customer_name }}</p>
+                        <p>{{ slotProps.value.customer_lastname }}</p>
+                      </div>
+                  </div>
+                  <span v-else>
+                      {{ slotProps.placeholder }}
+                  </span>
+              </template>
+              <template #option="slotProps">
+                  <div class="flex items-center"> 
+                      <div>
+                        <p>
+                          {{ slotProps.option.customer_name }}
+                          <small>{{ slotProps.option.customer_lastname }}</small>
+                        </p>
+                      </div>
+                  </div>
+              </template>
+            </Dropdown>
           </div>
           <br />
           <div
@@ -1283,10 +1322,10 @@
           </div>
         </div>
 
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_name">ชื่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
@@ -1297,10 +1336,20 @@
           >
         </div>
 
-        <div class="field">
+        <div class="field py-2">
+          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
+          <InputText
+            class="p-2 border"
+            id="customer_lastname"
+            v-model.trim="customer.customer_lastname"
+            required="true"
+          />
+        </div>
+
+        <div class="field py-2">
           <label for="customer_number">รหัสลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
@@ -1311,40 +1360,30 @@
           >
         </div>
 
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_taxnumber"
             v-model.trim="customer.customer_taxnumber"
             required="true"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_phone">เบอร์ติดต่อลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             required="false"
             :class="{ 'p-invalid': !customer.customer_phone }"
           />
-          <small class="p-error" v-if="!customer.customer_phone"
-            >กรุณาเพิ่มเบอร์ติดต่อลูกค้า</small
-          >
         </div>
-        <div class="field">
-          <label for="customer_lastname">สำนักงานใหญ่/สาขา</label>
-          <InputText
-            class="p-2"
-            id="customer_lastname"
-            v-model.trim="customer.customer_lastname"
-          />
-        </div>
-        <div class="field">
+        
+        <div class="field py-2">
           <label for="customer_position">ที่อยู่ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_position"
             v-model.trim="customer.customer_position"
             required="true"
@@ -1354,16 +1393,16 @@
             >กรุณาเพิ่มที่อยู่ลูกค้า</small
           >
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_email">อีเมล์ลูกค้า</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_email"
             v-model.trim="customer.customer_email"
             required="false"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <div>
             <label for="inventoryStatus" class="mb-3">ประเภทลูกค้า</label>
             <Dropdown
@@ -1371,6 +1410,7 @@
               v-model.trim="customer.customer_type"
               :options="statuses"
               placeholder="เลือกประเภทลูกค้า"
+              class="border"
             >
               <template #value="slotProps">
                 <div v-if="slotProps.value && slotProps.value.value">
@@ -1392,42 +1432,55 @@
             </Dropdown>
           </div>
 
-          <div class="flex py-2 align-items-center">
-            <Checkbox
-              v-model="isWithholding"
-              inputId="ingredient1"
-              name="pizza"
-              :binary="true"
-            />
-            <label for="ingredient1" class="ml-2"> หัก ณ ที่จ่าย </label>
+          <div class="flex items-center gap-x-2 my-4 px-2">
+            <div class="flex py-2 items-center">
+              <Checkbox
+                v-model="isWithholding"
+                inputId="ingredient1"
+                name="pizza"
+                :binary="true"
+              />
+              <label for="ingredient1" class="ml-2"> หัก ณ ที่จ่าย </label>
+            </div>
+            <div v-if="isWithholding" class="py-2 flex justify-center">
+              <Dropdown
+                v-model="withholdingPercent"
+                :options="percents"
+                placeholder="เลือกเปอร์เซ็น"
+                class="w-full md:w-14rem"
+              />
+            </div>
           </div>
-          <div v-if="isWithholding" class="card py-2 flex justify-content-center">
-            <Dropdown
-              v-model="withholdingPercent"
-              :options="percents"
-              placeholder="เลือกเปอร์เซ็น"
-              class="w-full md:w-14rem"
-            />
-          </div>
+
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_contact">ผู้ติดต่อ</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_contact"
             v-model.trim="customer.customer_contact"
             required="false"
             :class="{ 'p-invalid': !customer.customer_contact }"
           />
         </div>
-        <div class="field">
+        <div class="field py-2">
           <label for="customer_contact_number">เบอร์ผู้ติดต่อ</label>
           <InputText
-            class="p-2"
+            class="p-2 border"
             id="customer_contact_number"
             v-model.trim="customer.customer_contact_number"
             required="false"
             :class="{ 'p-invalid': !customer.customer_contact_number }"
+          />
+        </div>
+        <div class="field py-2">
+          <label for="customer_contact_sign">ชื่อผู้ลงนาม</label>
+          <InputText
+            class="p-2 border"
+            id="customer_contact_sign"
+            v-model.trim="customer.customer_contact_sign"
+            required="false"
+            :class="{ 'p-invalid': !customer.customer_contact_sign }"
           />
         </div>
       </div>
@@ -2107,6 +2160,7 @@ const referQuotation = async () => {
     console.log(refQuotation.value)
     customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
     selectedCustomer.value = customer.value
+    selectedCustomer.value.customer_contact_sign = refQuotation.value.customer_detail.customer_contact_sign
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.taxnumber === refQuotation.value.customer_branch.taxnumber)
     company.value = selectedCompany.value
     openProductForm.value = false
@@ -2547,6 +2601,7 @@ const createNewInvoice = async () => {
       customer_type: customer.value ? customer.value.customer_type : null,
       customer_contact: customer.value ? customer.value.customer_contact : null,
       customer_contact_number: customer.value ? customer.value.customer_contact_number : null,
+      customer_contact_sign: customer.value ? customer.value.customer_contact_sign : null,
     },
     project: prod.value.project,
     product_head: product_head.value,
@@ -2695,6 +2750,7 @@ const editingInvoice = async () => {
       customer_type: customer.value.customer_type,
       customer_contact: customer.value.customer_contact,
       customer_contact_number: customer.value.customer_contact_number,
+      customer_contact_sign: customer.value.customer_contact_sign,
     } : null,
     product_head: product_head.value,
     project: prod.value.project,

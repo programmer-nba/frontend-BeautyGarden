@@ -310,7 +310,7 @@
                           >____________________</p>
                         <p v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''
                             ">
-                              ( {{ data.data.customer_detail.customer_name }} )
+                              ( {{ data.data.customer_detail.customer_contact_sign ? data.data.customer_detail.customer_contact_sign : data.data.customer_detail.customer_name }} )
                             </p>
                             <p v-if="!data.data.customer_detail.customer_name || data.data.customer_detail.customer_name.trim() ===''">
                               {{`(.................................)`}}
