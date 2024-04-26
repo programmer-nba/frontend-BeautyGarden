@@ -129,7 +129,7 @@
                       <div class="flex justify-start font-bold h-full py-2">
                         {{ data.data.project.name }}
                       </div>
-                      <img class="w-[150px] object-contain"  :src="`${data.data.project.logo[0]}`" alt="project_pic" >
+                      <img v-if="data.data.project.logo?.length > 0" class="w-[150px] object-contain" :src="`${data.data.project.logo[0]}`" alt="project_pic" >
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">

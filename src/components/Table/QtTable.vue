@@ -1396,88 +1396,93 @@
 
           </div>
         </div>
-        <DataView :value="products">
-          <template #list="slotProps">
-            <div class="grid grid-nogutter">
-              <div v-for="(item, index) in slotProps.items" :key="index">
-                <div
-                  class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
-                  :class="{ 'surface-border': index !== 0 }"
-                >
-                  <div class="overflow-x-auto w-[120px]">
-                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
-                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
-                        <img
-                          class="w-full h-full object-cover"
-                          :src="pic"
-                          :alt="picindex"
-                        />
+        <draggable 
+          v-model="products"
+          tag="ul"
+          @start="drag=true" 
+          @end="drag=false"
+          item-key="_id">
+          <template #item="{ element: item }">
+            <li class="cursor-pointer hover:bg-green-200">
+              <div class="flex flex-col">
+                <div class="border rounded">
+                  <div
+                    class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
+                  >
+                    <div class="overflow-x-auto w-[120px]">
+                      <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
+                        <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
+                          <img
+                            class="w-full h-full object-cover"
+                            :src="pic"
+                            :alt="picindex"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-              
-                  <div
-                    class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
-                  >
-                    <div>
+                
+                    <div
+                      class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
+                    >
                       <div>
-                        <p class="text-clip font-semibold overflow-hidden w-[100px]">
-                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : null }}</span> 
-                          {{ item.product_name || null }}
-                        </p>
-                        <div class="w-[100px] overflow-y-hidden">
+                        <div>
+                          <p class="text-clip font-semibold overflow-hidden w-[100px]">
+                            <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : null }}</span> 
+                            {{ item.product_name || null }}
+                          </p>
+                          <div class="w-[100px] overflow-y-hidden">
+                            <p
+                              v-for="(proText, textIndex) in item.product_text"
+                              class="text-clip overflow-hidden w-[100px]"
+                              :key="textIndex"
+                            >
+                              {{ proText }}
+                            </p>
+                          </div>
                           <p
-                            v-for="(proText, textIndex) in item.product_text"
-                            class="text-clip overflow-hidden w-[100px]"
-                            :key="textIndex"
+                            class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                           >
-                            {{ proText }}
+                            {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
+                            {{ item.product_amount }} {{ item.unit }}
+                            {{
+                              item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
+                              : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
+                              : null 
+                            }}
                           </p>
                         </div>
-                        <p
-                          class="font-normal text-xs text-clip overflow-hidden w-[100px]"
-                        >
-                          {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
-                          {{ item.product_amount }} {{ item.unit }}
-                          {{
-                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
-                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
-                            : null 
-                          }}
-                        </p>
                       </div>
-                    </div>
-                    <div class="flex items-center md:items-end gap-5">
-                      <span v-if="item.product_price > 0" class="font-semibold text-900"
+                      <div class="flex items-center md:items-end gap-5">
+                        <span v-if="item.product_price > 0" class="font-semibold text-900"
+                          >
+                          {{
+                            formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
+                          }}.-</span
                         >
-                        {{
-                          formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
-                        }}.-</span
-                      >
-                      <div class="flex flex-col h-fit">
-                        <Button
-                          icon="pi pi-pencil"
-                          outlined
-                          rounded
-                          class="hover:bg-yellow-200"
-                          @click="editProduct(item)"
-                        ></Button>
-                        <Button
-                          icon="pi pi-trash"
-                          outlined
-                          rounded
-                          class="hover:bg-red-200"
-                          @click="removeProduct(index)"
-                        ></Button>
+                        <div class="flex flex-col h-fit">
+                          <Button
+                            icon="pi pi-pencil"
+                            outlined
+                            rounded
+                            class="hover:bg-yellow-200"
+                            @click="editProduct(item)"
+                          ></Button>
+                          <Button
+                            icon="pi pi-trash"
+                            outlined
+                            rounded
+                            class="hover:bg-red-200"
+                            @click="removeProduct(index)"
+                          ></Button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-            </div>
+            </li>
           </template>
-        </DataView>
+        </draggable>
       </div>
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
         <Button
@@ -1819,6 +1824,11 @@ import DocQuotation from "@/components/Pdf/DocQuotation.vue";
 import { copyToClipboard } from "@/functions/Coppy"
 import axios from 'axios';
 import { useConfirm } from "primevue/useconfirm";
+import { useSortable } from '@vueuse/integrations/useSortable'
+import draggable from 'vuedraggable'
+
+const el = ref()
+const drag = ref(false)
 
 const confirm = useConfirm();
 
@@ -2247,7 +2257,7 @@ const editQuotation = (prodd) => {
   console.log(prodd.customer_branch.taxnumber)
 
   const customered = customers.value.find(
-    item => item.customer_name.trim() === prodd.customer_detail?.customer_name?.trim() && item.customer_lastname === prodd.customer_detail?.customer_lastname
+    item => item.customer_name.trim() === prodd.customer_detail?.customer_name?.trim()
   );
 
   selectedCustomer.value = customered;
@@ -2750,5 +2760,10 @@ const confirm2 = () => {
         }
     });
 };
+
+useSortable(el, products)
+const { option } = useSortable(el, products, {
+  animation: 150,
+})
 
 </script>
