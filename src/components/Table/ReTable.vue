@@ -16,7 +16,7 @@
       
     </div>
 
-    <div v-if="!openFullReceipt && !openSmallReceipt" class="card">
+    <div v-if="!openFullReceipt && !openSmallReceipt" class="card" :class="!openFullReceipt && !openSmallReceipt ? '' : 'hidden'">
       <Toolbar class="mb-4">
         <template #start>
           <Button
@@ -84,6 +84,12 @@
               <Checkbox v-model="sign" :binary="true" />
               <p>ลายเซ็นอิเล็กทรอนิกส์</p>
             </div>
+          </div>
+          <div class="flex justify-center relative top-3">
+            <p>
+              หน้าปัจจุบัน
+              <span class="bg-green-500 w-fit px-2 rounded-full text-white text-center">{{ curPage }}</span>
+            </p>
           </div>
         </template>
 
@@ -2053,6 +2059,7 @@ const sign = ref(false)
 const project = ref({});
 const isPrice = ref(true);
 const files = ref([]);
+const curPage = ref(1)
 
 // Create with reference invoice
 const refInvoice = ref();
@@ -2064,6 +2071,14 @@ watchEffect(()=> {
     receiptRefInvoiceDialog.value = true
   }
   refInvoice.value = invoices.value.find(i=>i.invoice===invref.value)
+})
+
+watch(() => dt?.value?.d_first, (newVal, oldVal) => {
+  if (dt.value) {
+    curPage.value = 
+    dt.value.d_first === 0 ? 1 
+    : (dt.value.d_first/dt.value.d_rows) + 1
+  }
 })
 
 const amount_price = ref();

@@ -26,7 +26,7 @@
       />
     </div>
 
-    <div v-if="!openInvoice && !openInvoiceII" class="card">
+    <div v-if="!openInvoice && !openInvoiceII" class="card" :class="!openInvoice && !openInvoiceII ? '' : 'hidden'">
       <Toolbar class="mb-4">
         <template #start>
           <Button
@@ -94,6 +94,13 @@
               <Checkbox v-model="sign" :binary="true" />
               <p>ลายเซ็นอิเล็กทรอนิกส์</p>
             </div>
+            
+          </div>
+          <div class="flex justify-center relative top-3">
+            <p>
+              หน้าปัจจุบัน
+              <span class="bg-sky-500 w-fit px-2 rounded-full text-white text-center">{{ curPage }}</span>
+            </p>
           </div>
         </template>
 
@@ -2017,6 +2024,7 @@ onMounted(async () => {
   await cpStore.getMySignatures();
 })
 
+const curPage = ref(1)
 const originalInvoices = ref([])
 const quotations = ref([])
 const lastRefreshed = ref();
@@ -2066,6 +2074,14 @@ const prod = ref({
   project: {},
   product_detail: []
 });
+
+watch(() => dt?.value?.d_first, (newVal, oldVal) => {
+  if (dt.value) {
+    curPage.value = 
+    dt.value.d_first === 0 ? 1 
+    : (dt.value.d_first/dt.value.d_rows) + 1
+  }
+})
 
 const { refQt } = defineProps(["refQt"])
 
