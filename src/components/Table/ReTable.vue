@@ -2060,7 +2060,9 @@ const { ivref } = defineProps(["ivref"])
 const invref = ref(ivref)
 const receiptRefInvoiceDialog = ref(false);
 watchEffect(()=> {
-  receiptRefInvoiceDialog.value = true
+  if (ivref) {
+    receiptRefInvoiceDialog.value = true
+  }
   refInvoice.value = invoices.value.find(i=>i.invoice===invref.value)
 })
 

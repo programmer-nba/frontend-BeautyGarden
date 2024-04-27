@@ -13,7 +13,7 @@
         @close="closeHandle"
       />
     </div>
-    <div v-if="!openQuotation" class="card">
+    <div class="card" :class="openQuotation ? 'hidden' : ''">
       <Toolbar class="mb-4">
         <template #start>
           <Button
@@ -46,6 +46,7 @@
           {{ color }}
         </template>
       </Toolbar>
+      
       <DataTable
         ref="dt"
         :value="quotations"
@@ -54,9 +55,10 @@
         :paginator="true"
         :rows="5"
         :filters="filters"
+        paginatorPosition="top"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="แสดง {first} ถึง {last} จากเอกสารทั้งหมด {totalRecords} ชุด"
+        currentPageReportTemplate="หน้าปัจจุบัน ( {currentPage} )"
         :pt="{
           header: { style: `backgroundColor: #${color}` },
         }"
@@ -64,15 +66,33 @@
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
             <h4 class="m-0">จัดการเอกสาร</h4>
-            <span class="p-input-icon-right border rounded">
-              <i class="pi pi-search" />
-              <InputText v-model="filters['global'].value" placeholder="" />
-            </span>
+            <div class="flex gap-2">
+              <div class="flex border divide-x-2">
+                <Button class="px-2 rounded-none" :class="!chooseFilter ? 'bg-yellow-200' : ''" label="ทั้งหมด" @click="chooseFilter = null" />
+                <Button class="px-2 rounded-none" :class="chooseFilter === 'pending' ? 'bg-yellow-200' : ''" label="รออนุมัติ" @click="chooseFilter = 'pending'" />
+                <Button class="px-2 rounded-none" :class="chooseFilter === 'accepted' ? 'bg-yellow-200' : ''" label="อนุมัติแล้ว" @click="chooseFilter = 'accepted'" />
+                <Button class="px-2 rounded-none" :class="chooseFilter === 'rejected' ? 'bg-yellow-200' : ''" label="ปฏิเสธ" @click="chooseFilter = 'rejected'" />
+                <Button class="px-2 rounded-none" :class="chooseFilter === 'invoiced' ? 'bg-yellow-200' : ''" label="ออกใบแจ้งหนี้แล้ว" @click="chooseFilter = 'invoiced'" />
+              </div>
+
+              <span class="p-input-icon-right border rounded">
+                <i class="pi pi-search" />
+                <InputText v-model="filters['global'].value" placeholder="..." class="px-5 w-auto" />
+              </span>
+            </div>
+            
             <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
               <Checkbox v-model="sign" :binary="true" />
               <p>ลายเซ็นอิเล็กทรอนิกส์</p>
             </div>
           </div>
+          <div class="flex justify-center relative top-3">
+            <p>
+              หน้าปัจจุบัน
+              <span class="bg-yellow-500 w-fit px-2 rounded-full text-white text-center">{{ curPage }}</span>
+            </p>
+          </div>
+          
         </template>
 
         <template #empty>
@@ -107,7 +127,7 @@
           header="ชื่อลูกค้า"
           sortable
           :style="{maxWidth: '12rem'}"
-          class="border-b"
+          class="border-b text-xs"
         >
           <template #body="slotProps">
             <div class="flex flex-col text-xs h-[3rem] overflow-y-auto"
@@ -124,7 +144,7 @@
         <Column
           field="start_date"
           header="วันที่เริ่ม"
-          class="border-b"
+          class="border-b text-xs"
           sortable
           style="max-width: 7rem"
         >
@@ -135,7 +155,7 @@
         <Column
           field="end_date"
           header="วันที่สิ้นสุด"
-          class="border-b"
+          class="border-b text-xs"
           sortable
           style="max-width: 7rem"
         >
@@ -166,7 +186,7 @@
           header="VAT 7%"
           sortable
           style="max-width: 6rem"
-          class="border-b"
+          class="border-b text-xs"
         >
           <template #body="slotProps">
             <div class="grid place-items-center w-full">
@@ -185,7 +205,7 @@
         <Column
           field="vat.percen_deducted"
           header="หัก ณ ที่จ่าย"
-          class="border-b"
+          class="border-b text-xs"
           sortable
           style="max-width: 9rem"
         >
@@ -200,33 +220,39 @@
         <Column
           field="status"
           class="border-b text-xs text-center"
-          header="ออกใบแจ้งหนี้"
+          header="สถานะ"
           sortable
           style="max-width: 7rem"
         >
           <template #body="slotProps">
             <p
+              class="font-bold"
               :class="[
                 slotProps.data.status === 'invoiced' ? 'text-blue-500' 
+                : slotProps.data.status === 'accepted' ? 'text-green-500'
                 : slotProps.data.status === 'rejected' ? 'text-red-500' 
-                : 'hidden'
+                : 'text-yellow-500'
               ]"
             >
               {{ 
                 slotProps.data.status === 'invoiced' ? 'ออกใบแจ้งหนี้แล้ว' 
-                : slotProps.data.status === 'rejected' ? 'ยกเลิก' 
-                : ''
+                : slotProps.data.status === 'accepted' ? 'อนุมัติ'
+                : slotProps.data.status === 'rejected' ? 'ยกเลิกรายการ' 
+                : 'รออนุมัติ'
               }}
             </p>
             <Button 
               v-if="!['invoiced', 'rejected', 'accepted'].includes(slotProps.data.status)"
               :label="!loading ? 'อัพเดท' : ''"
               :loading="loading"
-              @click="openUpdateStatus = true"
-              class="bg-orange-500 text-white px-2 py-1 hidden"
+              @click="() => {
+                quotation = slotProps.data
+                openUpdateStatus = true
+              }"
+              class="bg-yellow-500 text-white px-2 py-1"
             />
-            <Button 
-              v-if="!['invoiced', 'rejected', 'accepted'].includes(slotProps.data.status)"
+            <Button
+              v-if="['accepted'].includes(slotProps.data.status)"
               :label="!loading ? 'ออกใบแจ้งหนี้' : ''"
               :loading="loading"
               @click="exportInvoice(slotProps.data)"
@@ -661,25 +687,31 @@
 
           </div>
         </div>
-        <DataView :value="products">
-          <template #list="slotProps">
-            <div class="grid grid-nogutter">
-              <div v-for="(item, index) in slotProps.items" :key="index">
-                <div
-                  class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
-                  :class="{ 'surface-border': index !== 0 }"
-                >
-                  <div class="overflow-x-auto w-[120px]">
-                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
-                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
-                        <img
-                          class="w-full h-full object-cover"
-                          :src="pic"
-                          :alt="picindex"
-                        />
+        <draggable 
+          v-model="products"
+          tag="ul"
+          @start="drag=true" 
+          @end="drag=false"
+          item-key="_id">
+          <template #item="{ element: item }">
+            <li class="cursor-pointer hover:bg-green-100">
+              <div class="flex flex-col">
+                <div class="border rounded">
+                  <div
+                    class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
+                    :class="{ 'surface-border': index !== 0 }"
+                  >
+                    <div class="overflow-x-auto w-[120px]">
+                      <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
+                        <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
+                          <img
+                            class="w-full h-full object-cover"
+                            :src="pic"
+                            :alt="picindex"
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
@@ -737,10 +769,11 @@
                     </div>
                   </div>
                 </div>
+                </div>
               </div>
-            </div>
+            </li>
           </template>
-        </DataView>
+        </draggable>
       </div>
 
       <div class="bg-orange-500 rounded-lg w-full flex justify-center my-2">
@@ -1804,8 +1837,8 @@
 
     <Dialog v-model:visible="openUpdateStatus" modal header=" " :style="{ width: '25rem' }">
       <div class="flex gap-4 justify-center">
-        <Button @click="confirm2()" label="ยกเลิกงาน" class="text-white bg-red-500 px-2 py-1" outlined></Button>
-        <Button @click="confirm1()" label="ได้งาน" class="bg-green-500 text-white px-2 py-1"></Button>
+        <Button :loading="loading" @click="confirm2(quotation._id, 'rejected')" label="ยกเลิกงาน" class="text-white bg-red-500 px-2 py-1" outlined></Button>
+        <Button :loading="loading" @click="confirm1(quotation._id, 'accepted')" label="ได้งาน" class="bg-green-500 text-white px-2 py-1"></Button>
       </div>
     </Dialog>
 
@@ -1836,10 +1869,11 @@ const qtStore = useQuotationStore();
 const cpStore = useCompanyStore();
 
 onMounted(async () => {
-  Documents.getQuotations().then((data) => (quotations.value = data.data.reverse()));
+  Documents.getQuotations().then((data) => (originQuotations.value = data.data.reverse()));
   Customers.getCustomers().then((data) => (customers.value = data.data));
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
+  console.log(dt.value)
 });
 
 const onCoppy = (value) => {
@@ -1854,6 +1888,9 @@ const prod = ref({
   product_detail: []
 });
 
+const curPage = ref(1)
+const originQuotations = ref()
+const chooseFilter = ref('pending')
 const customer_contact = ref("")
 const lastRefreshed = ref();
 const openQuotation = ref(false);
@@ -1877,7 +1914,7 @@ const dt = ref();
 const customer = ref({});
 const customers = ref();
 const selectedCustomer = ref();
-const quotations = ref();
+//const quotations = ref();
 const quotationDialog = ref(false);
 const deleteQuotationDialog = ref(false);
 const deleteQuotationsDialog = ref(false);
@@ -1902,6 +1939,14 @@ watch(() => prod.value.project.isVat, (newValue, oldValue) => {
   }
 })
 
+watch(() => dt?.value?.d_first, (newVal, oldVal) => {
+  if (dt.value) {
+    curPage.value = 
+    dt.value.d_first === 0 ? 1 
+    : (dt.value.d_first/dt.value.d_rows) + 1
+  }
+})
+
 const changesumVat = () => {
   if (prod.value.project.isVat && choosesumVat.value === 'Vat นอก') {
     sumVat.value = true
@@ -1909,6 +1954,20 @@ const changesumVat = () => {
     sumVat.value = false
   }
 };
+
+const quotations = computed(() => {
+  if (originQuotations.value) {
+    const result = 
+      chooseFilter.value === 'pending' ? originQuotations.value.filter( qt => !qt.status )
+      : chooseFilter.value === 'accepted' ? originQuotations.value.filter( qt => qt.status === 'accepted' )
+      : chooseFilter.value === 'rejected' ? originQuotations.value.filter( qt => qt.status === 'rejected' )
+      : chooseFilter.value === 'invoiced' ? originQuotations.value.filter( qt => qt.status === 'invoiced' )
+      : originQuotations.value
+    return result
+  } else {
+    return
+  }
+})
 
 const pushProduct = () => {
   prod.value.product_detail.push({})
@@ -1968,7 +2027,7 @@ const percents = ref([1, 3, 5]);
 const refresh = () => {
   loading.value = true
   Documents.getQuotations().then( data => {
-    quotations.value = data.data.reverse()
+    originQuotations.value = data.data.reverse()
     loading.value = false
   });
 
@@ -2722,8 +2781,28 @@ const fileToBase64 = async (file) => {
     });
 };
 
+const updateStatus = async (id, status) => {
+  loading.value = true
+  try {
+    const response = await Documents.updateQuotationStatus(id, status)
+    if (response.status) {
+      console.log(response.data)
+      toast.add({ severity: 'success', summary: 'ยืนยันแล้ว', detail: 'อัพเดทใบเสนอราคาแล้ว', life: 3000 });
+      openUpdateStatus.value = false
+      refresh()
+    }
+  }
+  catch (err) {
+    console.log(err)
+    toast.add({ severity: 'error', summary: 'เกิดข้อผิดพลาด', detail: 'อัพเดทใบเสนอราคาล้มเหลว', life: 3000 });
+  }
+  finally {
+    loading.value = false
+  }
+}
+
 const openUpdateStatus = ref(false);
-const confirm1 = () => {
+const confirm1 = (id, status) => {
     confirm.require({
         message: 'ยืนยันใบเสนอราคานี้ ?',
         header: ' ',
@@ -2733,8 +2812,7 @@ const confirm1 = () => {
         acceptLabel: 'ยืนยัน',
         acceptClass: 'text-green-700',
         accept: () => {
-            openUpdateStatus.value = false
-            toast.add({ severity: 'success', summary: 'ยืนยันแล้ว', detail: 'ยืนยันใบเสนอราคาแล้ว', life: 3000 });
+            updateStatus(id, status)
         },
         reject: () => {
             openUpdateStatus.value = false
@@ -2742,7 +2820,7 @@ const confirm1 = () => {
     });
 };
 
-const confirm2 = () => {
+const confirm2 = (id, status) => {
     confirm.require({
         message: 'ยกเลิกใบเสนอราคานี้ ?',
         header: ' ',
@@ -2752,8 +2830,7 @@ const confirm2 = () => {
         rejectClass: 'p-button-secondary p-button-outlined',
         acceptClass: 'p-button-danger',
         accept: () => {
-            openUpdateStatus.value = false
-            toast.add({ severity: 'success', summary: 'ยกเลิกแล้ว', detail: 'ยกเลิกใบเสนอราคาแล้ว', life: 3000 });
+          updateStatus(id, status)
         },
         reject: () => {
             openUpdateStatus.value = false

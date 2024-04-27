@@ -53,6 +53,7 @@ const refIv = (val) => {
 
 const ontable = (data) => {
   table.value = data
+  ivref.value = null
 }
 
 </script>
