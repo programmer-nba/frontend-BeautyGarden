@@ -26,7 +26,7 @@
       />
     </div>
 
-    <div v-if="!openInvoice && !openInvoiceII" class="card" :class="!openInvoice && !openInvoiceII ? '' : 'hidden'">
+    <div class="card" :class="!openInvoice && !openInvoiceII ? '' : 'hidden'">
       <Toolbar class="mb-4">
         <template #start>
           <Button

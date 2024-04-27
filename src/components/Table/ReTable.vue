@@ -16,7 +16,7 @@
       
     </div>
 
-    <div v-if="!openFullReceipt && !openSmallReceipt" class="card" :class="!openFullReceipt && !openSmallReceipt ? '' : 'hidden'">
+    <div class="card" :class="!openFullReceipt && !openSmallReceipt ? '' : 'hidden'">
       <Toolbar class="mb-4">
         <template #start>
           <Button
@@ -66,9 +66,10 @@
         :paginator="true"
         :rows="5"
         :filters="filters"
+        paginatorPosition="top"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="{first} - {last} / {totalRecords}"
+        currentPageReportTemplate="{currentPage} / {totalRecords}"
         :pt="{
           header: { style: `backgroundColor: #${color}` },
         }"

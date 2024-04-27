@@ -58,7 +58,7 @@
         paginatorPosition="top"
         paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
         :rowsPerPageOptions="[5, 10, 25]"
-        currentPageReportTemplate="หน้าปัจจุบัน ( {currentPage} )"
+        currentPageReportTemplate="{currentPage} / {totalRecords}"
         :pt="{
           header: { style: `backgroundColor: #${color}` },
         }"
