@@ -145,7 +145,7 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            <p class="text-sm">{{ formatThaiDate(slotProps.data.start_date) }}</p>
+            <p class="text-sm">{{ formatDateRef(slotProps.data.start_date) }}</p>
           </template>
         </Column>
         <Column
@@ -156,7 +156,7 @@
           style="min-width: 10rem"
         >
           <template #body="slotProps">
-            <p class="text-sm">{{ formatThaiDate(slotProps.data.end_date) }}</p>
+            <p class="text-sm">{{ formatDateRef(slotProps.data.end_date) }}</p>
           </template>
         </Column>
         <Column
@@ -171,7 +171,7 @@
               v-if="slotProps.data.cur_period!==slotProps.data.end_period"
               :class="
               countdownToEndDate(slotProps.data.end_date).days > 0 ? 'font-bold' 
-              : countdownToEndDate(slotProps.data.end_date).days === 0  ? 'text-green-700 font-bold'
+              : countdownToEndDate(slotProps.data.end_date).days === 0  ? 'text-orange-500 font-bold animate-bounce'
               : 'text-red-700 font-bold'
             ">
             {{ 
@@ -2002,7 +2002,7 @@ import { useCompanyStore } from "@/stores/company";
 import DocInvoice from "@/components/Pdf/DocInvoice.vue";
 import DocInvoiceII from "@/components/Pdf/DocInvoiceII.vue";
 import RefReceipt from '@/components/Dialog/RefReceipt.vue';
-import { formatThaiDate } from '@/functions/DateTime'
+//import { formatThaiDate } from '@/functions/DateTime'
 import axios from "axios"
 
 onMounted(async () => {
@@ -2131,7 +2131,7 @@ function countdownToEndDate(end_date) {
   const timeDifference = endDate - currentDate;
 
   // Calculate the remaining time in days, hours, minutes, and seconds
-  const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
+  const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000))+1;
   const hours = Math.floor((timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
   const minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
   const seconds = Math.floor((timeDifference % (60 * 1000)) / 1000);
@@ -2944,4 +2944,39 @@ const filterInvoice = () => {
   }
 }
 
+const formatDateRef = (isoDateString) => {
+  const isoDate = new Date(isoDateString);
+  
+  // Convert to Buddhist Era (BE) by adding 543 years
+  const thaiYear = isoDate.getFullYear() + 543;
+  
+  const formattedDate = isoDate.toLocaleDateString("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  // Construct the final formatted date in "dd/mm/yyyy" format
+  const [month, day, year] = formattedDate.split('/');
+  const formattedThaiDate = `${day}/${month}/${thaiYear}`;
+
+  return formattedThaiDate;
+};
+
 </script>
+
+<style scoped>
+@keyframes bounce {
+  0%, 100% {
+      transform: translateY(-25%);
+      animation-timing-function: cubic-bezier(0.8,0,1,1);
+  }
+  50% {
+      transform: none;
+      animation-timing-function: cubic-bezier(0,0,0.2,1);
+  }
+}
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+</style>

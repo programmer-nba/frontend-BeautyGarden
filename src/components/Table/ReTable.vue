@@ -194,7 +194,7 @@
           field="total_products"
           header="VAT 7%"
           sortable
-          style="min-width: 8rem"
+          style="max-width: 8rem"
           class="border-b text-sm"
         >
           <template #body="slotProps">
@@ -213,7 +213,7 @@
           header="หัก ณ ที่จ่าย"
           class="border-b text-sm"
           sortable
-          style="min-width: 10rem"
+          style="max-width: 10rem"
         >
           <template #body="slotProps">
             <div class="grid place-items-center w-full">
@@ -223,6 +223,20 @@
               >
                 {{ slotProps.data.vat?.percen_deducted ? "หัก ณ ที่จ่าย" : "-" }}
               </span>
+            </div>
+          </template>
+        </Column>
+        <Column
+          field="status[status.length-1].name"
+          header="กระทบยอด"
+          class="border-b text-sm"
+          sortable
+          style="max-width: 8rem"
+        >
+          <template #body="slotProps">
+            <div class="grid place-items-center w-full opacity-30" v-if="slotProps.data.status[slotProps.data.status.length-1].name === 'new'">
+              <Button icon="pi pi-file-export" disabled />
+              <small>coming sonn..</small>
             </div>
           </template>
         </Column>
