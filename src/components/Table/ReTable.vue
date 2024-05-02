@@ -234,7 +234,7 @@
           style="max-width: 8rem"
         >
           <template #body="slotProps">
-            <div class="grid place-items-center w-full opacity-30" v-if="slotProps.data.status[slotProps.data.status.length-1].name === 'new'">
+            <div class="grid place-items-center w-full opacity-30" v-if="slotProps.data.status[slotProps.data.status.length-1]?.name === 'new'">
               <Button icon="pi pi-file-export" disabled />
               <small>coming sonn..</small>
             </div>
