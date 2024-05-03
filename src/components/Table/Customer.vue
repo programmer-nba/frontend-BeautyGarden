@@ -117,6 +117,12 @@
           class="border-b"
           style="min-width: 8rem"
         ></Column>
+        <Column field="" header="โปรเจค" class="border-b max-w-[300px]">
+          <template #body="slotProps">
+            <Button icon="pi pi-file" />
+            <Button icon="pi pi-plus-circle" />
+          </template>
+        </Column>
         <Column :exportable="false" style="min-width: 10rem" class="border-b">
           <template #body="slotProps">
             <Button
@@ -575,6 +581,54 @@
         <span><strong>เบอร์โทรผู้ติดต่อ : </strong>{{ selectedCustomer?.customer_contact_number }}</span>
       </div>
     </Dialog>
+
+    <Dialog
+      v-model:visible="openProject"
+      :style="{ width: '450px' }"
+      header=" "
+      :modal="true"
+    >
+      <div>
+
+        <div v-for="company in companies" :key="company._id" class="flex">
+          <div class="flex items-center">
+            <RadioButton v-model="project.header" :inputId="company._id" :name="company._id" :value="company._id" />
+            <label :for="company._id" class="ml-2">{{ company._id }}</label>
+          </div>
+        </div>
+
+        <div>
+          <pre>
+            {{ selectedCustomer }}
+          </pre>
+        </div>
+
+        <div>
+          <FloatLabel>
+            <InputText id="location" v-model="detail.location" />
+            <label for="location">สถานที่ปฏิบัติงาน</label>
+          </FloatLabel>
+          <FloatLabel>
+            <InputText id="locationMap" v-model="detail.locationMap" />
+            <label for="locationMap">map</label>
+          </FloatLabel>
+          <FloatLabel>
+            <InputText id="username" v-model="detail.startDate" />
+            <label for="username">map</label>
+          </FloatLabel>
+        </div>
+
+      </div>
+      <template #footer>
+        <Button
+          label="ยกเลิก"
+          icon="pi pi-times"
+          text
+          @click="openProject = false"
+        />
+        <Button label="ยืนยัน" icon="pi pi-check" text @click="createProject" />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -583,9 +637,12 @@ import { ref, onMounted, computed } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import { Customers } from "@/service/Customer";
+import axios from 'axios'
 
 onMounted(async () => {
-  Customers.getCustomers().then((data) => (customers.value = data.data));
+  Customers.getCustomers().then( data => {
+    customers.value = data.data
+  });
 });
 
 const isMain = ref(false)

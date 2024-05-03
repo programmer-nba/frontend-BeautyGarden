@@ -996,12 +996,11 @@
       </div>
 
       <div class="border rounded px-3 py-2 items-center border-green-700">
-        <pre class="hidden">{{ amount_price = allEnd }}</pre>
         <div class="flex items-center gap-x-3 py-2">
           <p class="text-lg font-bold">ยอดชำระ : </p>
-          <p class="font-bold">{{ formatCurrency(amount_price) }}</p>
+          <input type="number" v-model="amount_price" >
         </div>
-        <p class="text-center">{{ formatNumberToText(amount_price) }}</p>
+        
       </div>
       
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
@@ -1032,7 +1031,7 @@
     <Dialog
       v-model:visible="receiptEditDialog"
       :style="{ width: '450px' }"
-      header="เพิ่มใบเสร็จรับเงิน"
+      header="แก้ไขใบเสร็จรับเงิน"
       :modal="true"
       class="p-fluid"
     >
@@ -1737,12 +1736,11 @@
       </div>
 
       <div class="border rounded px-3 py-2 items-center border-green-700">
-        <pre class="hidden">{{ amount_price = allEnd }}</pre>
         <div class="flex items-center gap-x-3 py-2">
           <p class="text-lg font-bold">ยอดชำระ : </p>
-          <p class="font-bold">{{ formatCurrency(amount_price) }}</p>
+          <input type="number" v-model="amount_price" >
         </div>
-        <p class="text-center">{{ formatNumberToText(amount_price) }}</p>
+        
       </div>
       
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
@@ -1852,7 +1850,7 @@
           class="w-full md:w-14rem"
         />
       </div>
-      <pre class="hidden">
+      <pre class="">
         {{ refInvoice?.isVat }}
         {{ refInvoice?.sumVat }}
         {{refInvoice?.total}}/
@@ -1860,7 +1858,7 @@
         {{refInvoice?.project.total}} =
         {{ net_raw = (refInvoice?.total + refInvoice?.project.total) - refInvoice?.discount }}
         {{ prod_vat = calVat(refInvoice?.product_detail) + ((refInvoice?.project.total || 0)*0.07) }}
-        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw : net_raw }}
+        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw + prod_vat : net_raw }}
       </pre>
       <div v-if="invoices && invoices.length > 0" class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
@@ -1882,11 +1880,11 @@
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-3 py-4">
-          <div class="flex align-items-center">
+          <div class="flex items-center">
               <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="cash" name="cash" value="cash" />
               <label for="ingredient1" class="ml-2">เงินสด</label>
           </div>
-          <div class="flex align-items-center">
+          <div class="flex items-center">
               <RadioButton class=" bg-green-900 rounded-full" v-model="transfer" inputId="bank" name="bank" value="bank" />
               <label for="ingredient2" class="ml-2">โอนผ่านบัญชีธนาคาร</label>
           </div>
@@ -1897,7 +1895,17 @@
         </div>
         <div class="py-3">
           <strong>จำนวนเงิน</strong>
-          <pre class="hidden">{{ amount_price = result }}</pre>
+          <div class="flex flex-wrap items-center gap-3 py-4">
+            <div class="flex items-center">
+                <RadioButton class=" bg-green-900 rounded-full" v-model="ref_paid" inputId="cash" name="cash" :value="true" />
+                <label for="ingredient1" class="ml-2">ยอดเต็ม</label>
+            </div>
+            <div class="flex items-center">
+                <RadioButton class=" bg-green-900 rounded-full" v-model="ref_paid" inputId="bank" name="bank" :value="false" />
+                <label for="ingredient2" class="ml-2">กำหนดเอง</label>
+            </div>
+          </div>
+          
           <InputGroup class="border rounded">
             <InputGroupAddon><span class="font-bold px-2">THB</span></InputGroupAddon>
             <InputNumber v-model="amount_price" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="5" />
@@ -2029,6 +2037,9 @@ const prod = ref({
   project: {},
   product_detail: []
 });
+
+const result = ref()
+const ref_paid = ref(false)
 const editReceiptRefInvoiceDialog = ref(false)
 const transfer = ref('bank')
 const quotations = ref([]);
@@ -2096,7 +2107,15 @@ watch(() => dt?.value?.d_first, (newVal, oldVal) => {
   }
 })
 
-const amount_price = ref();
+const amount_price = ref(0);
+
+watch(() => ref_paid.value, (newVal, oldVal) => {
+  if ( ref_paid.value ) {
+    amount_price.value = result.value
+  } else {
+    amount_price.value = 0
+  }
+})
 
 function openNewRef() {
   //resetRefInvoice();
@@ -2619,6 +2638,7 @@ const hideDialog = () => {
 const editReceipt = (prod) => {
   resetData();
   receipt.value = { ...prod };
+  amount_price.value = receipt.value.amount_price
   console.log("re", receipt.value);
   isSign.value = prod.isSign
   project.value = receipt.value.project || {}

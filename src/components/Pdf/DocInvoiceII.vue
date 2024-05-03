@@ -67,23 +67,23 @@
                   <br />
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เลขที่ : </span>
-                    {{ data.data.invoice }}-{{ data.data.thisperiod }}/{{ data.data.end_period }}
+                    {{ data.data.selectedChild.code }}/{{ data.data.end_period }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่ Date : </span>
-                    {{ formatDate(data.data.invoice_period[data.data.thisperiod-2]?.start_date || new Date()) }}
+                    {{ formatDate(data.data.selectedChild.start_date) || '-' }}
                   </div>
-                  <div class="flex justify-between">
+                  <div class="hidden justify-between">
                     <span class="font-bold pr-4">เครดิต</span>
                     {{ data.data.credit > 0 ? data.data.credit : '-' }} วัน
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันครบกำหนด Date due : </span>
-                    {{ formatDate(data.data.invoice_period[data.data.thisperiod-2]?.end_date || new Date()) }}
+                    {{ formatDate(data.data.selectedChild.end_date) || '-' }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง :</span>
-                    {{ data.data.quotation }}
+                    {{ data.data.quotation || '-' }}
                   </div>
                   <br />
                   <hr />
@@ -308,15 +308,15 @@
                     </tr>
 
                     <tr class="flex justify-between w-full pb-1">
-                      <td style="text-align: left"><span class="pl-5 font-semibold">ชำระค่ามัดจำแล้ว</span></td>
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ชำระมาแล้ว</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.prev_paid) }}</span>บาท</td>
                     </tr>
 
-                    <tr class="flex justify-between items-center w-full py-2 bg-sky-200 " :style="{ backgroundColor: `#${data.color}` }">
+                    <tr class="hidden justify-between items-center w-full py-2 bg-sky-200 " :style="{ backgroundColor: `#${data.color}` }">
                       <td style="text-align: left">
                         <div class="flex flex-col items-center">
                           <strong class="pl-5 font-semibold">
-                            จำนวนเงินที่ต้องชำระทั้งสิ้น
+                            ที่ต้องชำระงวดนี้
                           </strong>
                         </div>
                       </td>
@@ -337,7 +337,24 @@
                         </strong>
                         บาท
                       </td>
-                        
+                    </tr>
+
+                    <tr class="flex justify-between items-center w-full py-2 bg-sky-200 " :style="{ backgroundColor: `#${data.color}` }">
+                      <td style="text-align: left">
+                        <div class="flex flex-col items-center">
+                          <strong class="pl-5 font-semibold">
+                            ที่ต้องชำระงวดนี้
+                          </strong>
+                        </div>
+                      </td>
+                      <td style="text-align: right">
+                        <strong class="pr-3">
+                          {{ 
+                            formatCurrency(data.data.selectedChild.price)
+                          }}
+                        </strong>
+                        บาท
+                      </td>
                     </tr>
                   </tbody>
               </table>
@@ -397,11 +414,18 @@
           </div>
           <div class="w-full min-w-[100px] h-fit min-h-[30px] bg-sky-200 text-center py-2 border-b border-l border-r flex justify-center items-center"
               :style="{ backgroundColor: `#${data.color}` }">
-              <p class="font-bold">
+              <p class="font-bold hidden">
                 ( {{ 
                   data.data.customer_branch?.isVat
                   ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat)-data.data.prev_paid) + 'ถ้วน' 
                   : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.prev_paid) + 'ถ้วน'
+                }} )
+              </p>
+              <p class="font-bold">
+                ( {{ 
+                  !formatNumberToText(data.data.selectedChild.price).includes('สตางค์')
+                  ? formatNumberToText(data.data.selectedChild.price) + 'ถ้วน'
+                  : formatNumberToText(data.data.selectedChild.price)
                 }} )
               </p>
           </div>
@@ -605,6 +629,7 @@ const formatCurrency = (value) => {
 }
 
 const formatDate = (isoDateString) => {
+  if (!isoDateString) return
   const isoDate = new Date(isoDateString);
   
   // Convert to Buddhist Era (BE) by adding 543 years

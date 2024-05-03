@@ -1,6 +1,7 @@
 <template>
   <div class="h-full">
     <Toast />
+    <ConfirmPopup></ConfirmPopup>
     <div
       class="shadow-none rounded-none p-0 min-h-full cursor-pointer absolute top-0 left-0 bg-white w-full"
       v-if="openInvoice"
@@ -216,7 +217,8 @@
         >
           <template #body="slotProps">
             <pre class="hidden">
-              {{ slotProps.data.project.vat_price = slotProps.data.isVat ? slotProps.data.project?.vat_price : 0 }}</pre>
+              {{ slotProps.data.project.vat_price = slotProps.data.isVat ? slotProps.data.project?.vat_price : 0 }}
+            </pre>
             <span
               :class="
               totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) <= 0
@@ -224,25 +226,34 @@
               : ''
               "
             >
-            {{ 
-              slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) <= 0
-              ? 'ครบแล้ว'
-              : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
-            }}</span>
-            
+              {{ 
+                slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) <= 0
+                ? 'ครบแล้ว'
+                : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
+              }}
+            </span>
           </template>
         </Column>
         
         <Column
           field="status[0]"
-          header="สถานะ"
+          header="ออกงวดแล้ว"
           sortable
-          style="min-width: 6rem"
-          class="border-b text-xs"
+          style="min-width: 8rem"
+          class="border-b text-xs text-center"
         >
           <template #body="slotProps">
-            งวด {{ slotProps.data.cur_period }} / {{ slotProps.data.end_period }}
-            <i @click="openNextInvoice(slotProps.data)" v-tooltip.top="`สร้างใบแจ้งหนี้งวด ${slotProps.data.cur_period+1}`" v-show="slotProps.data.cur_period > 0 && slotProps.data.invoice_period.length+1 < slotProps.data.end_period && slotProps.data.cur_period !== slotProps.data.end_period" class="pi hover:text-sky-800 cursor-pointer pi-plus-circle pl-2 text-sky-500"></i>
+            <button v-tooltip.top="'รายละเอียดงวดย่อย'" class="border p-2 rounded hover:bg-sky-200" @click="openChildDetailHandle(slotProps.data)">
+              {{ slotProps.data.end_period > 1 ? slotProps.data.childs?.length : 1 }} / {{ slotProps.data.end_period }}
+            </button>
+            <Button 
+                class="text-sky-600 hover:bg-sky-100" 
+                v-tooltip.top="'ออกใบแจ้งหนี้งวดย่อย'"
+                icon="pi pi-plus-circle" 
+                outlined 
+                rounded
+                @click="openRefInvoiceHandle(slotProps.data)" 
+              />
           </template>
         </Column>
         <Column :exportable="false" style="min-width: 13rem" class="border-b">
@@ -258,7 +269,7 @@
               <div class="relative">
                 <Button
                   v-if="slotProps.data.status.length > 0 && slotProps.data.end_period > 1"
-                  class="text-blue-600 hover:bg-blue-100 focus:bg-blue-100" 
+                  class="text-blue-600 hidden hover:bg-blue-100 focus:bg-blue-100" 
                   v-tooltip.top="'ปริ้นท์'"
                   icon="pi pi-file" 
                   outlined 
@@ -267,7 +278,7 @@
                   @blur="blurMenu(slotProps.data._id)"
                 />
                 <Button
-                  v-else
+                  
                   class="text-blue-600 hover:bg-blue-100" 
                   v-tooltip.top="'ปริ้นท์'"
                   icon="pi pi-file" 
@@ -1989,6 +2000,62 @@
     </div>
     <Button class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createNextInvoice" />
   </Dialog>
+
+  <Dialog v-model:visible="openRefInvoice" modal :header="`${selectedInvoice.invoice}`" :style="{ width: '25rem' }">
+    <div class="flex flex-col gap-5">
+      <div class="flex-auto">
+        <label for="integeronly" class="font-bold block mb-2"> จำนวน (บาท) </label>
+        <InputNumber v-model="refInvoice.price" inputId="integeronly" />
+      </div>
+      <div class="flex flex-col gap-3">
+        <p>วันที่ออกเอกสาร</p>
+        <Calendar v-model="refInvoice.start_date" class="border" />
+      </div>
+      <div class="flex flex-col gap-3">
+        <p>วันที่สิ้นสุด</p>
+        <Calendar v-model="refInvoice.end_date" class="border" />
+      </div>
+      <div class="flex-auto">
+        <label for="refInvoice_remark" class="font-bold block mb-2"> หมายเหตุ </label>
+        <InputText v-model="refInvoice.remark" inputId="refInvoice_remark" />
+      </div>
+    </div>
+    <Button v-if="!refInvoice.edit" :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createChild(selectedInvoice._id)" />
+    <Button v-else :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึกการแก้ไข" @click="updateChild(refInvoice._id)" />
+  </Dialog>
+
+  <Dialog v-model:visible="openChildDetail" :header="selectedInvoice.invoice" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }">
+    <DataTable :value="selectedInvoice.childs" scrollable scrollHeight="flex" tableStyle="min-width: 50rem">
+      <Column field="period" header="งวดที่"></Column>  
+      <Column field="code" header="เลขที่เอกสาร"></Column>
+      <Column field="start_date" header="วันที่เริ่ม">
+        <template #body="item">
+          <p>{{ formatDateRef(item.data.start_date) || '-' }}</p>
+        </template>
+      </Column>
+      <Column field="end_date" header="วันที่สิ้นสุด">
+        <template #body="item">
+          <p>{{ formatDateRef(item.data.end_date) || '-' }}</p>
+        </template>
+      </Column>
+      <Column field="price" header="ราคา"></Column>
+      <Column field="" header="">
+        <template #body="item">
+          <Button :loading="loading" icon="pi pi-file" @click="() => {
+            openChildDetail = false
+            selectedInvoice.selectedChild = item.data
+            seeInvoiceII(selectedInvoice, item.data.period, selectedInvoice.paid)
+          }" />
+          <Button :loading="loading" icon="pi pi-pencil" @click="() => {
+            openChildDetail = false
+            selectedInvoice.selectedChild = item.data
+            openRefInvoiceHandle(selectedInvoice, true)
+          }" />
+          <Button :loading="loading" icon="pi pi-trash" @click="confirmDeleteChild($event, item.data._id)" />
+        </template>
+        </Column>
+    </DataTable>
+  </Dialog>
 </template>
 
 <script setup>
@@ -2004,10 +2071,12 @@ import DocInvoiceII from "@/components/Pdf/DocInvoiceII.vue";
 import RefReceipt from '@/components/Dialog/RefReceipt.vue';
 //import { formatThaiDate } from '@/functions/DateTime'
 import axios from "axios"
+import { useConfirm } from "primevue/useconfirm";
 
 onMounted(async () => {
   Documents.getInvoices().then((data) => {
     originalInvoices.value = data.data.reverse()
+    fetchChilds()
     invoices.value = originalInvoices.value
   });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
@@ -2024,6 +2093,9 @@ onMounted(async () => {
   await cpStore.getMySignatures();
 })
 
+const confirm = useConfirm();
+
+const childs = ref()
 const curPage = ref(1)
 const originalInvoices = ref([])
 const quotations = ref([])
@@ -2074,6 +2146,9 @@ const prod = ref({
   project: {},
   product_detail: []
 });
+const refInvoice = ref({})
+const openRefInvoice = ref(false)
+const openChildDetail = ref(false)
 
 watch(() => dt?.value?.d_first, (newVal, oldVal) => {
   if (dt.value) {
@@ -2082,6 +2157,175 @@ watch(() => dt?.value?.d_first, (newVal, oldVal) => {
     : (dt.value.d_first/dt.value.d_rows) + 1
   }
 })
+
+const fetchChilds = async () => {
+  try {
+    const { data } = await axios.get(
+      `${import.meta.env.VITE_API_URL}/invoice/child/all`,
+      {
+        headers: {
+          'auth-token' : import.meta.env.VITE_TOKEN
+        }
+      }
+    )
+    if (data.status) {
+      console.log(data.data)
+      childs.value = data.data
+      originalInvoices.value.forEach(inv => {
+        inv.childs = childs.value.filter( ch => ch.refInvoice === inv._id )
+      })
+    }
+  }
+  catch (err) {
+    console.log(err)
+  }
+}
+
+const openChildDetailHandle = (data) => {
+  selectedInvoice.value = data
+  openChildDetail.value = true
+}
+
+const openRefInvoiceHandle = (data, edit) => {
+  if (edit) {
+    refInvoice.value = data.selectedChild
+    refInvoice.value.edit = true
+  } else {
+    refInvoice.value = {}
+  }
+  selectedInvoice.value = data
+  openRefInvoice.value = true
+}
+
+const createChild = async (refInvoice_id) => {
+  loading.value = true
+  const payload = {
+    refInvoice: refInvoice_id,
+    price: refInvoice.value.price,
+    start_date: refInvoice.value.start_date,
+    end_date: refInvoice.value.end_date,
+    remark: refInvoice.value.remark
+  }
+  try {
+    const { data } = await axios.post(
+      `${import.meta.env.VITE_API_URL}/invoice/child/create`,
+      payload,
+      {
+        headers: {
+          'auth-token' : import.meta.env.VITE_TOKEN
+        }
+      }
+    )
+    if (data.status) {
+      console.log(data.data)
+      openRefInvoice.value = false
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "สร้างใบแจ้งหนี้แล้ว",
+        life: 3000,
+      })
+      refresh()
+    }
+  }
+  catch (err) {
+    console.log(err)
+    toast.add({
+      severity: "error",
+      summary: "ERROR",
+      detail: "สร้างใบแจ้งหนี้ล้มเหลว",
+      life: 3000,
+    })
+    refresh()
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+const updateChild = async (id) => {
+  loading.value = true
+  const payload = {
+    price: refInvoice.value.price,
+    start_date: refInvoice.value.start_date,
+    end_date: refInvoice.value.end_date,
+    remark: refInvoice.value.remark
+  }
+  try {
+    const { data } = await axios.put(
+      `${import.meta.env.VITE_API_URL}/invoice/child/update/${id}`,
+      payload,
+      {
+        headers: {
+          'auth-token' : import.meta.env.VITE_TOKEN
+        }
+      }
+    )
+    if (data.status) {
+      console.log(data.data)
+      openRefInvoice.value = false
+      refInvoice.value = {}
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "แก้ไขใบแจ้งหนี้แล้ว",
+        life: 3000,
+      })
+      refresh()
+    }
+  }
+  catch (err) {
+    console.log(err)
+    toast.add({
+      severity: "error",
+      summary: "ERROR",
+      detail: "แก้ไขใบแจ้งหนี้ล้มเหลว",
+      life: 3000,
+    })
+    refresh()
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+const deleteChild = async (id) => {
+  loading.value = true
+  try {
+    const { data } = await axios.delete(
+      `${import.meta.env.VITE_API_URL}/invoice/child/delete/${id}`,
+      {
+        headers: {
+          'auth-token' : import.meta.env.VITE_TOKEN
+        }
+      }
+    )
+    if (data.status) {
+      console.log(data)
+      openChildDetail.value = false
+      toast.add({
+        severity: "success",
+        summary: "Successful",
+        detail: "ลบใบแจ้งหนี้แล้ว",
+        life: 3000,
+      })
+      refresh()
+    }
+  }
+  catch (err) {
+    console.log(err)
+    toast.add({
+      severity: "error",
+      summary: "ERROR",
+      detail: "ลบใบแจ้งหนี้ล้มเหลว",
+      life: 3000,
+    })
+    refresh()
+  }
+  finally {
+    loading.value = false
+  }
+}
 
 const { refQt } = defineProps(["refQt"])
 
@@ -2160,6 +2404,7 @@ const closeHandle = () => {
 const refresh = () => {
   Documents.getInvoices().then((data) => {
     originalInvoices.value = data.data.reverse()
+    fetchChilds()
     invoices.value = originalInvoices.value
   });
 
@@ -2961,6 +3206,22 @@ const formatDateRef = (isoDateString) => {
   const formattedThaiDate = `${day}/${month}/${thaiYear}`;
 
   return formattedThaiDate;
+};
+
+const confirmDeleteChild = (event, id) => {
+    confirm.require({
+        target: event.currentTarget,
+        message: 'ต้องการลบใบแจ้งหนี้นี้หรือไม่ ?',
+        icon: 'pi pi-info-circle',
+        rejectClass: 'px-2',
+        acceptClass: 'px-2 border text-red-500 border-red-500',
+        rejectLabel: 'ยกเลิก',
+        acceptLabel: 'ลบ',
+        accept: () => {
+          deleteChild(id)
+        },
+        reject: () => null
+    });
 };
 
 </script>
