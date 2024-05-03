@@ -315,7 +315,7 @@
                         <td style="text-align: left"><span class="pl-5 font-semibold">ยอดที่ชำระแล้ว</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.invoiceRef_detail?.paid - data.data.amount_price) }}</span>บาท</td>
                       </tr>
-                      <tr class="flex justify-between w-full">
+                      <tr class="hidden justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">
                           ยอดค้างก่อนชำระ</span></td>
                         <td style="text-align: right">
@@ -401,7 +401,7 @@
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดที่ชำระแล้ว</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.invoiceRef_detail?.paid - data.data.amount_price) }}</span>บาท</td>
                     </tr>
-                    <tr class="flex justify-between w-full">
+                    <tr class="justify-between hidden w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดค้างก่อนชำระ</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice-data.data.discount+vat)-(data.data.invoiceRef_detail?.paid - data.data.amount_price)) }}</span>บาท</td>
                     </tr>
