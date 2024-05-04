@@ -113,8 +113,8 @@
                       <small class="font-normal">Description</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
-                      <p>จำนวน</p>
-                      <small class="font-normal">Quantity</small>
+                      <p>งวดที่</p>
+                      <small class="font-normal">Period</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
                       <p>ราคา/หน่วย</p>
@@ -201,12 +201,15 @@
                     </td>
                     <td class=".td border">
                       <div class="flex flex-col">
-                        <article class="text-wrap w-[200px]">
-                            <p class="pb-3 font-bold">{{ product.product_name }}</p>
-                            <p v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
+                        <article class="text-wrap w-[350px]">
+                            <p class="pb-3 font-bold hidden">{{ product.product_name }}</p>
+                            <p class="hidden" v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
                               {{ p }}
                             </p>
-                            <div class="flex flex-wrap">
+                            <p class="py-2" style="text-align: left">
+                              {{ data.data.selectedChild.remark }}
+                            </p>
+                            <div class="hidden flex-wrap">
                               <img 
                               v-for="(img, imgIndex) in product.product_logo" :key="imgIndex"
                               class="w-[100px] object-contain" 
@@ -221,14 +224,14 @@
                       <div class="flex justify-center h-full py-2"
                         :class="product.product_amount < 1 ? 'hidden' : ''"
                       >
-                        {{ product.product_amount }} {{ product.unit }}
+                        {{ data.data.selectedChild.period }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
-                        {{ formatCurrency(product.product_price) }}
+                        {{ formatCurrency(data.data.selectedChild.price*100/107) }}
                       </div>
                     </td>
                     <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: right">
@@ -236,9 +239,7 @@
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
                         {{ 
-                          product.vat_price > 0
-                          ? formatCurrency(product.vat_price)
-                          : '0.00'
+                          formatCurrency(data.data.selectedChild.price*7/107)
                         }}
                       </div>
                     </td>
@@ -246,7 +247,7 @@
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
-                        {{ formatCurrency((product.product_price + (product.vat_price || 0))*product.product_amount) }}
+                        {{ formatCurrency(data.data.selectedChild.price) }}
                       </div>
                     </td>
                     
@@ -275,39 +276,42 @@
                   </div>
                 </div>
                 
-                <table class="h-full" v-if="data.data.sumVat">
+                <table class="h-full">
                   <tbody class="h-full">
                     <tr class="flex justify-between w-full pb-1">
                       <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
                       <td class="" style="text-align: right"><span class="pr-3">
-                        {{ formatCurrency(totalPrice+(data.data.project.total || 0)) }}</span>บาท</td>
+                        {{ 
+                          data.data.customer_branch?.isVat ? formatCurrency(data.data.selectedChild.price*100/107) : formatCurrency(data.data.selectedChild.price) 
+                        }}</span>บาท</td>
                     </tr>
                     
-                    <tr class="flex justify-between w-full pb-1">
+                    <tr class="hidden justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount) || '0.00' }}</span>บาท</td>
                     </tr>
-                    <tr class="flex justify-between w-full pb-1">
+                    <tr class="hidden justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ 
+                        formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount) 
+                      }}</span>บาท</td>
                     </tr>
                     
                     <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.selectedChild.price*7/107) }}</span>บาท</td>
                     </tr>
+
                     <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
                       <td style="text-align: right"><span class="pr-3">
                         {{ 
-                          formatCurrency(totalPrice+(data.data.project.total || 0)
-                          -data.data.discount
-                          +(vat+(data.data.project.vat_price || 0))) 
+                          formatCurrency(data.data.selectedChild.price) 
                         }}
                       </span>บาท</td>
                     </tr>
 
-                    <tr class="flex justify-between w-full pb-1">
+                    <tr class="hidden justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ชำระมาแล้ว</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.prev_paid) }}</span>บาท</td>
                     </tr>
@@ -316,7 +320,7 @@
                       <td style="text-align: left">
                         <div class="flex flex-col items-center">
                           <strong class="pl-5 font-semibold">
-                            ที่ต้องชำระงวดนี้
+                            ยอดชำระทั้งสิ้น
                           </strong>
                         </div>
                       </td>
@@ -343,7 +347,7 @@
                       <td style="text-align: left">
                         <div class="flex flex-col items-center">
                           <strong class="pl-5 font-semibold">
-                            ที่ต้องชำระงวดนี้
+                            ยอดชำระทั้งสิ้น
                           </strong>
                         </div>
                       </td>
@@ -357,9 +361,9 @@
                       </td>
                     </tr>
                   </tbody>
-              </table>
+                </table>
               
-              <table v-if="!data.data.sumVat">
+              <table class="hidden" v-if="!data.data.sumVat">
                 <tbody>
                   
                   <tr class="flex justify-between w-full pb-1">
@@ -431,7 +435,7 @@
           </div>
           <tr v-if="data.data.vat?.percen_deducted" class="flex justify-end text-sm py-2 pr-2 border-b border-r border-l font-semibold w-full">
             <td style="text-align: left"><span class="pl-5">หัก ณ ที่จ่าย ({{ data.data.vat?.percen_deducted }}%)</span></td>
-            <td style="text-align: right"><span class="pr-3">{{ formatCurrency(withHolding) }}</span>บาท</td>
+            <td style="text-align: right"><span class="pr-3">{{ formatCurrency((data.data.vat?.percen_deducted/100)*(data.data.selectedChild.price*100/107)) }}</span>บาท</td>
           </tr>
         
           <div class="flex justify-center px-2">
@@ -583,30 +587,31 @@ function formatNumberToText(number) {
         previousDigitWasZero = true;
       }
     }
-    return result;
+    return result.replace("ร้อยหนึ่งสิบ", "ร้อยสิบ");
   }
 
   function convertDecimalToThaiText(num) {
-    let result = "";
-    const tensDigit = parseInt(num[0]);
-    const onesDigit = parseInt(num[1]);
-    if (tensDigit !== 0) {
-      if (tensDigit === 1) {
-        result += "สิบ";
-      } else if (tensDigit === 2) {
-        result += "ยี่สิบ";
-      } else {
-        result += thaiNumerals[tensDigit] + "สิบ";
-      }
+  let result = "";
+  const tensDigit = parseInt(num[0]);
+  const onesDigit = parseInt(num[1]);
+  if (tensDigit !== 0) {
+    if (tensDigit === 1) {
+      result += onesDigit !== 0 ? "สิบ" : "";
+    } else if (tensDigit === 2) {
+      result += "ยี่สิบ";
+    } else {
+      result += thaiNumerals[tensDigit] + "สิบ";
     }
-    if (onesDigit !== 0) {
-      result += thaiNumerals[onesDigit];
-    }
-    return result;
+  }
+  if (onesDigit !== 0 && tensDigit !== 1) {
+    result += thaiNumerals[onesDigit];
+  }
+  console.log(result)
+  return result;
   }
 
   const thaiIntegerText = convertIntegerToThaiText(integerPart.toString());
-  const thaiDecimalText = convertDecimalToThaiText(decimalPart);
+  const thaiDecimalText = decimalPart === "00" ? "" : convertDecimalToThaiText(decimalPart);
 
   const thaiText =
     thaiIntegerText +
