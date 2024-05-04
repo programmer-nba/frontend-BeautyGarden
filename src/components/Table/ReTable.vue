@@ -1850,7 +1850,7 @@
           class="w-full md:w-14rem"
         />
       </div>
-      <pre class="">
+      <pre class="hidden">
         {{ refInvoice?.isVat }}
         {{ refInvoice?.sumVat }}
         {{refInvoice?.total}}/
