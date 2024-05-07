@@ -157,7 +157,7 @@
         </Column>
 
         <Column
-          field="vat.totalVat_deducted"
+          field="amount_price"
           class="border-b text-sm"
           header="ราคา"
           sortable
@@ -191,7 +191,7 @@
           </template>
         </Column>
         <Column
-          field="total_products"
+          field='vat.totalvat'
           header="VAT 7%"
           sortable
           style="max-width: 8rem"
@@ -2025,7 +2025,24 @@ const cpStore = useCompanyStore();
 const invoices = ref([]);
 
 onMounted(async () => {
-  Documents.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+  Documents.getReceipts().then((data) => {
+    receipts.value = data.data.reverse()
+    receipts.value.forEach(re => {
+      re.receipt = 
+        re.isBillVat ? re.receiptVat
+        : re.isBillVat === false ? re.receiptNoVat
+        : re.receipt
+
+      re.vat.totalvat = 
+        re.isVat && re.sumVat ? (re.project?.vat_price || 0) + totalVat(re)
+        : re.isVat && !re.sumVat ? totalVat(re)
+        : 0
+
+      re.vat.percen_deducted = 
+        re.vat.percen_deducted ? (re.vat.percen_deducted/100)*re.amount_price
+        : 0
+    })
+  });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
   Customers.getCustomers().then((data) => (customers.value = data.data));
   await cpStore.getMyCompanies();
@@ -2255,7 +2272,24 @@ const statuses = ref(["Normal", "องค์กร", "หน่วยงาน�
 const percents = ref([1, 3, 5]);
 
 const refresh = () => {
-  Documents.getReceipts().then((data) => (receipts.value = data.data.reverse()));
+  Documents.getReceipts().then((data) => {
+    receipts.value = data.data.reverse()
+    receipts.value.forEach(re => {
+      re.receipt = 
+        re.isBillVat ? re.receiptVat
+        : re.isBillVat === false ? re.receiptNoVat
+        : re.receipt
+
+      re.vat.totalvat = 
+        re.isVat && re.sumVat ? (re.project?.vat_price || 0) + totalVat(re)
+        : re.isVat && !re.sumVat ? totalVat(re)
+        : 0
+
+      re.vat.percen_deducted = 
+        re.vat.percen_deducted ? (re.vat.percen_deducted/100)*re.amount_price
+        : 0
+    })
+  });
 
   const currentTimestamp = Date.now();
   const options = { hour: "2-digit", minute: "2-digit", second: "2-digit" };
@@ -2743,7 +2777,7 @@ const withHolding = (product) => {
   return result;
 };
 
-const exportCSV = () => {
+const exportCSV = (event) => {
   dt.value.exportCSV();
 };
 

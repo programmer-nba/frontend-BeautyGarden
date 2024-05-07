@@ -1136,6 +1136,17 @@
           <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
         >
       </div>
+
+      <div class="flex flex-col gap-y-2 py-5 items-center justify-center">
+        <div class="">
+          <label>หัวข้อลายเซ็น (ฝั่งผู้เสนอ)</label>
+          <InputText class="p-2" v-model="prod.footer1" placeholder="ผู้เสนอราคา" />
+        </div>
+        <div class="">
+          <label>หัวข้อลายเซ็น (ฝั่งลูกค้า)</label>
+          <InputText class="p-2" v-model="prod.footer2" placeholder="ผู้อนุมัติการสั่งซื้อ" />
+        </div>
+      </div>
       
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
         <p>หมายเหตุ</p>
@@ -1897,6 +1908,17 @@
           <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
         >
       </div>
+
+      <div class="flex flex-col gap-y-2 py-5 items-center justify-center">
+        <div class="">
+          <label>หัวข้อลายเซ็น (ฝั่งผู้เสนอ)</label>
+          <InputText class="p-2" v-model="prod.footer1" placeholder="ผู้เสนอราคา" />
+        </div>
+        <div class="">
+          <label>หัวข้อลายเซ็น (ฝั่งลูกค้า)</label>
+          <InputText class="p-2" v-model="prod.footer2" placeholder="ผู้อนุมัติการสั่งซื้อ" />
+        </div>
+      </div>
       
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
         <p>หมายเหตุ</p>
@@ -2014,6 +2036,16 @@
       <div class="flex flex-col gap-3">
         <p>วันที่สิ้นสุด</p>
         <Calendar v-model="refInvoice.end_date" class="border" />
+      </div>
+      <div class="flex flex-col gap-y-2 py-5 items-center justify-center">
+        <div class="">
+          <label>หัวข้อลายเซ็น (ฝั่งผู้เสนอ)</label>
+          <InputText class="p-2" v-model="refInvoice.footer1" placeholder="ผู้เสนอราคา" />
+        </div>
+        <div class="">
+          <label>หัวข้อลายเซ็น (ฝั่งลูกค้า)</label>
+          <InputText class="p-2" v-model="refInvoice.footer2" placeholder="ผู้อนุมัติการสั่งซื้อ" />
+        </div>
       </div>
       <div class="flex-auto">
         <label for="refInvoice_remark" class="font-bold block mb-2"> หมายเหตุ </label>
@@ -2715,6 +2747,8 @@ const editInvoice = (prodd) => {
   invoiceEditDialog.value = true;
   discount.value = 0
   prod.value.project = prodd.project
+  prod.value.footer1 = prodd.footer1
+  prod.value.footer2 = prodd.footer2
   product.value = {}
   product.value.product_text = [""]
   sumVat.value = prodd.sumVat
@@ -2887,7 +2921,9 @@ const createNewInvoice = async () => {
     credit: credit.value,
     end_period: end_period.value,
     cur_period: cur_period.value,
-    transfer: transfer.value
+    transfer: transfer.value,
+    footer1: prod.value.footer1,
+    footer2: prod.value.footer2
   };
   console.log(data);
   let product_detail = [];
@@ -3035,7 +3071,9 @@ const editingInvoice = async () => {
     },
     cur_period: cur_period.value,
     credit: credit.value,
-    transfer: transfer.value
+    transfer: transfer.value,
+    footer1: prod.value.footer1,
+    footer2: prod.value.footer2
   };
   console.log(data)
   try {

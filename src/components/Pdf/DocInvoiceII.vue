@@ -442,8 +442,8 @@
             <table>
                 <tbody>
                   <tr>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเงิน</td>
-                    <td class="border text-sm" style="text-align: center; padding:0;">ผู้รับเอกสาร</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">{{ data.data.footer1 || 'ผู้เสนอราคา' }}</td>
+                    <td class="border text-sm" style="text-align: center; padding:0;">{{ data.data.footer2 || 'ผู้อนุมัติการสั่งซื้อ' }}</td>
                   </tr>
                   <tr class="border">
                     <td class="h-full min-h-[50px] w-full flex justify-around items-end" style="text-align: bottom; padding:0;">
