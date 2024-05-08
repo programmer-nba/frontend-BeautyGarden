@@ -91,6 +91,11 @@
               <i class="pi pi-search" />
               <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหา..." />
             </span>
+            
+            <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
+              <Checkbox v-model="showCustomerName" :binary="true" />
+              <p>ลายเซ็นแสดงชื่อลูกค้า</p>
+            </div>
             <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
               <Checkbox v-model="sign" :binary="true" />
               <p>ลายเซ็นอิเล็กทรอนิกส์</p>
@@ -2174,6 +2179,7 @@ const transfer = ref('bank')
 const inputHeader = ref('ใบแจ้งหนี้')
 const sign = ref(false)
 const isAmount = ref(true);
+const showCustomerName = ref(true);
 const prod = ref({
   project: {},
   product_detail: []
@@ -2509,6 +2515,7 @@ const seeInvoice = (data) => {
 
   selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
   selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
+  selectedInvoice.value.showCustomerName = showCustomerName.value
   console.log("data", selectedInvoice.value);
   const body = document.body;
   body.style.backgroundColor = 'white';
@@ -3164,6 +3171,7 @@ const seeInvoiceII = (data, period, prev_paid) => {
   selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
   selectedInvoice.value.prev_paid = prev_paid
   selectedInvoice.value.thisperiod = period
+  selectedInvoice.value.showCustomerName = showCustomerName.value
   console.log("data", selectedInvoice.value);
   const body = document.body;
   body.style.backgroundColor = 'white';

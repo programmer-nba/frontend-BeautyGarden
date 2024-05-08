@@ -472,12 +472,13 @@
                     <td class="border h-full min-h-[50px] px-4 w-fit" style="text-align: bottom;">
                       <div class="text-center w-full h-full text-sm flex flex-col mt-auto pt-10 items-center justify-end" style="text-align: bottom;">
                           <p>____________________</p>
-                        <p class="break-words max-w-[300px]" v-if="data.data.customer_detail.customer_name && data.data.customer_detail.customer_name.trim() !==''">
-                              ( {{ data.data.customer_detail.customer_contact_sign ? data.data.customer_detail.customer_contact_sign : data.data.customer_detail.customer_name }} )
-                        </p>
-                        <p v-if="!data.data.customer_detail.customer_name || data.data.customer_detail.customer_name.trim() ===''">
-                          {{`(.................................)`}}
-                        </p>
+
+                          <p v-if="!data.data.showCustomerName">
+                            {{`(.................................)`}}
+                          </p>
+                          <p class="break-words max-w-[300px]" v-else>
+                            ( {{ data.data.customer_detail.customer_contact_sign ? data.data.customer_detail.customer_contact_sign : data.data.customer_detail.customer_name }} )
+                          </p>
                         
                         <p>{{`วันที่...../....../.......`}}</p>
                       </div>
