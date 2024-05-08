@@ -474,7 +474,7 @@
                           <p>____________________</p>
 
                           <p v-if="!data.data.showCustomerName">
-                            {{`(.................................)`}}
+                            {{``}}
                           </p>
                           <p class="break-words max-w-[300px]" v-else>
                             ( {{ data.data.customer_detail.customer_contact_sign ? data.data.customer_detail.customer_contact_sign : data.data.customer_detail.customer_name }} )
