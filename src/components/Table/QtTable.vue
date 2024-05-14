@@ -763,7 +763,7 @@
                           outlined
                           rounded
                           class="hover:bg-red-200"
-                          @click="removeProduct(index)"
+                          @click="removeProduct(item)"
                         ></Button>
                       </div>
                     </div>
@@ -1505,7 +1505,7 @@
                             outlined
                             rounded
                             class="hover:bg-red-200"
-                            @click="removeProduct(index)"
+                            @click="removeProduct(item)"
                           ></Button>
                         </div>
                       </div>
@@ -2171,11 +2171,14 @@ const allEnd = computed(() => {
   return netVat.value
 });
 
-const removeProduct = (index) => {
+const removeProduct = (item) => {
   if (products.value && products.value.length > 0) {
-    products.value.splice(index, 1);
+    const index = products.value.findIndex(i => i === item)
+    if ( index !== -1 ) {
+      products.value.splice(index, 1)
+    }
   }
-};
+}
 
 const sumProductsPrice = computed(() => {
   if (products.value && products.value.length > 0) {
