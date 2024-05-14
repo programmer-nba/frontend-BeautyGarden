@@ -369,10 +369,7 @@
                 </p>
                 <p v-else class="font-bold">
                   ( {{ 
-                    formatNumberToText(
-                      (totalPrice - data.data.discount
-                      + (data.data.project.total || 0)
-                      )) 
+                    formatNumberToText(data.data.amount_price) 
                     + 'ถ้วน' 
                   }} )
                 </p>
@@ -478,7 +475,7 @@ const withHolding = computed(()=>{
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
     : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
   const result = percent > 0 ? price*percent/100 : 0
-  return result
+  return (percent/100)*data.data.amount_price
 })
 
 const totalPrice = computed(()=>{

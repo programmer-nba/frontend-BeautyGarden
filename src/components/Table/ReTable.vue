@@ -209,7 +209,7 @@
           </template>
         </Column>
         <Column
-          field="vat.percen_deducted"
+          field="vat.total_deducted"
           header="หัก ณ ที่จ่าย"
           class="border-b text-sm"
           sortable
@@ -2038,9 +2038,9 @@ onMounted(async () => {
         : re.isVat && !re.sumVat ? totalVat(re)
         : 0
 
-      re.vat.percen_deducted = 
+      re.vat.total_deducted = 
         re.vat.percen_deducted ? (re.vat.percen_deducted/100)*re.amount_price
-        : 0
+        : null
     })
   });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
@@ -2359,9 +2359,17 @@ const referQuotationInput = () => {
 };
 
 const seeFullReceipt = (data) => {
-  const customered = customers.value.find(
-    (item) => item.customer_name === data.customer_detail.customer_name
+  console.log(customers.value)
+  console.log(data.customer_detail)
+  let customered = customers.value.find(
+    (item) => item.customer_name.trim() === data.customer_detail.customer_name.trim()
   );
+
+  if (!customered) {
+    customered = data.customer_detail
+  }
+
+  console.log(customered)
 
   selectedReceipt.value = data;
 
@@ -2680,8 +2688,10 @@ const editReceipt = (prod) => {
   end_date.value = prod.end_date;
 
   const company = cpStore.myCompanies.find(
-    (item) => item.Branch_company_name === prod.customer_branch.Branch_company_name
+    (item) => item.taxnumber.trim() === prod.customer_branch.taxnumber.trim()
   );
+  console.log(cpStore.myCompanies)
+  console.log(prod.customer_branch)
   selectedCompany.value = company;
 
   const customered = customers.value.find(
@@ -2690,7 +2700,7 @@ const editReceipt = (prod) => {
   selectedCustomer.value = customered;
   console.log('cus', selectedCustomer.value)
   refCustomer();
-
+  console.log(prod.vat.percen_deducted)
   isWithholding.value = prod.vat.percen_deducted ? true : false;
   withholdingPercent.value = prod.vat.percen_deducted ? prod.vat.percen_deducted : null;
   discount.value = prod.discount;

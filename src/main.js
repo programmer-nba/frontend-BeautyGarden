@@ -6,6 +6,7 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import 'primevue/resources/themes/aura-light-green/theme.css'
 
+import FloatLabel from "primevue/floatlabel"
 import Button from "primevue/button"
 import InputText from 'primevue/inputtext';
 import Menubar from 'primevue/menubar';
@@ -72,6 +73,7 @@ app.directive('badge', BadgeDirective);
 app.directive('ripple', Ripple);
 app.directive('tooltip', Tooltip);
 
+app.component('FloatLabel', FloatLabel)
 app.component('SelectButton', SelectButton)
 app.component('InputMask', InputMask)
 app.component('TieredMenu', TieredMenu)
