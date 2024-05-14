@@ -2031,8 +2031,8 @@
   <Dialog v-model:visible="openRefInvoice" modal :header="`${selectedInvoice.invoice}`" :style="{ width: '25rem' }">
     <div class="flex flex-col gap-5">
       <div class="flex-auto">
-        <label for="integeronly" class="font-bold block mb-2"> จำนวน (บาท) </label>
-        <InputNumber v-model="refInvoice.price" inputId="integeronly" />
+        <label for="minmaxfraction" class="font-bold block mb-2"> จำนวน (บาท) </label>
+        <InputNumber v-model="refInvoice.price" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="2" />
       </div>
       <div class="flex flex-col gap-3">
         <p>วันที่ออกเอกสาร</p>
@@ -2064,7 +2064,13 @@
   <Dialog v-model:visible="openChildDetail" :header="selectedInvoice.invoice" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }">
     <DataTable :value="selectedInvoice.childs" scrollable scrollHeight="flex" tableStyle="min-width: 50rem">
       <Column field="period" header="งวดที่"></Column>  
-      <Column field="code" header="เลขที่เอกสาร"></Column>
+      <Column field="code" header="เลขที่เอกสาร">
+        <template #body="item">
+          <p>{{ item.data.code }}
+            <span v-if="selectedInvoice.status.some(c => c.period !== item.data.period)"><i class="pi pi-file-export text-green-500 cursor-pointer" @click="onCoppy(item.data.code)"></i></span>
+          </p>
+        </template>
+      </Column>
       <Column field="start_date" header="วันที่เริ่ม">
         <template #body="item">
           <p>{{ formatDateRef(item.data.start_date) || '-' }}</p>
@@ -2076,6 +2082,14 @@
         </template>
       </Column>
       <Column field="price" header="ราคา"></Column>
+      <Column header="ออกใบเสร็จ">
+        <template #body="item">
+          <div class="flex justify-center items-center" v-if="selectedInvoice.status.some(c => c.period === item.data.period)">
+            <i class="pi pi-check text-center"></i>
+          </div>
+          <p v-else class="text-center">-</p>
+        </template>
+      </Column>
       <Column field="" header="">
         <template #body="item">
           <Button :loading="loading" icon="pi pi-file" @click="() => {
@@ -3162,9 +3176,12 @@ const seeInvoiceII = (data, period, prev_paid) => {
     item => item.taxnumber === data.customer_branch.taxnumber
   )
 
-  const customered = customers.value.find(
+  let customered = customers.value.find(
     item => item.customer_name === data.customer_detail?.customer_name
   );
+  if (!customered) {
+    customered = data.customer_detail
+  }
   selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber
 
   selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden

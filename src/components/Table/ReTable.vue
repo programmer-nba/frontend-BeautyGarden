@@ -1839,7 +1839,6 @@
 
       <div v-show="!invoices || invoices.length === 0" class="bg-black/30 rounded-lg h-[650px] w-full animate-pulse">
       </div>
-    
       <div v-if="invoices && invoices.length > 0" class="card flex flex-col gap-y-2 bg-sky-300 py-2 px-2 rounded-lg justify-content-center">
         <Dropdown
           v-model="refInvoice"
@@ -1849,6 +1848,11 @@
           placeholder="เลือกใบแจ้งหนี้"
           class="w-full md:w-14rem"
         />
+      </div>
+      <p class="p-2 text-center">{{ ivref }}</p>
+      <div class="flex justify-center items-center gap-x-2">
+        <label>งวดที่</label>
+        <input type="number" v-model="cur_period" class="px-2 py-1 border rounded text-center w-fit max-w-[5rem]">
       </div>
       <pre class="hidden">
         {{ refInvoice?.isVat }}
@@ -2103,6 +2107,7 @@ const project = ref({});
 const isPrice = ref(true);
 const files = ref([]);
 const curPage = ref(1)
+const cur_period = ref(1)
 
 // Create with reference invoice
 const refInvoice = ref();
@@ -2110,10 +2115,21 @@ const { ivref } = defineProps(["ivref"])
 const invref = ref(ivref)
 const receiptRefInvoiceDialog = ref(false);
 watchEffect(()=> {
-  if (ivref) {
+  /* if (ivref) {
+    receiptRefInvoiceDialog.value = true
+  } */
+  console.log(invref.value)
+  console.log(invref.value.split('-')[0])
+  if (invref.value?.includes('-')) {
+    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value.split('-')[0])
+    cur_period.value = parseInt(invref.value.split('-')[1])
+    receiptRefInvoiceDialog.value = true
+  } else if (!invref.value?.includes('-')) {
+    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value)
+    cur_period.value = 1
     receiptRefInvoiceDialog.value = true
   }
-  refInvoice.value = invoices.value.find(i=>i.invoice===invref.value)
+  
 })
 
 watch(() => dt?.value?.d_first, (newVal, oldVal) => {
@@ -2187,7 +2203,8 @@ async function createNewReceiptRefInvoice() {
     project: refInvoice.value.project,
     transfer: transfer.value,
     paid_detail: paid_detail.value,
-    isSign: isSign.value
+    isSign: isSign.value,
+    cur_period: cur_period.value
   };
   console.log("data_refInv : ", data);
   try {
@@ -2226,7 +2243,8 @@ async function editReceiptRefInvoice(id) {
     transfer: transfer.value,
     //project: refInvoice.value ? refInvoice.value.project,
     paid_detail: paid_detail.value,
-    isSign: isSign.value
+    isSign: isSign.value,
+    cur_period: cur_period.value
   };
   console.log("data_refInv : ", data);
   try {
@@ -2390,9 +2408,13 @@ const seeFullReceipt = (data) => {
 };
 
 const seeSmallReceipt = (data) => {
-  const customered = customers.value.find(
+  let customered = customers.value.find(
     (item) => item.customer_name === data.customer_detail.customer_name
   );
+  if(!customered) {
+    customered = data.customer_detail
+  }
+
   openSmallReceipt.value = true;
   selectedReceipt.value = data;
   const company = cpStore.myCompanies.find(
