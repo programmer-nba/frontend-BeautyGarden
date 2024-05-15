@@ -84,10 +84,7 @@
         <Column field="customer_name" header="ชื่อลูกค้า" sortable class="border-b max-w-[250px]">
           <template #body="slotProps">
             {{
-              slotProps.data.customer_lastname &&
-              slotProps.data.customer_lastname?.trim() !== "null"
-                ? `${slotProps.data.customer_name} (${slotProps.data.customer_lastname})`
-                : `${slotProps.data.customer_name}`
+                slotProps.data.customer_name
             }}
           </template>
         </Column>
@@ -175,13 +172,12 @@
             v-model="customer.customer_name"
             required="true"
             autofocus
-            :class="{ 'p-invalid': submitted && !customer.customer_name }"
+            :class="{ 'p-invalid': !customer.customer_name || existCustomer }"
           />
-          <small class="p-error" v-if="submitted && !customer.customer_name"
-            >กรุณาเพิ่มชื่อลูกค้า</small
-          >
+          <small class="p-error" v-if="!customer.customer_name">กรุณาเพิ่มชื่อลูกค้า</small>
+          <small class="p-error" v-else-if="existCustomer">ลูกค้าชื่อนี้มีอยู่ในระบบแล้ว</small>
         </div>
-        <div class="field py-2">
+        <div class="field py-2 hidden">
           <div>
             <strong>สำนักงานใหญ่/สาขา</strong>
             <InputSwitch @change="changeMain" v-model="isMain" />
@@ -359,7 +355,7 @@
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
         </div>
-        <div class="field py-2">
+        <div class="field py-2 hidden">
           <div>
             <strong>สำนักงานใหญ่/สาขา</strong>
             <InputSwitch @change="changeMain" v-model="isMain" />
@@ -561,11 +557,7 @@
 
     <Dialog v-model:visible="openCustomer" modal :header="selectedCustomer?.customer_number" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
       <div class="flex flex-col gap-y-2">
-        <span><strong>ชื่อลูกค้า : </strong>{{ selectedCustomer?.customer_name }} 
-          {{ selectedCustomer?.customer_lastname.trim()!=='' 
-          ? `(${selectedCustomer?.customer_lastname})` 
-          : null }}
-        </span>
+        <span><strong>ชื่อลูกค้า : </strong>{{ selectedCustomer?.customer_name }}</span>
         <span><strong>เลขประจำตัวผู้เสียภาษี TAX ID : </strong>{{ selectedCustomer?.customer_taxnumber }}</span>
         <span><strong>ที่อยู่ : </strong>{{ selectedCustomer?.customer_position }}</span>
         <span><strong>map : </strong>
@@ -633,7 +625,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import { FilterMatchMode } from "primevue/api";
 import { useToast } from "primevue/usetoast";
 import { Customers } from "@/service/Customer";
@@ -659,7 +651,6 @@ const customerDialog = ref(false);
 const deleteCustomerDialog = ref(false);
 const deleteCustomersDialog = ref(false);
 const selectedCustomers = ref();
-const uploadfiles = ref([]);
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
@@ -674,6 +665,12 @@ const changeMain = () => {
   }
 }
 
+const existCustomer = computed(()=>{
+  return customers.value.some(cus =>
+    cus.customer_name.trim() === customer.value.customer_name.trim()
+  )
+})
+
 const refreshData = () => {
   Customers.getCustomers().then((data) => (customers.value = data.data));
   const currentTimestamp = Date.now();
@@ -686,22 +683,6 @@ const seeCustomer = (data) => {
   openCustomer.value = true;
   selectedCustomer.value = data;
   console.log("data", selectedCustomer.value);
-};
-
-const customBase64Uploader = async (event) => {
-  const file = event.files[0];
-  const reader = new FileReader();
-  let blob = await fetch(file.objectURL).then((r) => r.blob()); //blob:url
-
-  reader.readAsDataURL(blob);
-
-  reader.onloadend = function () {
-    const base64data = reader.result;
-    product.value.product_logo64 = base64data;
-  };
-
-  uploadfiles.value.push(file);
-  console.log(uploadfiles.value);
 };
 
 const openNew = () => {
@@ -777,22 +758,31 @@ const deleteSelectedCustomers = async () => {
     life: 3000,
   });
 };
-
 const createNewCustomer = async () => {
   loading.value = true;
   const formData = new FormData();
   formData.append("customer_name", customer.value.customer_name);
-  formData.append("customer_map", customer.value.customer_map);
-  formData.append("customer_lastname", customer.value.customer_lastname);
-  formData.append("customer_phone", customer.value.customer_phone);
-  formData.append("customer_position", customer.value.customer_position);
-  formData.append("customer_email", customer.value.customer_email);
-  formData.append("customer_type", customer.value.customer_type);
-  formData.append("customer_taxnumber", customer.value.customer_taxnumber);
-  formData.append("customer_contact", customer.value.customer_contact);
-  formData.append("customer_contact_number", customer.value.customer_contact_number);
-
+  formData.append("customer_map", customer.value.customer_map || "");
+  formData.append("customer_lastname", customer.value.customer_lastname || "");
+  formData.append("customer_phone", customer.value.customer_phone || "");
+  formData.append("customer_position", customer.value.customer_position || "");
+  formData.append("customer_email", customer.value.customer_email || "");
+  formData.append("customer_type", customer.value.customer_type || "Normal");
+  formData.append("customer_taxnumber", customer.value.customer_taxnumber || "");
+  formData.append("customer_contact", customer.value.customer_contact || "");
+  formData.append("customer_contact_number", customer.value.customer_contact_number || "");
+  console.log([...formData])
   const response = await Customers.createNewCustomer(formData);
+  if (!customer.value.customer_name || !customer.value.customer_type) {
+    toast.add({
+      severity: "error",
+      summary: "กรุณาเพิ่มชื่อลูกค้า และประเภทลูกค้า",
+      detail: "กรุณาเพิ่มข้อมูลให้ครบถ้วน",
+      life: 3000,
+    });
+    loading.value = false;
+    return
+  }
   if (response.data) {
     toast.add({
       severity: "success",

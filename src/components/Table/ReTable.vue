@@ -2119,12 +2119,12 @@ watchEffect(()=> {
     receiptRefInvoiceDialog.value = true
   } */
   console.log(invref.value)
-  console.log(invref.value.split('-')[0])
-  if (invref.value?.includes('-')) {
+  console.log(invref.value?.split('-')[0])
+  if (invref.value && invref.value?.includes('-')) {
     refInvoice.value = invoices.value.find(i=>i.invoice===invref.value.split('-')[0])
     cur_period.value = parseInt(invref.value.split('-')[1])
     receiptRefInvoiceDialog.value = true
-  } else if (!invref.value?.includes('-')) {
+  } else if (invref.value && !invref.value?.includes('-')) {
     refInvoice.value = invoices.value.find(i=>i.invoice===invref.value)
     cur_period.value = 1
     receiptRefInvoiceDialog.value = true
