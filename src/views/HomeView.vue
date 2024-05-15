@@ -29,10 +29,21 @@ import QtHeadCard from '@/components/Card/QtHeadCard.vue'
 import QtTable from '@/components/Table/QtTable.vue'
 import InTable from '@/components/Table/InTable.vue'
 import ReTable from '@/components/Table/ReTable.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
+onMounted(()=>{
+  ssgdToken.value = localStorage.getItem("ssgdToken")
+  console.log(ssgdToken.value)
+  if (!ssgdToken.value) {
+    router.push('/login')
+  }
+})
+
+const router = useRouter()
 const table = ref('quotation')
 
+const ssgdToken = ref(null)
 const refQt = ref()
 const referQt = (val) => {
   console.log(val)

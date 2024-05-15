@@ -16,7 +16,7 @@
                 </a>
             </template>
             <template #end>
-                
+                <Button icon="pi pi-sign-out text-red-400" class="text-red-400" label="ออกจากระบบ" @click="logout" />
             </template>
         </Menubar>
     </div>
@@ -44,45 +44,6 @@ const items = ref([
             router.push('/company');
         }
     },
-    /* {
-        label: 'เอกสาร',
-        icon: 'pi pi-file',
-        items: [
-            {
-                label: 'ใบเสนอราคา',
-                icon: 'pi pi-users',
-                route: '/',
-                badge: 0
-            },
-            {
-                label: 'ใบแจ้งหนี้',
-                items: [
-                    {
-                        label: 'ดูใบแจ้งหนี้',
-                        badge: 4
-                    },
-                    {
-                        label: 'ออกใบแจ้งหนี้',
-                        icon: 'pi pi-palette',
-                    }
-                ]
-            },
-            {
-                label: 'ใบเสร็จรับเงิน',
-                items: [
-                    {
-                        label: 'ดูใบเสร็จรับเงิน',
-                        badge: 0,
-                        route: '/theming'
-                    },
-                    {
-                        label: 'ออกใบเสร็จรับเงิน',
-                        icon: 'pi pi-palette',
-                    }
-                ]
-            }
-        ]
-    }, */
     {
         label: 'ลูกค้า',
         icon: 'pi pi-users',
@@ -108,25 +69,9 @@ const items = ref([
         badge: 0
     }
 ]);
+
+const logout = () => {
+    localStorage.clear()
+    window.location.href = '/'
+}
 </script>
-
-
-<!-- <template>
-    <div class="w-full py-3 px-5 ">
-        <div class="rounded py-3 px-5 bg-emerald-600">
-            <nav class="text-white font-bold">
-                <RouterLink to="/">Home</RouterLink>
-                <RouterLink to="/documents">Documents</RouterLink>
-            </nav>
-        </div>
-    </div>
-</template>
-
-<script setup>
-import { RouterLink } from 'vue-router'
-
-</script>
-
-<style scoped>
-
-</style> -->
