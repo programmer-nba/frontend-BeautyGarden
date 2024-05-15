@@ -54,7 +54,7 @@
                     class="text-xs w-full text-center font-semibold inline-block py-2 px-2 rounded text-black bg-sky-200 uppercase last:mr-0 mr-1"
                     :style="{ backgroundColor: `#${data.color}` }"
                     >
-                    {{ data.data.header }}
+                    {{ data.data.selectedChild.header || data.data.header }}
                   </span>
                   <span
                     v-if="data.data.customer_branch?.isVat"

@@ -2030,6 +2030,10 @@
 
   <Dialog v-model:visible="openRefInvoice" modal :header="`${selectedInvoice.invoice}`" :style="{ width: '25rem' }">
     <div class="flex flex-col gap-5">
+      <div class="flex flex-col items-center gap-y-1">
+        <label>หัวเอกสาร</label>
+        <InputText class="p-2 border text-center" v-model="refInvoice.header" placeholder="ใบแจ้งหนี้/ใบวางบิล" />
+      </div>
       <div class="flex-auto">
         <label for="minmaxfraction" class="font-bold block mb-2"> จำนวน (บาท) </label>
         <InputNumber v-model="refInvoice.price" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="2" />
@@ -2256,7 +2260,8 @@ const createChild = async (refInvoice_id) => {
     price: refInvoice.value.price,
     start_date: refInvoice.value.start_date,
     end_date: refInvoice.value.end_date,
-    remark: refInvoice.value.remark
+    remark: refInvoice.value.remark,
+    header: refInvoice.value.header
   }
   try {
     const { data } = await axios.post(
@@ -2301,7 +2306,8 @@ const updateChild = async (id) => {
     price: refInvoice.value.price,
     start_date: refInvoice.value.start_date,
     end_date: refInvoice.value.end_date,
-    remark: refInvoice.value.remark
+    remark: refInvoice.value.remark,
+    header: refInvoice.value.header
   }
   try {
     const { data } = await axios.put(
