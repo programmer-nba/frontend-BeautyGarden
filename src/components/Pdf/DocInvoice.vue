@@ -301,7 +301,10 @@
                           }}
                         </span>บาท</td>
                       </tr>
-
+                      <tr class="flex justify-between w-full pb-1">
+                        <td style="text-align: left"><span class="pl-5 font-semibold">ชำระค่ามัดจำแล้ว</span></td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.paid) }}</span>บาท</td>
+                      </tr>
                       <tr class="flex justify-between items-center w-full py-2 bg-sky-200 " :style="{ backgroundColor: `#${data.color}` }">
                         <td style="text-align: left">
                           <div class="flex flex-col items-center">
@@ -315,13 +318,13 @@
                             {{ 
                               formatCurrency(totalPrice+(data.data.project.total || 0)
                               -data.data.discount
-                              +(vat+(data.data.project.vat_price || 0))) 
+                              +(vat+(data.data.project.vat_price || 0)) - data.data.paid ) 
                             }}
                           </strong>
                           <strong class="pr-3" v-else>
                             {{ 
                               formatCurrency(totalPrice+(data.data.project.total || 0)
-                              -data.data.discount
+                              - data.data.discount - data.data.paid
                               ) 
                             }}
                           </strong>
@@ -381,8 +384,8 @@
                 <p class="font-bold">
                   ( {{ 
                     data.data.customer_branch?.isVat
-                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat))
-                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount))
+                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat) - data.data.paid)
+                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount) - data.data.paid)
                   }} )
                 </p>
               </div>
