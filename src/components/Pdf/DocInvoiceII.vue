@@ -228,10 +228,15 @@
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2"
+                      <div v-if="data.data.customer_branch?.isVat" class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
                         {{ formatCurrency(data.data.selectedChild.price*100/107) }}
+                      </div>
+                      <div v-else class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      >
+                        {{ formatCurrency(data.data.selectedChild.price) }}
                       </div>
                     </td>
                     <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: right">

@@ -46,6 +46,12 @@
           />
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
+          <Calendar :disabled="seeAll" class="px-5" v-model="month" showIcon :showOnFocus="false" :showButtonBar="true" inputClass="p-2 bg-sky-100 text-center w-24" inputId="buttondisplay" view="month" dateFormat="mm/yy" />
+          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-sky-700 underline">{{ getMonthString(month.getMonth() + 1) }} {{ month.getFullYear() + 543 }}</span></p>
+          <div class="flex items-center border px-2 py-1 rounded bg-slate-100">
+            <Checkbox v-model="seeAll" inputId="dateFilter" name="dateFilter" :binary="true" />
+            <label for="dateFilter" class="ml-2"> ดูทั้งหมด </label>
+          </div>
         </template>
 
         <template #end>
@@ -84,7 +90,7 @@
               <p class="m-0">
                 จัดการเอกสาร
               </p>
-              <SelectButton v-model="curfilter" :options="['ทั้งหมด', 'ยังไม่ครบ', 'ครบแล้ว']" aria-labelledby="basic" @change="filterInvoice(curfilter)" />
+              <SelectButton v-model="curfilter" :options="['ทั้งหมด', 'ยังไม่ครบ', 'ครบแล้ว']" aria-labelledby="basic" />
             </div>
             
             <span class="p-input-icon-right border rounded">
@@ -2132,7 +2138,7 @@ onMounted(async () => {
   Documents.getInvoices().then((data) => {
     originalInvoices.value = data.data.reverse()
     fetchChilds()
-    invoices.value = originalInvoices.value
+    //invoices.value = originalInvoices.value
   });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
   Customers.getCustomers().then((data) => {
@@ -2176,7 +2182,7 @@ const dt = ref();
 const customer = ref({});
 const customers = ref();
 const selectedCustomer = ref();
-const invoices = ref();
+//const invoices = ref();
 const invoiceDialog = ref(false);
 const deleteInvoiceDialog = ref(false);
 const deleteInvoicesDialog = ref(false);
@@ -2198,6 +2204,8 @@ const inputHeader = ref('ใบแจ้งหนี้')
 const sign = ref(false)
 const isAmount = ref(true);
 const showCustomerName = ref(true);
+const month = ref(new Date())
+const seeAll = ref(false)
 const prod = ref({
   project: {},
   product_detail: []
@@ -2205,6 +2213,45 @@ const prod = ref({
 const refInvoice = ref({})
 const openRefInvoice = ref(false)
 const openChildDetail = ref(false)
+
+const monthYear = computed(()=>{
+  const thisMonth = (month.value.getMonth()+1).toString().padStart(2, '0')
+  const thisYear = month.value.getFullYear()
+  const thisMonthYear = `${thisYear}${thisMonth}`
+  return thisMonthYear
+})
+
+const filterdInvoices = computed(()=>{
+  let result = []
+  if (!seeAll.value) {
+    result = originalInvoices.value.filter( inv => 
+      inv.invoice.substring(2, 8) === monthYear.value
+    )
+  } else {
+    result = originalInvoices.value
+  }
+
+  return result
+})
+
+const invoices = computed(()=>{
+  let result = []
+  const filter = curfilter.value
+  if ( filter === 'ยังไม่ครบ' ) {
+    result = filterdInvoices.value.filter((inv)=>(
+      totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) > 0
+    ))
+  } else if ( filter === 'ครบแล้ว' ) {
+    result = filterdInvoices.value.filter((inv)=>(
+      totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) <= 0
+    ))
+  }
+  else {
+    result = filterdInvoices.value
+  }
+
+  return result
+})
 
 watch(() => dt?.value?.d_first, (newVal, oldVal) => {
   if (dt.value) {
@@ -2385,6 +2432,15 @@ const deleteChild = async (id) => {
   }
 }
 
+const getMonthString = (monIndex) => {
+  const thaiMonths = [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+  ]
+
+  return thaiMonths[monIndex]
+}
+
 const { refQt } = defineProps(["refQt"])
 
 const choosesumVat = ref('Vat นอก');
@@ -2463,7 +2519,7 @@ const refresh = () => {
   Documents.getInvoices().then((data) => {
     originalInvoices.value = data.data.reverse()
     fetchChilds()
-    invoices.value = originalInvoices.value
+    //invoices.value = originalInvoices.value
   });
 
   const currentTimestamp = Date.now();
@@ -2528,9 +2584,12 @@ const seeInvoice = (data) => {
     item => item.taxnumber === data.customer_branch.taxnumber
   )
 
-  const customered = customers.value.find(
+  let customered = customers.value.find(
     item => item.customer_name === data.customer_detail?.customer_name
   );
+  if(!customered) {
+    customered = data.customer_detail
+  }
   selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber
 
   selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
@@ -3233,7 +3292,7 @@ const createNextInvoice = async () => {
     loading.value = false
     Documents.getInvoices().then((data) => {
       originalInvoices.value = data.data.reverse()
-      invoices.value = originalInvoices.value
+      //invoices.value = originalInvoices.value
     })
   } else {
     console.log(data.data)
@@ -3242,7 +3301,7 @@ const createNextInvoice = async () => {
 }
 
 const curfilter = ref('ทั้งหมด')
-const filterInvoice = () => {
+/* const filterInvoice = () => {
   const filter = curfilter.value
   if ( filter === 'ยังไม่ครบ' ) {
     invoices.value = originalInvoices.value.filter((inv)=>(
@@ -3256,7 +3315,7 @@ const filterInvoice = () => {
   else {
     invoices.value = originalInvoices.value
   }
-}
+} */
 
 const formatDateRef = (isoDateString) => {
   const isoDate = new Date(isoDateString);

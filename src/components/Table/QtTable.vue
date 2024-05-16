@@ -32,6 +32,12 @@
           />
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
+          <Calendar :disabled="seeAll" class="px-5" v-model="month" showIcon :showOnFocus="false" :showButtonBar="true" inputClass="p-2 bg-sky-100 text-center w-24" inputId="buttondisplay" view="month" dateFormat="mm/yy" />
+          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-yellow-700 underline">{{ getMonthString(month.getMonth() + 1) }} {{ month.getFullYear() + 543 }}</span></p>
+          <div class="flex items-center border px-2 py-1 rounded bg-slate-100">
+            <Checkbox v-model="seeAll" inputId="dateFilter" name="dateFilter" :binary="true" />
+            <label for="dateFilter" class="ml-2"> ดูทั้งหมด </label>
+          </div>
         </template>
         <template #end>
           
@@ -66,6 +72,7 @@
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
             <h4 class="m-0">จัดการเอกสาร</h4>
+            <SelectButton v-model="curfilter" :options="['ทั้งหมด', 'Vat', 'ไม่มี Vat']" aria-labelledby="basic" />
             <div class="flex gap-2">
               <div class="flex border divide-x-2">
                 <Button class="px-2 rounded-none" :class="!chooseFilter ? 'bg-yellow-200' : ''" label="ทั้งหมด" @click="chooseFilter = null" />
@@ -1889,7 +1896,7 @@ const prod = ref({
 });
 
 const curPage = ref(1)
-const originQuotations = ref()
+const originQuotations = ref([])
 const chooseFilter = ref('pending')
 const customer_contact = ref("")
 const lastRefreshed = ref();
@@ -1930,6 +1937,9 @@ const edittingProduct = ref()
 const files = ref([])
 const transfer = ref('bank')
 const sign = ref(false)
+const month = ref(new Date())
+const seeAll = ref(true)
+const curfilter = ref("ทั้งหมด")
 
 const choosesumVat = ref('Vat นอก');
 
@@ -1954,20 +1964,6 @@ const changesumVat = () => {
     sumVat.value = false
   }
 };
-
-const quotations = computed(() => {
-  if (originQuotations.value) {
-    const result = 
-      chooseFilter.value === 'pending' ? originQuotations.value.filter( qt => !qt.status )
-      : chooseFilter.value === 'accepted' ? originQuotations.value.filter( qt => qt.status === 'accepted' )
-      : chooseFilter.value === 'rejected' ? originQuotations.value.filter( qt => qt.status === 'rejected' )
-      : chooseFilter.value === 'invoiced' ? originQuotations.value.filter( qt => qt.status === 'invoiced' )
-      : originQuotations.value
-    return result
-  } else {
-    return
-  }
-})
 
 const pushProduct = () => {
   prod.value.product_detail.push({})
@@ -2015,6 +2011,62 @@ const editProduct = (item) => {
   product.value.isVat = item.vat_price && item.vat_price > 0 ? true : false
   openProductForm.value = true
 }
+
+const getMonthString = (monIndex) => {
+  const thaiMonths = [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+  ]
+
+  return thaiMonths[monIndex]
+}
+
+const monthYear = computed(()=>{
+  const thisMonth = (month.value.getMonth()+1).toString().padStart(2, '0')
+  const thisYear = month.value.getFullYear()
+  const thisMonthYear = `${thisYear}${thisMonth}`
+  return thisMonthYear
+})
+
+const filterdQuotations = computed(()=>{
+  let result = []
+  if (!seeAll.value) {
+    result = originQuotations.value.filter( qt => 
+      qt.quotation.substring(2, 8) === monthYear.value
+    )
+  } else {
+    result = originQuotations.value
+  }
+
+  return result
+})
+
+const vatFilter = computed(()=>{
+  let result = []
+  const filter = curfilter.value
+  if ( filter === 'Vat' ) {
+    result = filterdQuotations.value.filter(qt=>qt.customer_branch.isVat)
+  } else if ( filter === 'ไม่มี Vat' ) {
+    result = filterdQuotations.value.filter(qt=>!qt.customer_branch.isVat)
+  }
+  else {
+    result = filterdQuotations.value
+  }
+
+  return result
+})
+
+const quotations = computed(() => {
+  
+    const result = 
+      chooseFilter.value === 'pending' ? vatFilter.value.filter( qt => !qt.status )
+      : chooseFilter.value === 'accepted' ? vatFilter.value.filter( qt => qt.status === 'accepted' )
+      : chooseFilter.value === 'rejected' ? vatFilter.value.filter( qt => qt.status === 'rejected' )
+      : chooseFilter.value === 'invoiced' ? vatFilter.value.filter( qt => qt.status === 'invoiced' )
+      : vatFilter.value
+    return result
+  
+})
 
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },

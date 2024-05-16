@@ -42,6 +42,12 @@
           />
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
+          <Calendar :disabled="seeAll" class="px-5" v-model="month" showIcon :showOnFocus="false" :showButtonBar="true" inputClass="p-2 bg-green-100 text-center w-24" inputId="buttondisplay" view="month" dateFormat="mm/yy" />
+          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-green-700 underline">{{ getMonthString(month.getMonth() + 1) }} {{ month.getFullYear() + 543 }}</span></p>
+          <div class="flex items-center border px-2 py-1 rounded bg-slate-100">
+            <Checkbox v-model="seeAll" inputId="dateFilter" name="dateFilter" :binary="true" />
+            <label for="dateFilter" class="ml-2"> ดูทั้งหมด </label>
+          </div>
         </template>
 
         <template #end>
@@ -77,6 +83,7 @@
         <template #header>
           <div class="flex flex-wrap gap-y-2 w-full gap-x-4 items-center justify-between">
             <h4 class="m-0">จัดการเอกสาร</h4>
+            <SelectButton v-model="curfilter" :options="['ทั้งหมด', 'Vat', 'ไม่มี Vat']" aria-labelledby="basic" />
             <span class="p-input-icon-right border rounded">
               <i class="pi pi-search" />
               <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหา..." />
@@ -2030,8 +2037,8 @@ const invoices = ref([]);
 
 onMounted(async () => {
   Documents.getReceipts().then((data) => {
-    receipts.value = data.data.reverse()
-    receipts.value.forEach(re => {
+    originalReceipts.value = data.data.reverse()
+    originalReceipts.value.forEach(re => {
       re.receipt = 
         re.isBillVat ? re.receiptVat
         : re.isBillVat === false ? re.receiptNoVat
@@ -2059,6 +2066,7 @@ const prod = ref({
   product_detail: []
 });
 
+const curfilter = ref("ทั้งหมด")
 const result = ref()
 const ref_paid = ref(false)
 const editReceiptRefInvoiceDialog = ref(false)
@@ -2086,7 +2094,7 @@ const dt = ref();
 const customer = ref({});
 const customers = ref();
 const selectedCustomer = ref();
-const receipts = ref();
+//const receipts = ref();
 const receiptDialog = ref(false);
 const deleteReceiptDialog = ref(false);
 const deleteReceiptsDialog = ref(false);
@@ -2108,6 +2116,53 @@ const isPrice = ref(true);
 const files = ref([]);
 const curPage = ref(1)
 const cur_period = ref(1)
+const seeAll = ref(false)
+const month = ref(new Date())
+const originalReceipts = ref([])
+
+const getMonthString = (monIndex) => {
+  const thaiMonths = [
+    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+  ]
+
+  return thaiMonths[monIndex]
+}
+
+const monthYear = computed(()=>{
+  const thisMonth = (month.value.getMonth()+1).toString().padStart(2, '0')
+  const thisYear = month.value.getFullYear()
+  const thisMonthYear = `${thisYear}${thisMonth}`
+  return thisMonthYear
+})
+
+const filterdReceipts = computed(()=>{
+  let result = []
+  if (!seeAll.value) {
+    result = originalReceipts.value.filter( re => 
+      re.receipt.substring(2, 8) === monthYear.value
+    )
+  } else {
+    result = originalReceipts.value
+  }
+
+  return result
+})
+
+const receipts = computed(()=>{
+  let result = []
+  const filter = curfilter.value
+  if ( filter === 'Vat' ) {
+    result = filterdReceipts.value.filter(re=>re.isVat)
+  } else if ( filter === 'ไม่มี Vat' ) {
+    result = filterdReceipts.value.filter(re=>!re.isVat)
+  }
+  else {
+    result = filterdReceipts.value
+  }
+
+  return result
+})
 
 // Create with reference invoice
 const refInvoice = ref();
@@ -2291,8 +2346,8 @@ const percents = ref([1, 3, 5]);
 
 const refresh = () => {
   Documents.getReceipts().then((data) => {
-    receipts.value = data.data.reverse()
-    receipts.value.forEach(re => {
+    originalReceipts.value = data.data.reverse()
+    originalReceipts.value.forEach(re => {
       re.receipt = 
         re.isBillVat ? re.receiptVat
         : re.isBillVat === false ? re.receiptNoVat
