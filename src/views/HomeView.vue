@@ -13,15 +13,15 @@
       </div>
   
       <div class="pt-5 h-full overflow-y-auto">
-        <div :class="table!=='quotation' ? 'hidden' : 'block'">
-          <QtTable @referQt="referQt" />
-        </div>
-        <div :class="table!=='invoice' ? 'hidden' : 'block'">
-          <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" />
-        </div>
-        <div :class="table!=='receipt' ? 'hidden' : 'block'">
-          <ReTable :ivref="ivref" />
-        </div>
+        
+          <QtTable @referQt="referQt" v-if="table==='quotation'" />
+        
+        
+          <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" v-if="table==='invoice'" />
+
+        
+          <ReTable :ivref="ivref" v-if="table==='receipt'" />
+        
       </div>
     </div>
   </div>
