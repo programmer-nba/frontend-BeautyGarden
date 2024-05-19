@@ -232,15 +232,23 @@
             </pre>
             <span
               :class="
-              totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) - (slotProps.data.paid || 0) <= 0
+              slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && (totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) <= 0
+              || !slotProps.data.customer_branch?.isVat && (totalPrice(slotProps.data) - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) <= 0
               ? 'text-green-700 font-bold bg-green-100 rounded px-2 py-0.5'
               : ''
               "
             >
-              {{ 
+              <!-- {{ 
                 Math.round(slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) <= 0
                 ? 'ครบแล้ว'
                 : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
+              }} -->
+              {{ 
+                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && (totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) <= 0
+                ? 'ครบแล้ว'
+                : !slotProps.data.customer_branch?.isVat && (totalPrice(slotProps.data) - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) <= 0
+                ? 'ครบแล้ว'
+                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
               }}
             </span>
           </template>
