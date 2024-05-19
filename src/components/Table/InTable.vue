@@ -180,7 +180,7 @@
         >
           <template #body="slotProps">
             <span 
-              v-if="slotProps.data.cur_period!==slotProps.data.end_period"
+              v-if="slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) > 0"
               :class="
               countdownToEndDate(slotProps.data.end_date).days > 0 ? 'font-bold' 
               : countdownToEndDate(slotProps.data.end_date).days === 0  ? 'text-orange-500 font-bold animate-bounce'
@@ -238,7 +238,7 @@
               "
             >
               {{ 
-                slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) <= 0
+                Math.round(slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) <= 0
                 ? 'ครบแล้ว'
                 : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
               }}

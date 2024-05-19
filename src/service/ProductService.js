@@ -1227,7 +1227,7 @@ export const Documents = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/quotation/getQuotationAll`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1244,7 +1244,7 @@ export const Documents = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/quotation/deleteQuotation/${id}`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1261,7 +1261,7 @@ export const Documents = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/quotation/deleteAllQuotation`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1279,7 +1279,7 @@ export const Documents = {
                     formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN,
+                        'auth-token': localStorage.getItem('ssgdToken'),
                         'Content-Type': 'multipart/form-data'
                     }
                 }
@@ -1298,7 +1298,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1316,7 +1316,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1336,7 +1336,7 @@ export const Documents = {
                 },
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1354,7 +1354,7 @@ export const Documents = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/receiptVat/getReceiptVatAll`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1371,7 +1371,7 @@ export const Documents = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/receiptVat/deleteReceiptVat/${id}`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1388,7 +1388,7 @@ export const Documents = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/receiptVat/deleteAllReceiptVat`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1406,7 +1406,7 @@ export const Documents = {
                     formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN,
+                        'auth-token': localStorage.getItem('ssgdToken'),
                         'Content-Type': 'multipart/form-data'
                     }
                 }
@@ -1425,7 +1425,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1443,7 +1443,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1461,7 +1461,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1479,7 +1479,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1497,7 +1497,7 @@ export const Documents = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/invoice/getInvoiceVatAll`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1514,7 +1514,7 @@ export const Documents = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/invoice/deleteInvoice/${id}`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1531,7 +1531,7 @@ export const Documents = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/invoice/deleteAllInvoice`,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1549,7 +1549,7 @@ export const Documents = {
                     formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN,
+                        'auth-token': localStorage.getItem('ssgdToken'),
                         'Content-Type': 'multipart/form-data'
                     }
                 }
@@ -1568,7 +1568,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
@@ -1587,7 +1587,7 @@ export const Documents = {
                 formData,
                 {
                     headers: {
-                        'auth-token': import.meta.env.VITE_TOKEN
+                        'auth-token': localStorage.getItem('ssgdToken')
                     }
                 }
             )
