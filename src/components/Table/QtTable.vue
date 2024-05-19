@@ -2091,9 +2091,14 @@ const refresh = () => {
   lastRefreshed.value = formattedTime;
 };
 
-const seeQuotation = (data) => {
-  openQuotation.value = true;
+const seeQuotation = async (data) => {
+  const qt = await Documents.getQuotation(data._id);
   selectedQuotation.value = data;
+  if (!qt) return;
+  selectedQuotation.value.product_detail.forEach(d =>{
+    d.product_logo = qt.data.product_detail.find(val => val._id === d._id)?.product_logo
+  })
+  openQuotation.value = true;
   console.log(data);
   const company = cpStore.myCompanies.find(
     item => item.taxnumber === data.customer_branch.taxnumber

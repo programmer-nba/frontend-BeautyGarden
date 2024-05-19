@@ -1239,6 +1239,23 @@ export const Documents = {
             return err
         }
     },
+    async getQuotation(id) {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/quotation/getQuotationBy/${id}`,
+                {
+                    headers: {
+                        'auth-token': localStorage.getItem('ssgdToken')
+                    }
+                }
+            )
+            console.log(response.data)
+            return response.data
+        }
+        catch (err) {
+            console.error(err)
+            return err
+        }
+    },
     async deleteQuotation(id) {
         try {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/quotation/deleteQuotation/${id}`,
