@@ -39,6 +39,11 @@ const router = createRouter({
       component: PayView
     },
     {
+      path: '/users',
+      name: 'users',
+      component: () => import('../views/UserView.vue')
+    },
+    {
       path: '/test',
       name: 'test',
       component: () => import('../views/TestView.vue')
