@@ -24,10 +24,14 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from "@/stores/auth";
 const router = useRouter();
 const route = useRoute();
+
+const auth = useAuthStore()
+const row = computed(()=> auth.decodedToken?.row)
 
 const items = ref([
     {
@@ -35,14 +39,17 @@ const items = ref([
         icon: 'pi pi-folder',
         command: () => {
             router.push('/');
-        }
+        },
+        disabled: row.value !== 'admin',
+        class: row.value !== 'admin' ? 'hidden' : ''
     },
     {
         label: 'โปรไฟล์',
         icon: 'pi pi-id-card',
         command: () => {
             router.push('/company');
-        }
+        },
+        class: row.value !== 'admin' ? 'hidden' : ''
     },
     {
         label: 'ลูกค้า',
@@ -58,7 +65,8 @@ const items = ref([
         command: () => {
             router.push('/suppliers');
         },
-        badge: 0
+        badge: 0,
+        class: row.value !== 'admin' ? 'hidden' : ''
     },
     {
         label: 'บันทึกค่าใช้จ่าย',
@@ -66,7 +74,17 @@ const items = ref([
         command: () => {
             router.push('/pays');
         },
-        badge: 0
+        badge: 0,
+        class: row.value !== 'admin' ? 'hidden' : ''
+    },
+    {
+        label: 'เพิ่มพนักงาน',
+        icon: 'pi pi-user',
+        command: () => {
+            router.push('/users');
+        },
+        badge: 0,
+        class: row.value !== 'admin' ? 'hidden' : ''
     }
 ]);
 

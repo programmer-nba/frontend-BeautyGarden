@@ -1,10 +1,14 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import decodeToken from '../functions/jwt';
 
 export const useAuthStore = defineStore('auth', () => {
-    const token = ref()
-
+    const token = ref(localStorage.getItem('ssgdToken') || null)
+    const decodedToken = ref(null)
+    console.log(token.value)
+    decodedToken.value = decodeToken(token.value)
+    console.log(decodedToken.value)
     const login = async (username, password) => {
         try {
             const response = await axios.post(
@@ -16,6 +20,8 @@ export const useAuthStore = defineStore('auth', () => {
             )
             if (response.data.status) {
                 token.value = response.data.token
+                decodedToken.value = decodeToken(token.value)
+                console.log(decodedToken.value)
                 localStorage.setItem('ssgdToken', token.value)
                 console.log(token.value)
             }
@@ -27,5 +33,5 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
     
-    return { login, token }
+    return { login, token, decodedToken}
 })

@@ -1,32 +1,45 @@
 <template>
-    <div>
-      <button @click="fetchUsers">Load Users</button>
-      <button @click="openCreateUserModal">Create User</button>
+    <header>
+      <div class="mb-10">
+        <AdminNavBar />
+      </div>
+    </header>
+    <div class="bg-white p-3">
+      <div class="flex items-center">
+        <Button label="เพิ่มผู้ดูเลลูกค้า" class="bg-sky-300 px-2 py-1" @click="openCreateUserModal"/>
+        <Button icon="pi pi-refresh" @click="fetchUsers"/>
+      </div>
   
       <div v-if="loading">Loading...</div>
-  
-      <ul v-if="!loading">
-        <li v-for="user in users" :key="user._id">
-          {{ user.member_username }}
-          <button @click="openEditUserModal(user)">Edit</button>
-          <button @click="confirmDeleteUser(user._id)">Delete</button>
-        </li>
-      </ul>
-  
-      <div v-if="openUser">
+
+      <div v-if="openUser" class="border my-3">
         <form @submit.prevent="onEdit ? editUser() : createNewUser()">
-          <input v-model="user.member_username" placeholder="username" required />
-          <input v-model="user.member_password" placeholder="password" required />
-          <button type="submit">{{ onEdit ? 'Update' : 'Create' }}</button>
-          <button @click="closeUserModal">Cancel</button>
+          <div class="flex items-center justify-between w-full px-2">
+            <input v-model="user.member_username" placeholder="username" type="string" required class="px-2 py-1 border rounded w-full" />
+            <input v-model="user.member_password" placeholder="password" type="password" required class="px-2 py-1 border rounded w-full" />
+          </div>
+          <div class="flex justify-center gap-x-3">
+            <button @click="closeUserModal">ยกเลิก</button>
+            <button class="font-bold bg-green-300 rounded px-2" type="submit">{{ onEdit ? 'อัพเดท' : 'สร้าง' }}</button>
+          </div>
         </form>
       </div>
+  
+      <ul v-if="!loading" class="w-full border">
+        <li v-for="(user, index) in users" :key="user._id" class="flex justify-between items-center w-full">
+          <p class="px-2">{{ index + 1 }}</p>
+          <p class="font-bold px-5 bg-yellow-300">{{ user.member_username }}</p>
+          <button @click="openEditUserModal(user)">แก้ไข</button>
+          <button class="text-red-500 px-2" @click="confirmDeleteUser(user._id)">ลบ</button>
+        </li>
+      </ul>
     </div>
   </template>
   
   <script setup>
   import { ref, onMounted } from 'vue'
   import { getUsers, createUser, deleteUser, updateUser, getUser } from '@/service/UserService'
+  import AdminNavBar from '@/components/NavBar/AdminNavBar.vue';
   
   const loading = ref(false)
   const users = ref([])

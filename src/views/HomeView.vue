@@ -5,7 +5,7 @@
         <AdminNavBar />
       </div>
     </header>
-    <div>
+    <div v-if="decodedToken?.row === 'admin'">
       <div class="w-full h-auto flex flex-1 gap-5 flex-wrap md:flex-nowrap lg:flex-nowrap">
         <QtHeadCard @choose="ontable('quotation')" :class="table==='quotation' ? 'shadow-lg shadow-yellow-200' : ''" />
         <InHeadCard @choose="ontable('invoice')" :class="table==='invoice' ? 'shadow-lg shadow-blue-200' : ''" />
@@ -23,6 +23,9 @@
           <ReTable :ivref="ivref" v-if="table==='receipt'" />
         
       </div>
+      <pre class="hidden">
+        {{ decodedToken }}
+      </pre>
     </div>
   </div>
 </template>
@@ -35,21 +38,26 @@ import QtHeadCard from '@/components/Card/QtHeadCard.vue'
 import QtTable from '@/components/Table/QtTable.vue'
 import InTable from '@/components/Table/InTable.vue'
 import ReTable from '@/components/Table/ReTable.vue'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 
 onMounted(()=>{
-  ssgdToken.value = localStorage.getItem("ssgdToken")
-  console.log(ssgdToken.value)
+  
   if (!ssgdToken.value) {
     router.push('/login')
+  } else if (decodedToken.value.row !== 'admin') {
+    router.push('/customers')
   }
+
 })
 
+const auth = useAuthStore()
+const decodedToken = computed(() => auth.decodedToken)
 const router = useRouter()
 const table = ref('quotation')
 
-const ssgdToken = ref(null)
+const ssgdToken = ref(localStorage.getItem('ssgdToken'))
 const refQt = ref()
 const referQt = (val) => {
   console.log(val)
