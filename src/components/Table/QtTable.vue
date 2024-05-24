@@ -180,8 +180,10 @@
         >
           <template #body="slotProps">
             {{ 
-              slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+              slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && !slotProps.data.discount > 0
               ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
+              : slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && slotProps.data.discount > 0
+              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (((slotProps.data.project?.total || 0))*0.07))
               : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
               ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
               : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
@@ -2411,7 +2413,8 @@ const totalVat = (product) => {
     return (item.vat_price || 0)*item.product_amount
   })
   const result = vat.length > 0 ? vat.reduce((a,b) => a + b) : 0
-  return result
+  const discountResult = (totalPrice(product)-product.discount)*0.07
+  return !product.discount > 0 ? result : discountResult
 }
 
 const confirmDeleteQuotation = (prod) => {

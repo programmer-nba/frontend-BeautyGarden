@@ -283,15 +283,27 @@
                       
                       <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
+                        <td v-if="!data.data.discount > 0" style="text-align: right"><span class="pr-3">{{ 
+                          formatCurrency(vat+(data.data.project.vat_price || 0)) 
+                        }}</span>บาท</td>
+                        <td v-else style="text-align: right"><span class="pr-3">{{ 
+                          formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07) 
+                        }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">
+                        <td v-if="!data.data.discount > 0" style="text-align: right"><span class="pr-3">
                           {{ 
                             formatCurrency(totalPrice+(data.data.project.total || 0)
                             -data.data.discount
                             +(vat+(data.data.project.vat_price || 0))) 
+                          }}
+                        </span>บาท</td>
+                        <td v-else style="text-align: right"><span class="pr-3">
+                          {{ 
+                            formatCurrency(totalPrice+(data.data.project.total || 0)
+                            -data.data.discount
+                            +((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07))
                           }}
                         </span>บาท</td>
                       </tr>
@@ -305,11 +317,18 @@
                           </div>
                         </td>
                         <td style="text-align: right">
-                          <strong class="pr-3" v-if="data.data?.project?.isVat">
+                          <strong class="pr-3" v-if="data.data?.project?.isVat && !data.data.discount > 0">
                             {{ 
                               formatCurrency(totalPrice+(data.data.project.total || 0)
                               -data.data.discount
                               +(vat+(data.data.project.vat_price || 0))) 
+                            }}
+                          </strong>
+                          <strong class="pr-3" v-else-if="data.data?.project?.isVat && data.data.discount > 0">
+                            {{ 
+                              formatCurrency(totalPrice+(data.data.project.total || 0)
+                              -data.data.discount
+                              +((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07)) 
                             }}
                           </strong>
                           <strong class="pr-3" v-else>
@@ -373,9 +392,11 @@
                 :style="{ backgroundColor: `#${data.color}` }">
                 <p class="font-bold">
                   ( {{ 
-                    data.data.customer_branch?.isVat
-                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat))
-                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount))
+                    data.data.customer_branch?.isVat && !data.data.discount > 0 ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat))?.replace('หนึ่งบาท', 'เอ็ดบาท')
+                    : data.data.customer_branch?.isVat && data.data.discount > 0 ? formatNumberToText((totalPrice+(data.data.project.total || 0)
+                    -data.data.discount
+                    +((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07)) )?.replace('หนึ่งบาท', 'เอ็ดบาท')
+                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount))?.replace('หนึ่งบาท', 'เอ็ดบาท')
                   }} )
                 </p>
               </div>
@@ -482,14 +503,14 @@ const vat = computed(()=>{
 
 const withHolding = computed(()=>{
   const percent = data.data.vat.percen_deducted
-  /*const price = 
-    data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
-    : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount*/
-
   const price = 
+    data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
+    : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
+
+ /* const price = 
     data.data.sumVat 
     ? totalPrice.value+(data.data.project.total || 0) -data.data.discount+(vat.value+(data.data.project.vat_price || 0))
-    : totalPrice.value+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat.value+(data.data.project.vat_price || 0)
+    : totalPrice.value+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat.value+(data.data.project.vat_price || 0)*/
 
   const result = percent > 0 ? price*percent/100 : 0
   return result
