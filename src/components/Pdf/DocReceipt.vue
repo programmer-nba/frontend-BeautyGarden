@@ -378,16 +378,16 @@
                     <tr class="flex justify-between w-full">
                       <td v-if="data.data.isVat" class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ (ก่อน Vat)</span></td>
                       <td v-else class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
-                      <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice) }}</span>บาท</td>
+                      <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)) }}</span>บาท</td>
                     </tr>
                     <tr class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ส่วนลด</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount*100/totalPrice) || 0 }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.discount) || 0 }}</span>บาท</td>
                     </tr>
                   
                     <tr class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคาหลังหักส่วนลด</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice-data.data.discount) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount) }}</span>บาท</td>
                     </tr>
                     <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>

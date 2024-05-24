@@ -482,14 +482,14 @@ const vat = computed(()=>{
 
 const withHolding = computed(()=>{
   const percent = data.data.vat.percen_deducted
-  const price = 
+  /*const price = 
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
-    : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
+    : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount*/
 
-  /* const price = 
+  const price = 
     data.data.sumVat 
     ? totalPrice.value+(data.data.project.total || 0) -data.data.discount+(vat.value+(data.data.project.vat_price || 0))
-    : totalPrice.value+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat.value+(data.data.project.vat_price || 0) */
+    : totalPrice.value+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat.value+(data.data.project.vat_price || 0)
 
   const result = percent > 0 ? price*percent/100 : 0
   return result

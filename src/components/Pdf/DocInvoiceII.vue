@@ -67,7 +67,7 @@
                   <br />
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">เลขที่ : </span>
-                    {{ data.data.selectedChild.code }}/{{ data.data.end_period }}
+                    {{ data.data.selectedChild.code.replace('undefined', '1') }}/{{ data.data.end_period }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่ Date : </span>
@@ -131,7 +131,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="data.data.project.name" class="border">
+                  <tr v-if="data.data.project.name && !data.data.childs.length" class="border">
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2 font-bold">
                         โครงการ project
@@ -190,7 +190,7 @@
                       </div>
                     </td>
                   </tr>
-                  <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
+                  <tr class="border" v-for="(product, index) in !data.data.childs.length ? data.data.product_detail : data.data.product_detail.slice(0, 1)" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       <p v-if="product.product_name">
                         {{ product.product_no }}

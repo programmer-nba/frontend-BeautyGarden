@@ -475,7 +475,7 @@ const withHolding = computed(()=>{
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
     : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
   const result = percent > 0 ? price*percent/100 : 0
-  return (percent/100)*data.data.amount_price
+  return result
 })
 
 const totalPrice = computed(()=>{
