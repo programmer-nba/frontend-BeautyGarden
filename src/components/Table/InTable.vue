@@ -271,6 +271,7 @@
                 icon="pi pi-plus-circle" 
                 outlined 
                 rounded
+                :loading="loading"
                 @click="openRefInvoiceHandle(slotProps.data)" 
               />
           </template>
@@ -283,6 +284,7 @@
                 v-tooltip.top="'ดูใบเสร็จ'"
                 icon="pi pi-dollar" 
                 outlined 
+                :loading="loading"
                 rounded
                 @click="openRefReceipt(slotProps.data)" />
               <div class="relative">
@@ -292,6 +294,7 @@
                   v-tooltip.top="'ปริ้นท์'"
                   icon="pi pi-file" 
                   outlined 
+                  :loading="loading"
                   rounded
                   @click="openMenus=slotProps.data._id"
                   @blur="blurMenu(slotProps.data._id)"
@@ -302,6 +305,7 @@
                   v-tooltip.top="'ปริ้นท์'"
                   icon="pi pi-file" 
                   outlined 
+                  :loading="loading"
                   rounded
                   @click="seeInvoice(slotProps.data)" 
                   
@@ -319,6 +323,7 @@
                 v-tooltip.top="'แก้ไข'"
                 icon="pi pi-pencil"
                 outlined
+                :loading="loading"
                 rounded
                 @click="editInvoice(slotProps.data)"
               />
@@ -327,6 +332,7 @@
                 v-tooltip.top="'ลบ'"
                 icon="pi pi-trash"
                 outlined
+                :loading="loading"
                 rounded
                 @click="confirmDeleteInvoice(slotProps.data)"
               />
@@ -2075,7 +2081,7 @@
         <InputText v-model="refInvoice.remark" inputId="refInvoice_remark" />
       </div>
     </div>
-    <Button v-if="!refInvoice.edit" :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createChild(selectedInvoice._id)" />
+    <Button v-if="!refInvoice.edit" :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createChild(selectedInvoice)" />
     <Button v-else :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึกการแก้ไข" @click="updateChild(refInvoice._id)" />
   </Dialog>
 
@@ -2143,7 +2149,9 @@ import axios from "axios"
 import { useConfirm } from "primevue/useconfirm";
 
 onMounted(async () => {
+  loading.value = true
   Documents.getInvoices().then((data) => {
+    loading.value = false
     originalInvoices.value = data.data.reverse()
     fetchChilds()
     //invoices.value = originalInvoices.value
@@ -2308,15 +2316,16 @@ const openRefInvoiceHandle = (data, edit) => {
   openRefInvoice.value = true
 }
 
-const createChild = async (refInvoice_id) => {
+const createChild = async (mainInvoice) => {
   loading.value = true
   const payload = {
-    refInvoice: refInvoice_id,
+    refInvoice: mainInvoice._id,
     price: refInvoice.value.price,
     start_date: refInvoice.value.start_date,
     end_date: refInvoice.value.end_date,
     remark: refInvoice.value.remark,
-    header: refInvoice.value.header
+    header: refInvoice.value.header,
+    period: mainInvoice.invoice_period.length + 1
   }
   try {
     const { data } = await axios.post(
@@ -2524,9 +2533,11 @@ const closeHandle = () => {
 }
 
 const refresh = () => {
+  loading.value = true
   Documents.getInvoices().then((data) => {
     originalInvoices.value = data.data.reverse()
     fetchChilds()
+    loading.value = false
     //invoices.value = originalInvoices.value
   });
 

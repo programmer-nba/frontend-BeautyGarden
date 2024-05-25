@@ -131,24 +131,30 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="data.data.project.name && !data.data.childs.length" class="border">
+                  <tr v-if="data.data.project.name" class="border">
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2 font-bold">
                         โครงการ project
                       </div>
                     </td>
-                    <td class=".td border" style="text-align: center">
+                    <td class=".td border" style="text-align: start">
                       <div class="flex justify-start font-bold h-full py-2">
                         {{ data.data.project.name }}
                       </div>
-                    </td>
-                    <td class=".td border" style="text-align: center">
-                      <div class="flex justify-center h-full py-2">
-                        {{ data.data.project.amount?.toLocaleString() }} {{ data.data.project.unit }}
+                      <div class="flex justify-start h-full">
+                        {{ data.data.selectedChild.remark }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
-                      <div class="flex justify-center h-full py-2">
+                      <div v-if="!data.data.selectedChild" class="flex justify-center h-full py-2">
+                        {{ data.data.project.amount?.toLocaleString() }} {{ data.data.project.unit }}
+                      </div>
+                      <div v-else class="flex justify-center items-center h-full py-2">
+                        {{ data.data.selectedChild.period }}
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: center">
+                      <div v-if="!data.data.selectedChild" class="flex justify-center h-full py-2">
                         <pre class="hidden">
                           {{
                             data.data.sumVat 
@@ -161,9 +167,14 @@
                           : formatCurrency(data.data.project?.price-data.data.project?.vat_price)
                         }}
                       </div>
+                      <div v-else class="flex items-center justify-center h-full py-2">
+                        {{ 
+                          formatCurrency(data.data.selectedChild.price)
+                        }}
+                      </div>
                     </td>
                     <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: center">
-                      <div class="flex justify-center h-full py-2">
+                      <div v-if="!data.data.selectedChild" class="flex justify-center h-full py-2">
                         <pre class="hidden">{{ 
                             data.data.project.isVat && data.data.sumVat 
                             ? data.data.project.vat_price = data.data.project.total*0.07 
@@ -173,6 +184,9 @@
                           }}
                         </pre>
                         {{ data.data.project.isVat ? formatCurrency(data.data.project.vat_price) : '0.00' }}
+                      </div>
+                      <div v-else class="flex justify-center h-full py-2">
+                        {{ formatCurrency(data.data.selectedChild.price) }}
                       </div>
                     </td>
                     <pre class="hidden">
@@ -185,8 +199,11 @@
                       }}
                     </pre>
                     <td class=".td border" style="text-align: center">
-                      <div class="flex justify-center h-full py-2">
+                      <div v-if="!data.data.selectedChild" class="flex justify-center h-full py-2">
                         {{ formatCurrency(data.data.project.total_net) }}
+                      </div>
+                      <div v-else>
+                        {{ formatCurrency(data.data.selectedChild.price) }}
                       </div>
                     </td>
                   </tr>
