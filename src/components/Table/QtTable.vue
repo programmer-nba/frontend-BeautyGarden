@@ -40,7 +40,6 @@
           </div>
         </template>
         <template #end>
-          
           <Button
             label="ดาวน์โหลดไฟล์ excel"
             icon="pi pi-upload"
@@ -99,9 +98,7 @@
               <span class="bg-yellow-500 w-fit px-2 rounded-full text-white text-center">{{ curPage }}</span>
             </p>
           </div>
-          
         </template>
-
         <template #empty>
           <div class="w-full flex justify-center items-center py-48 border-t border-b">
             <p class="tex-lg">ไม่มีข้อมูล</p>
@@ -170,7 +167,6 @@
             <p class="text-xs">{{ formatDateRef(slotProps.data.end_date) }}</p>
           </template>
         </Column>
-
         <Column
           field="total"
           class="border-b"
