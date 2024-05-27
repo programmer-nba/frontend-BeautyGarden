@@ -2240,7 +2240,7 @@ const monthYear = computed(()=>{
 const filterdInvoices = computed(()=>{
   let result = []
   if (!seeAll.value) {
-    result = originalInvoices.value.filter( inv => 
+    result = originalInvoices.value?.filter( inv => 
       inv.invoice.substring(2, 8) === monthYear.value
     )
   } else {
@@ -2290,7 +2290,7 @@ const fetchChilds = async () => {
     if (data.status) {
       console.log(data.data)
       childs.value = data.data
-      originalInvoices.value.forEach(inv => {
+      originalInvoices.value?.forEach(inv => {
         inv.childs = childs.value.filter( ch => ch.refInvoice === inv._id )
       })
     }
@@ -2535,7 +2535,7 @@ const closeHandle = () => {
 const refresh = () => {
   loading.value = true
   Documents.getInvoices().then((data) => {
-    originalInvoices.value = data.data.reverse()
+    originalInvoices.value = data.data?.reverse()
     fetchChilds()
     loading.value = false
     //invoices.value = originalInvoices.value
@@ -3310,7 +3310,7 @@ const createNextInvoice = async () => {
     openNextInvoiceDialog.value = false
     loading.value = false
     Documents.getInvoices().then((data) => {
-      originalInvoices.value = data.data.reverse()
+      originalInvoices.value = data.data?.reverse()
       //invoices.value = originalInvoices.value
     })
   } else {
