@@ -210,13 +210,25 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{ 
-              slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
-              : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
-              : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
-            }}
+            <div v-if="!slotProps.data.discount > 0">
+              {{ 
+                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
+                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
+                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
+              }}
+            </div>
+            <div v-else>
+              {{ 
+                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + ((totalPrice(slotProps.data) - slotProps.data.discount)*0.07) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
+                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
+                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
+              }}
+            </div>
+            
           </template>
         </Column>
         <Column
@@ -230,27 +242,42 @@
             <pre class="hidden">
               {{ slotProps.data.project.vat_price = slotProps.data.isVat ? slotProps.data.project?.vat_price : 0 }}
             </pre>
-            <span
-              :class="
-              slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && (totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) <= 0
-              || !slotProps.data.customer_branch?.isVat && (totalPrice(slotProps.data) - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) <= 0
-              ? 'text-green-700 font-bold bg-green-100 rounded px-2 py-0.5'
-              : ''
-              "
+            <div v-if="!slotProps.data.discount > 0"
+              :class="[
+                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0))) === '0.00' 
+                ? 'bg-green-200 font-bold'
+                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) === '0.00')
+                ? 'bg-green-200 font-bold'
+                : 'font-bold'
+              ]"
             >
-              <!-- {{ 
-                Math.round(slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) <= 0
-                ? 'ครบแล้ว'
-                : formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
-              }} -->
               {{ 
-                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && (totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) <= 0
-                ? 'ครบแล้ว'
-                : !slotProps.data.customer_branch?.isVat && (totalPrice(slotProps.data) - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) <= 0
-                ? 'ครบแล้ว'
+                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
+                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
                 : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
               }}
-            </span>
+            </div>
+            <div v-else
+              :class="[
+                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+                && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + ((totalPrice(slotProps.data) - slotProps.data.discount)*0.07) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0))) === '0.00'
+                ? 'bg-green-200 font-bold'
+                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
+                && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0))) === '0.00' 
+                ? 'bg-green-200 font-bold'
+                : 'font-bold' 
+              ]"
+            >
+              {{ 
+                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + ((totalPrice(slotProps.data) - slotProps.data.discount)*0.07) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
+                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
+                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
+                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
+              }}
+            </div>
           </template>
         </Column>
         
@@ -288,7 +315,7 @@
                 rounded
                 @click="openRefReceipt(slotProps.data)" />
               <div class="relative">
-                <Button
+                <!-- <Button
                   v-if="slotProps.data.status.length > 0 && slotProps.data.end_period > 1"
                   class="text-blue-600 hidden hover:bg-blue-100 focus:bg-blue-100" 
                   v-tooltip.top="'ปริ้นท์'"
@@ -298,7 +325,7 @@
                   rounded
                   @click="openMenus=slotProps.data._id"
                   @blur="blurMenu(slotProps.data._id)"
-                />
+                /> -->
                 <Button
                   
                   class="text-blue-600 hover:bg-blue-100" 
@@ -307,16 +334,16 @@
                   outlined 
                   :loading="loading"
                   rounded
-                  @click="seeInvoice(slotProps.data)" 
+                  @click.prevent="seeInvoice(slotProps.data)" 
                   
                 />
-                <div v-show="openMenus===slotProps.data._id" class="absolute -top-12 bg-black text-white z-10 shadow-lg flex flex-col divide-y-2 w-[100px] overflow-x-hidden">
+                <!-- <div v-show="openMenus===slotProps.data._id" class="absolute -top-12 bg-black text-white z-10 shadow-lg flex flex-col divide-y-2 w-[100px] overflow-x-hidden">
                   <p v-for="i in slotProps.data.end_period" :key="i" class="py-1 px-2 cursor-pointer hover:bg-white hover:text-black duration-300 ease-in-out"
                   @click="seeInvoiceRef(slotProps.data, i)"
                   @mouseover="hoverMenu=true"
                   @mouseout="hoverMenu=false"
                   >งวดที่ {{ i }}</p>
-                </div>
+                </div> -->
               </div>
               <Button
                 class="text-yellow-600 hover:bg-orange-100"
@@ -325,7 +352,7 @@
                 outlined
                 :loading="loading"
                 rounded
-                @click="editInvoice(slotProps.data)"
+                @click.prevent="editInvoice(slotProps.data)"
               />
               <Button
                 class="text-red-600 hover:bg-red-100"
@@ -2469,11 +2496,11 @@ const changesumVat = () => {
   }
 };
 
-watch(() => prod.value.project.isVat, (newValue, oldValue) => {
+/* watch(() => prod.value.project.isVat, (newValue, oldValue) => {
   if(!newValue) {
     prod.value.project.vat_price = 0
   }
-})
+}) */
 
 const reStore = useInvoiceStore()
 const cpStore = useCompanyStore()
@@ -2600,14 +2627,14 @@ const seeInvoice = (data) => {
   openInvoice.value = true;
   selectedInvoice.value = data;
   const company = cpStore.myCompanies.find(
-    item => item.taxnumber === data.customer_branch.taxnumber
+    item => item.taxnumber === selectedInvoice.value.customer_branch.taxnumber
   )
 
   let customered = customers.value.find(
-    item => item.customer_name === data.customer_detail?.customer_name
+    item => item.customer_name === selectedInvoice.value.customer_detail?.customer_name
   );
   if(!customered) {
-    customered = data.customer_detail
+    customered = selectedInvoice.value.customer_detail
   }
   selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber
 
