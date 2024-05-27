@@ -379,7 +379,7 @@
                 </td>
                 <td style="text-align: left">
                     <span class="pl-5 font-semibold">
-                      มูลค่า ภาษีหัก ณ. ที่จ่าย ({{ data.data.vat?.percen_deducted }}%) <span class="px-2">{{ formatCurrency(withHolding) }}</span> บาท
+                      มูลค่า ภาษีหัก ณ. ที่จ่าย ({{ data.data.total_products?.percen_payment }}%) <span class="px-2">{{ formatCurrency(withHolding) }}</span> บาท
                     </span>
                 </td>
               </tr>
@@ -470,7 +470,7 @@ const vat = computed(()=>{
 })
 
 const withHolding = computed(()=>{
-  const percent = data.data.vat.percen_deducted
+  const percent = data.data.total_products.percen_payment
   const price = 
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
     : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount

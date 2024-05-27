@@ -172,7 +172,7 @@
         >
           <template #body="slotProps">
             <span v-if="slotProps.data.amount_price >= 0 && slotProps.data.invoice && slotProps.data.amount_price > slotProps.data.net && slotProps.data.net > 0">
-              {{ formatCurrency(slotProps.data.net) }}
+              {{ formatCurrency(slotProps.data.amount_price) }}
             </span>
             <span v-else-if="slotProps.data.amount_price >= 0 && slotProps.data.invoice && slotProps.data.amount_price <= slotProps.data.net && slotProps.data.net >= 0">
               {{ formatCurrency(slotProps.data.amount_price) }}

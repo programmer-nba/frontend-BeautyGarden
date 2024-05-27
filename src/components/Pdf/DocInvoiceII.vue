@@ -142,7 +142,7 @@
                         {{ data.data.project.name }}
                       </div>
                       <div class="flex justify-start h-full">
-                        {{ data.data.selectedChild.remark }}
+                        {{ data.data.selectedChild.remark || "-" }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
@@ -207,7 +207,7 @@
                       </div>
                     </td>
                   </tr>
-                  <tr class="border" v-for="(product, index) in !data.data.childs.length ? data.data.product_detail : data.data.product_detail.slice(0, 1)" :key="index">
+                  <tr v-if="!data.data.childs.length" class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       <p v-if="product.product_name">
                         {{ product.product_no }}
