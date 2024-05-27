@@ -2152,7 +2152,7 @@ onMounted(async () => {
   loading.value = true
   Documents.getInvoices().then((data) => {
     loading.value = false
-    originalInvoices.value = data.data.reverse()
+    originalInvoices.value = data.data?.reverse()
     fetchChilds()
     //invoices.value = originalInvoices.value
   });
