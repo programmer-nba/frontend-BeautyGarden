@@ -13,16 +13,17 @@
       </div>
   
       <div class="pt-5 h-full overflow-y-auto">
-        
-          <QtTable @referQt="referQt" v-if="table==='quotation'" />
-        
-        
-          <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" v-if="table==='invoice'" />
-
-        
-          <ReTable :ivref="ivref" v-if="table==='receipt'" />
-        
+        <div :class="table!=='quotation' ? 'hidden' : ''">
+          <QtTable @referQt="referQt" />
+        </div>
+        <div :class="table!=='invoice' ? 'hidden' : ''">
+          <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" />
+        </div>
+        <div :class="table!=='receipt' ? 'hidden' : ''">
+          <ReTable :ivref="ivref" />
+        </div>
       </div>
+      
       <pre class="hidden">
         {{ decodedToken }}
       </pre>
