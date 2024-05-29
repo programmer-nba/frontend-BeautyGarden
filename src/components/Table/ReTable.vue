@@ -1869,9 +1869,9 @@
         {{ refInvoice?.sumVat }}
         {{refInvoice?.total}}/
         {{refInvoice?.discount}}/
-        {{refInvoice?.project.total}} =
-        {{ net_raw = (refInvoice?.total + refInvoice?.project.total) - refInvoice?.discount }}
-        {{ prod_vat = calVat(refInvoice?.product_detail) + ((refInvoice?.project.total || 0)*0.07) }}
+        {{refInvoice?.project?.total}} =
+        {{ net_raw = (refInvoice?.total + refInvoice?.project?.total) - refInvoice?.discount }}
+        {{ prod_vat = calVat(refInvoice?.product_detail) + ((refInvoice?.project?.total || 0)*0.07) }}
         {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw + prod_vat : net_raw }}
       </pre>
       <div v-if="invoices && invoices.length > 0" class="card">
@@ -2173,10 +2173,7 @@ const { ivref } = defineProps(["ivref"])
 const invref = ref(ivref)
 const receiptRefInvoiceDialog = ref(false);
 watchEffect(()=> {
-  /* if (ivref) {
-    receiptRefInvoiceDialog.value = true
-  } */
-  console.log(invref.value)
+  console.log(ivref)
   console.log(invref.value?.split('-')[0])
   if (invref.value && invref.value?.includes('-')) {
     refInvoice.value = invoices.value.find(i=>i.invoice===invref.value.split('-')[0])
@@ -2187,7 +2184,20 @@ watchEffect(()=> {
     cur_period.value = 1
     receiptRefInvoiceDialog.value = true
   }
-  
+})
+
+watch((invref), (newVal, oldVal) => {
+  if (newVal !== oldVal) {
+    if (invref.value && invref.value?.includes('-')) {
+    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value.split('-')[0])
+    cur_period.value = parseInt(invref.value.split('-')[1])
+    receiptRefInvoiceDialog.value = true
+  } else if (invref.value && !invref.value?.includes('-')) {
+    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value)
+    cur_period.value = 1
+    receiptRefInvoiceDialog.value = true
+  }
+  }
 })
 
 watch(() => dt?.value?.d_first, (newVal, oldVal) => {

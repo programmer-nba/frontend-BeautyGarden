@@ -19,8 +19,8 @@
         <div :class="table!=='invoice' ? 'hidden' : ''">
           <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" />
         </div>
-        <div :class="table!=='receipt' ? 'hidden' : ''">
-          <ReTable :ivref="ivref" />
+        <div>
+          <ReTable v-if="table==='receipt'" :ivref="ivref" />
         </div>
       </div>
       
