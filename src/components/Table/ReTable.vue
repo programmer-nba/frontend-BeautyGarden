@@ -1860,20 +1860,21 @@
         />
       </div>
       <p class="p-2 text-center">{{ ivref }}</p>
+      <pre class="my-2 border">
+        "สำหรับตรวจสอบ"
+        หัวบิล VAT : {{ refInvoice?.isVat }}
+        ประเภท VAT : {{ refInvoice?.sumVat ? 'vat นอก' : 'vat ใน' }}
+        ราคาโปรเจค : {{refInvoice?.project?.total}}
+        ราคาสินค้า/บริการ : {{refInvoice?.total}}
+        ส่วนลด : {{refInvoice?.discount}}
+        ราคารวม (ก่อน VAT) : {{ net_raw = (refInvoice?.total + refInvoice?.project?.total) - refInvoice?.discount }}
+        VAT 7% : {{ prod_vat = Math.round(calVat(refInvoice?.product_detail) + ((refInvoice?.project?.vat_price || 0))) }}
+        ราคาสุทธิ : {{ result = refInvoice?.sumVat && refInvoice?.isVat ? net_raw + prod_vat : net_raw }}
+      </pre>
       <div class="flex justify-center items-center gap-x-2">
         <label>งวดที่</label>
         <input type="number" v-model="cur_period" class="px-2 py-1 border rounded text-center w-fit max-w-[5rem]">
       </div>
-      <pre class="hidden">
-        {{ refInvoice?.isVat }}
-        {{ refInvoice?.sumVat }}
-        {{refInvoice?.total}}/
-        {{refInvoice?.discount}}/
-        {{refInvoice?.project?.total}} =
-        {{ net_raw = (refInvoice?.total + refInvoice?.project?.total) - refInvoice?.discount }}
-        {{ prod_vat = calVat(refInvoice?.product_detail) + ((refInvoice?.project?.total || 0)*0.07) }}
-        {{ result = refInvoice?.isVat && refInvoice?.sumVat ? net_raw + prod_vat : net_raw }}
-      </pre>
       <div v-if="invoices && invoices.length > 0" class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
           <p>วันที่ออกใบเสร็จ</p>
@@ -2371,7 +2372,7 @@ const refresh = () => {
         : re.isVat && !re.sumVat ? totalVat(re)
         : 0
 
-      re.vat.percen_deducted = 
+      re.vat.total_deducted = 
         re.vat.percen_deducted ? (re.vat.percen_deducted/100)*re.amount_price
         : 0
     })
@@ -2536,8 +2537,8 @@ const formatDateRef = (isoDateString) => {
 };
 
 const withholdingPrice = computed(() => {
-  if (isWithholding.value && sumVat) {
-    const result = (netVat.value * withholdingPercent.value) / 100;
+  if (isWithholding.value && sumVat.value) {
+    const result = (netPrices.value * withholdingPercent.value) / 100;
     return result;
   } else {
     return 0;
@@ -2596,22 +2597,10 @@ const sumProductsPrice = computed(() => {
   }
 });
 
-const notSumVatsumProductsPrice = computed(()=>{
-  if (selectedCompany.value && selectedCompany.value.isVat && sumVat.value) {
-    const result = sumProductsPrice.value
-    return result;
-  } else if (selectedCompany.value && selectedCompany.value.isVat && !sumVat.value){
-    const result = sumProductsPrice.value
-    return result;
-  } else {
-    return 0;
-  }
-})
-
 const netPrices = computed(() => {
-  if (project.value.isVat && sumVat.value) {
+  if (receipt.value.isVat && sumVat.value) {
     return (sumProductsPrice.value+project.value.total) - discount.value;
-  } else if (project.value.isVat && !sumVat.value){
+  } else if (receipt.value.isVat && !sumVat.value){
     return (sumProductsPrice.value+project.value.total-project.value.vat_price) - discount.value;
   } else {
     return (sumProductsPrice.value+project.value.total) - discount.value;
@@ -2627,10 +2616,10 @@ const vat = computed(() => {
 });
 
 const netVat = computed(() => {
-  if (project.value.isVat && sumVat.value) {
+  if (receipt.value.isVat && sumVat.value) {
     const result = vat.value + netPrices.value + project.value.vat_price;
     return result;
-  } else if (project.value.isVat && !sumVat.value){
+  } else if (receipt.value.isVat && !sumVat.value){
     const result = vat.value + netPrices.value + project.value.vat_price;
     return result;
   } else {
