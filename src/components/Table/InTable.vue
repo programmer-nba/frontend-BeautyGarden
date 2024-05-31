@@ -3203,6 +3203,7 @@ const editingInvoice = async () => {
     },
     cur_period: cur_period.value,
     credit: credit.value,
+    end_period: end_period.value,
     transfer: transfer.value,
     footer1: prod.value.footer1,
     footer2: prod.value.footer2

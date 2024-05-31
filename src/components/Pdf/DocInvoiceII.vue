@@ -274,6 +274,84 @@
                     </td>
                     
                   </tr>
+                  <tr v-if="data.data.childs.length" class="border" v-for="(product, index) in data.data.product_detail" :key="index">
+                    <td class=".td flex justify-center" style="text-align: center">
+                      <p v-if="product.product_name">
+                        {{ product.product_no }}
+                      </p>
+                      <p v-else>
+                        
+                      </p>
+                    </td>
+                    <td class=".td border">
+                      <div class="flex flex-col">
+                        <article class="text-wrap w-[350px]">
+                            <p class="pb-3 font-bold hidden">{{ product.product_name }}</p>
+                            <p class="hidden" v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
+                              {{ p }}
+                            </p>
+                            <p class="py-2" style="text-align: left">
+                              {{ data.data.selectedChild.remark }}
+                            </p>
+                            <div class="hidden flex-wrap">
+                              <img 
+                              v-for="(img, imgIndex) in product.product_logo" :key="imgIndex"
+                              class="w-[100px] object-contain" 
+                              :src="`${img}`" 
+                              :alt="imgIndex" 
+                              />
+                            </div>
+                        </article>
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: center">
+                      <div class="flex justify-center h-full py-2"
+                        :class="product.product_amount < 1 ? 'hidden' : ''"
+                      >
+                        {{ data.data.selectedChild.period }}
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: right">
+                      <div v-if="data.data.customer_branch?.isVat && vat > 0" class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      >
+                        <!-- {{vat}} -->
+                        <!-- {{ formatCurrency(data.data.selectedChild.price*100/107) }} -->
+                        {{ formatCurrency(vat) }}
+                      </div>
+                      <div v-else class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      >
+                        {{ formatCurrency(data.data.selectedChild.price) }}
+                      </div>
+                    </td>
+                    <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: right">
+                      <div class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      v-if="!data.data.sumVat && vat > 0"
+                      >
+                        {{ 
+                          formatCurrency(data.data.selectedChild.price*7/107)
+                        }}
+                      </div>
+                      <div class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      v-else
+                      >
+                        {{ 
+                          formatCurrency(vat)
+                        }}
+                      </div>
+                    </td>
+                    <td class=".td border" style="text-align: right">
+                      <div class="flex justify-center h-full py-2"
+                      :class="product.product_price < 1 ? 'hidden' : ''"
+                      >
+                        {{ formatCurrency(data.data.selectedChild.price) }}
+                      </div>
+                    </td>
+                    
+                  </tr>
                 </tbody>
               </table>
               <div class="flex w-full justify-between total border-r border-l border-b">
@@ -304,8 +382,9 @@
                       <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
                       <td class="" style="text-align: right"><span class="pr-3">
                         {{ 
-                          data.data.customer_branch?.isVat ? formatCurrency(data.data.selectedChild.price*100/107) : formatCurrency(data.data.selectedChild.price) 
-                        }}</span>บาท</td>
+                          data.data.customer_branch?.isVat && vat > 0 ? formatCurrency(data.data.selectedChild.price*100/107) : formatCurrency(data.data.selectedChild.price) 
+                        }}</span>บาท
+                      </td>
                     </tr>
                     
                     <tr class="hidden justify-between w-full pb-1">
@@ -321,7 +400,8 @@
                     
                     <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                       <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.selectedChild.price*7/107) }}</span>บาท</td>
+                      <td style="text-align: right" v-if="vat > 0"><span class="pr-3">{{ formatCurrency(data.data.selectedChild.price*7/107) }}</span>บาท</td>
+                      <td style="text-align: right" v-else><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
                     </tr>
 
                     <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
