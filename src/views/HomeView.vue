@@ -16,8 +16,8 @@
         <div :class="table!=='quotation' ? 'hidden' : ''">
           <QtTable @referQt="referQt" />
         </div>
-        <div :class="table!=='invoice' ? 'hidden' : ''">
-          <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" />
+        <div>
+          <InTable :refQt="refQt" @refIv="refIv" @chooseRef="ontable('receipt')" v-if="table==='invoice'" />
         </div>
         <div>
           <ReTable v-if="table==='receipt'" :ivref="ivref" />
