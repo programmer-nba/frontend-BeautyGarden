@@ -274,7 +274,7 @@
                     </td>
                     
                   </tr>
-                  <tr v-if="data.data.childs.length" class="border" v-for="(product, index) in data.data.product_detail" :key="index">
+                  <tr v-if="data.data.childs.length" class="border hidden" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       <p v-if="product.product_name">
                         {{ product.product_no }}
@@ -350,7 +350,6 @@
                         {{ formatCurrency(data.data.selectedChild.price) }}
                       </div>
                     </td>
-                    
                   </tr>
                 </tbody>
               </table>

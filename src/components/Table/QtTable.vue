@@ -1874,7 +1874,7 @@ const qtStore = useQuotationStore();
 const cpStore = useCompanyStore();
 
 onMounted(async () => {
-  Documents.getQuotations().then((data) => (originQuotations.value = data.data.reverse()));
+  Documents.getQuotations().then((data) => (originQuotations.value = data.data?.reverse()));
   Customers.getCustomers().then((data) => (customers.value = data.data));
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
@@ -2077,7 +2077,7 @@ const percents = ref([1, 3, 5]);
 const refresh = () => {
   loading.value = true
   Documents.getQuotations().then( data => {
-    originQuotations.value = data.data.reverse()
+    originQuotations.value = data.data?.reverse()
     loading.value = false
   });
 
