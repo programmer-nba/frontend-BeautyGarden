@@ -207,7 +207,7 @@
                       </div>
                     </td>
                   </tr>
-                  <tr v-if="!data.data.childs.length" class="border" v-for="(product, index) in data.data.product_detail" :key="index">
+                  <tr v-if="data.data.childs.length === 0" class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       <p v-if="product.product_name">
                         {{ product.product_no }}
@@ -274,20 +274,17 @@
                     </td>
                     
                   </tr>
-                  <tr v-if="data.data.childs.length" class="border hidden" v-for="(product, index) in data.data.product_detail" :key="index">
+                  <tr v-if="data.data.childs.length > 0" class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
-                      <p v-if="product.product_name">
-                        {{ product.product_no }}
-                      </p>
-                      <p v-else>
-                        
+                      <p>
+                        {{ data.data.selectedChild.period  }}
                       </p>
                     </td>
                     <td class=".td border">
                       <div class="flex flex-col">
                         <article class="text-wrap w-[350px]">
-                            <p class="pb-3 font-bold hidden">{{ product.product_name }}</p>
-                            <p class="hidden" v-for="(p, pindex) in product.product_text" style="text-align: left" :key="pindex">
+                            <p class="pb-3 font-bold hidden">{{ product?.product_name }}</p>
+                            <p class="hidden" v-for="(p, pindex) in product?.product_text" style="text-align: left" :key="pindex">
                               {{ p }}
                             </p>
                             <p class="py-2" style="text-align: left">
@@ -295,7 +292,7 @@
                             </p>
                             <div class="hidden flex-wrap">
                               <img 
-                              v-for="(img, imgIndex) in product.product_logo" :key="imgIndex"
+                              v-for="(img, imgIndex) in product?.product_logo" :key="imgIndex"
                               class="w-[100px] object-contain" 
                               :src="`${img}`" 
                               :alt="imgIndex" 
