@@ -185,8 +185,8 @@
                         </pre>
                         {{ data.data.project.isVat ? formatCurrency(data.data.project.vat_price) : '0.00' }}
                       </div>
-                      <div v-else class="flex justify-center h-full py-2">
-                        {{ formatCurrency(data.data.selectedChild.price) }}
+                      <div v-else class="flex justify-center items-center h-full py-2">
+                        {{ formatCurrency(vat) }}
                       </div>
                     </td>
                     <pre class="hidden">
