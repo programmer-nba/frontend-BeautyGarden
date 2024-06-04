@@ -365,7 +365,8 @@
                   <tbody>
                     
                     <tr class="flex justify-between w-full pb-1">
-                      <td class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
+                      <td v-if="data.data?.customer_branch?.isVat" class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ (ก่อน Vat)</span></td>
+                      <td v-else class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
                       <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     <tr class="flex justify-between w-full pb-1">
@@ -382,7 +383,7 @@
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
-                      <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
+                      <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวมสุทธิ</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+((data.data.project.total || 0)-(data.data.project.vat_price || 0))-data.data.discount+vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
                     </tr>
                     

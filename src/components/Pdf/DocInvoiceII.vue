@@ -314,7 +314,7 @@
                       >
                         <!-- {{vat}} -->
                         <!-- {{ formatCurrency(data.data.selectedChild.price*100/107) }} -->
-                        {{ formatCurrency(vat) }}
+                        {{ formatCurrency(data.data.selectedChild.price-(data.data.selectedChild.price*7/107)) }}
                       </div>
                       <div v-else class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
