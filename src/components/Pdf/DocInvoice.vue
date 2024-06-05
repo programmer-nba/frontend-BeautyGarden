@@ -411,8 +411,8 @@
                 <p v-if="!data.data.discount > 0" class="font-bold">
                   ( {{ 
                     data.data.customer_branch?.isVat
-                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat) - data.data.paid)
-                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount) - data.data.paid)
+                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat) - data.data.paid).replace('หนึ่งบาท', 'เอ็ดบาท')
+                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount) - data.data.paid).replace('หนึ่งบาท', 'เอ็ดบาท')
                   }} )
                 </p>
                 <p v-else class="font-bold">

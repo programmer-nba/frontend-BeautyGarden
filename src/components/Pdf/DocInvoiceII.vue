@@ -519,15 +519,15 @@
               <p class="font-bold hidden">
                 ( {{ 
                   data.data.customer_branch?.isVat
-                  ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat)-data.data.prev_paid) + 'ถ้วน' 
-                  : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.prev_paid) + 'ถ้วน'
+                  ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat)-data.data.prev_paid).replace('หนึ่งบาท', 'เอ็ดบาท') + 'ถ้วน' 
+                  : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount)-data.data.prev_paid).replace('หนึ่งบาท', 'เอ็ดบาท') + 'ถ้วน'
                 }} )
               </p>
               <p class="font-bold">
                 ( {{ 
                   !formatNumberToText(data.data.selectedChild.price).includes('สตางค์')
-                  ? formatNumberToText(data.data.selectedChild.price) + 'ถ้วน'
-                  : formatNumberToText(data.data.selectedChild.price)
+                  ? formatNumberToText(data.data.selectedChild.price).replace('หนึ่งบาท', 'เอ็ดบาท') + 'ถ้วน'
+                  : formatNumberToText(data.data.selectedChild.price).replace('หนึ่งบาท', 'เอ็ดบาท')
                 }} )
               </p>
           </div>
