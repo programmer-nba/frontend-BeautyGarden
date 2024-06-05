@@ -2579,7 +2579,10 @@ const refresh = () => {
 const referQuotation = async () => {
   if ( refQuotation.value && refQuotation.value.customer_detail ) {
     console.log(refQuotation.value)
-    customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail.customer_name)
+    customer.value = customers.value.find((item)=>item?.customer_name===refQuotation.value.customer_detail?.customer_name)
+    if(!customer.value) {
+      customer.value = refQuotation.value.customer_detail
+    }
     selectedCustomer.value = customer.value
     selectedCustomer.value.customer_contact_sign = refQuotation.value.customer_detail.customer_contact_sign
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.taxnumber === refQuotation.value.customer_branch.taxnumber)
@@ -2604,7 +2607,10 @@ const referQuotationInput = async () => {
     prod.value.project = {...refQuotation.value.project}
     console.log('rfQT', refQuotation.value)   
     console.log('customers', customers.value)
-    customer.value = customers.value.find((item)=>item.customer_name===refQuotation.value.customer_detail?.customer_name)
+    customer.value = customers.value.find((item)=>item?.customer_name===refQuotation.value.customer_detail?.customer_name)
+    if(!customer.value) {
+      customer.value = refQuotation.value.customer_detail
+    }
     selectedCustomer.value = customer.value
     selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
     company.value = selectedCompany.value
