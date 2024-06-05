@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "deploy:production": "scp -r dist/* root@143.198.204.72:/var/www/ssgd.online",
     "deploy:test": "scp -r dist/* nbadigital@147.50.183.54:/var/www/ssgd.online"
   },
   "dependencies": {
