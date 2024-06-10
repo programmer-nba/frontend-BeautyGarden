@@ -2118,7 +2118,7 @@
       <Column field="code" header="เลขที่เอกสาร">
         <template #body="item">
           <p>{{ item.data.code }}
-            <span v-if="!selectedInvoice.status.some(c => c.period === item.data.period)"><i class="pi pi-file-export text-green-500 cursor-pointer" @click="onCoppy(item.data.code)"></i></span>
+            <span v-if="!selectedInvoice.status.some(c => c.period === item.data.period)"><i class="pi pi-file-export text-green-500 cursor-pointer" @click="onCoppy(item.data)"></i></span>
           </p>
         </template>
       </Column>

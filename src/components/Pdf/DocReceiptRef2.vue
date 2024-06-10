@@ -125,18 +125,19 @@
                 <tbody>
                   <tr class="border py-2">
                     <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
+                      <div class="flex justify-center h-full py-2 items-center">
                         {{ 1 }}
                       </div>
                     </td>
                     <td class=".td border" style="text-align: left">
-                      <div class="flex justify-start pl-2 h-full py-2 w-[340px]">
-                        {{ data.data.invoiceRef_detail?.paid_detail }}
+                      <div class="flex flex-col justify-start pl-2 h-full py-2">
+                        <p v-if="data.data.project?.name" class="font-semibold pb-2">{{ data.data.project?.name }}</p>
+                        <p>{{ data.data.invoiceRef_detail?.paid_detail }}</p>
                       </div>
                     </td>
                     <td class=".td border" style="text-align: center">
-                      <div class="flex justify-center h-full py-2">
-                        {{ data.data.invoiceRef_detail?.period_text }}
+                      <div class="flex justify-center items-center h-full py-2">
+                        {{ data.data.invoiceRef_detail?.period }}
                       </div>
                     </td>
                     <td class=".td border hidden" style="text-align: center">
@@ -184,7 +185,7 @@
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2">
+                      <div class="flex justify-center h-full py-2 items-center">
                         {{ formatCurrency(data.data.amount_price) }}
                       </div>
                     </td>
