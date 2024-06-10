@@ -134,7 +134,7 @@
           <span class="text-xs">
             {{ slotProps.data.invoice }}
             <i 
-              @click="onCoppy(slotProps.data.invoice)" 
+              @click="onCoppy(slotProps.data)" 
               class="pi text-xs pi-file-export cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
               v-tooltip.top="'ใช้อ้างอิงใบเสร็จ'"
               >

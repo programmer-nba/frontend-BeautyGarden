@@ -2184,13 +2184,14 @@ watchEffect(()=> {
   console.log(ivref)
   console.log(invref.value?.code?.split('-')[0])
   if (invref.value && invref.value?.code?.includes('-')) {
-    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value?.code?.split('-')[0])
+    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value?.code?.split('-')[0] || i.invoice===invref.value?.code[0])
     cur_period.value = parseInt(invref.value?.code?.split('-')[1])
     console.log('refInvoice', refInvoice.value)
     paid_detail.value = ivref?.remark
     receiptRefInvoiceDialog.value = true
   } else if (invref.value && !invref.value?.code?.includes('-')) {
-    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value?.code)
+    console.log('invref', invref.value)
+    refInvoice.value = invoices.value.find(i=>i.invoice===invref.value?.invoice)
     cur_period.value = 1
     paid_detail.value = ivref?.remark
     console.log('refInvoice', refInvoice.value)
