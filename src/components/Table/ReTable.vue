@@ -43,7 +43,7 @@
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
           <Calendar :disabled="seeAll" class="px-5" v-model="month" showIcon :showOnFocus="false" :showButtonBar="true" inputClass="p-2 bg-green-100 text-center w-24" inputId="buttondisplay" view="month" dateFormat="mm/yy" />
-          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-green-700 underline">{{ getMonthString(month.getMonth() + 1) }} {{ month.getFullYear() + 543 }}</span></p>
+          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-green-700 underline">{{ getMonthString(month.getMonth()) }} {{ month.getFullYear() + 543 }}</span></p>
           <div class="flex items-center border px-2 py-1 rounded bg-slate-100">
             <Checkbox v-model="seeAll" inputId="dateFilter" name="dateFilter" :binary="true" />
             <label for="dateFilter" class="ml-2"> ดูทั้งหมด </label>
@@ -181,6 +181,10 @@
               {{ formatCurrency(slotProps.data.amount_price) }}
             </span>
             <span v-else>
+              {{ formatCurrency(slotProps.data.amount_price) }}
+            </span>
+            
+            <span class="hidden">
               {{
                 slotProps.data.sumVat
                   ? formatCurrency(
@@ -254,20 +258,23 @@
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
               <Button
-                class="text-green-600 hover:bg-green-100 px-1"
-                label="เต็ม"
-                outlined
-                rounded
-                @click="seeFullReceipt(slotProps.data)"
-              />
-              <Button
                 class="text-blue-600 hover:bg-blue-100 px-1"
-                :class="!slotProps.data.invoice || slotProps.data.invoiceRef_detail.period_text === '1/1' ? 'opacity-10' : 'opacity-100'"
+                v-if="slotProps.data.invoice && slotProps.data.invoiceRef_detail.period_text !== '1/1'"
                 :disabled="!slotProps.data.invoice"
-                label="ย่อ"
+                icon="pi pi-file"
+                :loading="loading"
                 outlined
                 rounded
                 @click="seeSmallReceipt(slotProps.data)"
+              />
+              <Button
+                class="text-green-600 hover:bg-green-100 px-1"
+                icon="pi pi-file"
+                v-else
+                outlined
+                rounded
+                :loading="loading"
+                @click="seeFullReceipt(slotProps.data)"
               />
               <Button
                 class="text-yellow-600 hover:bg-orange-100"

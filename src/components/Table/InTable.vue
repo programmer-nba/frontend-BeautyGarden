@@ -47,7 +47,7 @@
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
           <Calendar :disabled="seeAll" class="px-5" v-model="month" showIcon :showOnFocus="false" :showButtonBar="true" inputClass="p-2 bg-sky-100 text-center w-24" inputId="buttondisplay" view="month" dateFormat="mm/yy" />
-          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-sky-700 underline">{{ getMonthString(month.getMonth() + 1) }} {{ month.getFullYear() + 543 }}</span></p>
+          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-sky-700 underline">{{ getMonthString(month.getMonth()) }} {{ month.getFullYear() + 543 }}</span></p>
           <div class="flex items-center border px-2 py-1 rounded bg-slate-100">
             <Checkbox v-model="seeAll" inputId="dateFilter" name="dateFilter" :binary="true" />
             <label for="dateFilter" class="ml-2"> ดูทั้งหมด </label>
