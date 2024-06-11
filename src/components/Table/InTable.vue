@@ -2358,7 +2358,7 @@ const createChild = async (mainInvoice) => {
     end_date: refInvoice.value.end_date,
     remark: refInvoice.value.remark,
     header: refInvoice.value.header,
-    period: mainInvoice.invoice_period.length + 1
+    period: mainInvoice.childs.length + 1
   }
   try {
     const { data } = await axios.post(
