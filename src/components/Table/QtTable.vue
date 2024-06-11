@@ -704,7 +704,6 @@
                 <div class="border rounded">
                   <div
                     class="flex justify-between flex-column sm:flex-row sm:items-center p-4 gap-3 border-b"
-                    :class="{ 'surface-border': index !== 0 }"
                   >
                     <div class="overflow-x-auto w-[120px]">
                       <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">

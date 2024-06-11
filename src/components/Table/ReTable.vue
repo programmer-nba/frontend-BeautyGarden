@@ -24,12 +24,14 @@
             icon="pi pi-plus"
             severity="success"
             class="mr-4"
+            :loading="loading"
             @click="openNew"
           />
           <Button
             label="เพิ่มจากใบแจ้งหนี้"
             icon="pi pi-plus"
             severity="success"
+            :loading="loading"
             class="mr-4 hidden md:block text-sm"
             @click="openNewRef"
           />
@@ -37,6 +39,7 @@
             label="ลบ"
             icon="pi pi-trash"
             severity="danger"
+            :loading="loading"
             @click="confirmDeleteSelected"
             :disabled="!selectedReceipts || !selectedReceipts.length"
           />
@@ -55,6 +58,7 @@
             label="ดาวน์โหลดไฟล์"
             icon="pi pi-upload"
             class="mr-4"
+            :loading="loading"
             severity="help"
             @click="exportCSV($event)"
           />
@@ -135,6 +139,7 @@
           class="border-b text-sm"
         >
           <template #body="slotProps">
+            
             {{ slotProps.data.invoice }}
             {{
               slotProps.data.invoiceRef_detail &&
@@ -152,14 +157,14 @@
           class="border-b text-sm"
         ></Column>
         <Column
-          field="start_date"
+          field="start_date_format"
           header="วันที่ออกเอกสาร"
           class="border-b text-sm"
           sortable
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{ formatDateRef(slotProps.data.start_date) }}
+            {{ slotProps.data.start_date_format }}
           </template>
         </Column>
 
@@ -246,10 +251,11 @@
           class="border-b text-sm"
           sortable
           style="max-width: 8rem"
+          :exportable="false"
         >
           <template #body="slotProps">
             <div class="grid place-items-center w-full opacity-30" v-if="slotProps.data.status[slotProps.data.status.length-1]?.name === 'new'">
-              <Button icon="pi pi-file-export" disabled />
+              <Button :loading="loading" icon="pi pi-file-export" disabled />
               <small>coming sonn..</small>
             </div>
           </template>
@@ -1882,6 +1888,7 @@
         <label>งวดที่</label>
         <input type="number" v-model="cur_period" class="px-2 py-1 border rounded text-center w-fit max-w-[5rem]">
       </div>
+      <p class="w-full text-center" v-if="ivref?.price">ราคางวดย่อย : {{ ivref?.price }}</p>
       <div v-if="invoices && invoices.length > 0" class="card">
         <div class="card flex flex-col gap-y-2 justify-center items-center py-3">
           <p>วันที่ออกใบเสร็จ</p>
@@ -2063,6 +2070,8 @@ onMounted(async () => {
       re.vat.total_deducted = 
         re.vat.percen_deducted ? (re.vat.percen_deducted/100)*re.amount_price
         : null
+
+      re.start_date_format = formatDateRef(re.start_date)
     })
   });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
@@ -2142,8 +2151,8 @@ const getMonthString = (monIndex) => {
 
 const monthYear = computed(()=>{
   const thisMonth = (month.value.getMonth()+1).toString().padStart(2, '0')
-  const thisYear = month.value.getFullYear()
-  const thisMonthYear = `${thisYear}${thisMonth}`
+  const thisYear = month.value.getFullYear() + 543
+  const thisMonthYear = `${thisMonth}/${thisYear}`
   return thisMonthYear
 })
 
@@ -2151,7 +2160,7 @@ const filterdReceipts = computed(()=>{
   let result = []
   if (!seeAll.value) {
     result = originalReceipts.value.filter( re => 
-      re.receipt.substring(2, 8) === monthYear.value
+      formatDateRef(re.start_date).substring(3) === monthYear.value
     )
   } else {
     result = originalReceipts.value
@@ -2174,7 +2183,7 @@ const receipts = computed(()=>{
 
   return result
 })
-
+const amount_price = ref(0);
 // Create with reference invoice
 const refInvoice = ref();
 const { ivref } = defineProps(["ivref"])
@@ -2187,6 +2196,7 @@ watchEffect(()=> {
     refInvoice.value = invoices.value.find(i=>i.invoice===invref.value?.code?.split('-')[0] || i.invoice===invref.value?.code[0])
     cur_period.value = parseInt(invref.value?.code?.split('-')[1])
     console.log('refInvoice', refInvoice.value)
+    amount_price.value = ivref?.price
     paid_detail.value = ivref?.remark
     receiptRefInvoiceDialog.value = true
   } else if (invref.value && !invref.value?.code?.includes('-')) {
@@ -2220,8 +2230,6 @@ watch(() => dt?.value?.d_first, (newVal, oldVal) => {
     : (dt.value.d_first/dt.value.d_rows) + 1
   }
 })
-
-const amount_price = ref(0);
 
 watch(() => ref_paid.value, (newVal, oldVal) => {
   if ( ref_paid.value ) {
@@ -2371,6 +2379,7 @@ const statuses = ref(["Normal", "องค์กร", "หน่วยงาน�
 const percents = ref([1, 3, 5]);
 
 const refresh = () => {
+  loading.value = true
   Documents.getReceipts().then((data) => {
     originalReceipts.value = data.data.reverse()
     originalReceipts.value.forEach(re => {
@@ -2387,7 +2396,10 @@ const refresh = () => {
       re.vat.total_deducted = 
         re.vat.percen_deducted ? (re.vat.percen_deducted/100)*re.amount_price
         : 0
+      
+      re.start_date_format = formatDateRef(re.start_date)
     })
+    loading.value = false
   });
 
   const currentTimestamp = Date.now();
@@ -2530,19 +2542,16 @@ const changeProductVat = () => {
 }
 
 const formatDateRef = (isoDateString) => {
-  const isoDate = new Date(isoDateString);
+  let isoDate = new Date(isoDateString);
 
   // Convert to Buddhist Era (BE) by adding 543 years
-  const thaiYear = isoDate.getFullYear() + 543;
+  const thaiYear = isoDate.getUTCFullYear() + 543;
 
-  const formattedDate = isoDate.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  // Get the day and month in UTC
+  const day = String(isoDate.getUTCDate()).padStart(2, '0');
+  const month = String(isoDate.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
 
-  // Construct the final formatted date in "dd/mm/yyyy" format
-  const [month, day, year] = formattedDate.split("/");
+  // Format the date in "dd/mm/yyyy" format with the Thai year
   const formattedThaiDate = `${day}/${month}/${thaiYear}`;
 
   return formattedThaiDate;

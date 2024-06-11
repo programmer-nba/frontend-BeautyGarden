@@ -131,7 +131,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="data.data.project.name" class="border">
+                  <tr v-if="data.data.childs.length > 0" class="border">
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2 font-bold">
                         โครงการ project
@@ -169,7 +169,7 @@
                       </div>
                       <div v-else class="flex items-center justify-center h-full py-2">
                         {{ 
-                          formatCurrency(data.data.selectedChild.price)
+                          data.data.customer_branch?.isVat && vat > 0 ? formatCurrency(data.data.selectedChild.price*100/107) : formatCurrency(data.data.selectedChild.price)
                         }}
                       </div>
                     </td>
@@ -183,10 +183,10 @@
                             : data.data.project.vat_price = 0 
                           }}
                         </pre>
-                        {{ data.data.project.isVat ? formatCurrency(data.data.project.vat_price) : '0.00' }}
+                        {{ data.data.customer_branch?.isVat ? formatCurrency(data.data.project.vat_price) : '0.00' }}
                       </div>
                       <div v-else class="flex justify-center items-center h-full py-2">
-                        {{ formatCurrency(vat) }}
+                        {{ data.data.customer_branch?.isVat && vat > 0 ? formatCurrency(data.data.selectedChild.price*7/107) : formatCurrency(vat) }}
                       </div>
                     </td>
                     <pre class="hidden">
@@ -274,7 +274,7 @@
                     </td>
                     
                   </tr>
-                  <tr v-if="data.data.childs.length > 0" class="border" v-for="(product, index) in data.data.product_detail" :key="index">
+                  <tr v-if="data.data.childs.length > 0" class="border hidden" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       <p>
                         {{ data.data.selectedChild.period  }}
@@ -618,6 +618,7 @@ const vat = computed(()=>{
     return (item.vat_price || 0) * item.product_amount
   })
   const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b) : 0
+  //const vats = result + data.data.project.vat_price
   return result
 })
 

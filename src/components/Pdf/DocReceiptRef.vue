@@ -470,19 +470,16 @@ const formatCurrency = (value) => {
 }
 
 const formatDate = (isoDateString) => {
-  const isoDate = new Date(isoDateString);
-  
-  // Convert to Buddhist Era (BE) by adding 543 years
-  const thaiYear = isoDate.getFullYear() + 543;
-  
-  const formattedDate = isoDate.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
+  let isoDate = new Date(isoDateString);
 
-  // Construct the final formatted date in "dd/mm/yyyy" format
-  const [month, day, year] = formattedDate.split('/');
+  // Convert to Buddhist Era (BE) by adding 543 years
+  const thaiYear = isoDate.getUTCFullYear() + 543;
+
+  // Get the day and month in UTC
+  const day = String(isoDate.getUTCDate()).padStart(2, '0');
+  const month = String(isoDate.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+
+  // Format the date in "dd/mm/yyyy" format with the Thai year
   const formattedThaiDate = `${day}/${month}/${thaiYear}`;
 
   return formattedThaiDate;

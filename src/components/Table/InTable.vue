@@ -118,7 +118,7 @@
 
         <template #empty>
           <div class="w-full flex justify-center items-center py-48 border-t border-b">
-            <p class="tex-lg">ไม่มีข้อมูล</p>
+            <p class="tex-lg animate-bounce">กำลังโหลดข้อมูล...</p>
           </div>
         </template>
 
@@ -2105,7 +2105,13 @@
       </div>
       <div class="flex-auto">
         <label for="refInvoice_remark" class="font-bold block mb-2"> หมายเหตุ </label>
-        <InputText v-model="refInvoice.remark" inputId="refInvoice_remark" />
+        <Textarea
+          id="refInvoice_remark"
+          v-model="refInvoice.remark"
+          autoResize
+          rows="5"
+          cols="30"
+        />
       </div>
     </div>
     <Button v-if="!refInvoice.edit" :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createChild(selectedInvoice)" />
@@ -2365,6 +2371,7 @@ const createChild = async (mainInvoice) => {
       }
     )
     if (data.status) {
+      refresh()
       console.log(data.data)
       openRefInvoice.value = false
       toast.add({
@@ -2373,7 +2380,6 @@ const createChild = async (mainInvoice) => {
         detail: "สร้างใบแจ้งหนี้แล้ว",
         life: 3000,
       })
-      refresh()
     }
   }
   catch (err) {
@@ -2686,8 +2692,11 @@ function countDistinctDays(start_date, end_date) {
 }
 
 const withholdingPrice = computed(() => {
-  if (isWithholding.value && sumVat) {
-    const result = ((sumProductsPrice.value + (prod.value.project.total || 0)) * withholdingPercent.value) / 100;
+  if (isWithholding.value && sumVat.value) {
+    const result = ((netPrices.value) * withholdingPercent.value ) / 100;
+    return result;
+  } else if (isWithholding.value && !sumVat.value) {
+    const result = ((netPrices.value) * withholdingPercent.value ) / 100;
     return result;
   } else {
     return 0;
