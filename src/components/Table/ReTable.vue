@@ -263,9 +263,10 @@
         <Column :exportable="false" style="min-width: 15rem" class="border-b">
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
+              <!-- v-if="slotProps.data.invoice && slotProps.data.invoiceRef_detail.period_text !== '1/1'" -->
               <Button
                 class="text-blue-600 hover:bg-blue-100 px-1"
-                v-if="slotProps.data.invoice && slotProps.data.invoiceRef_detail.period_text !== '1/1'"
+                
                 :disabled="!slotProps.data.invoice"
                 icon="pi pi-file"
                 :loading="loading"
@@ -276,7 +277,7 @@
               <Button
                 class="text-green-600 hover:bg-green-100 px-1"
                 icon="pi pi-file"
-                v-else
+                label="แบบเต็ม"
                 outlined
                 rounded
                 :loading="loading"
@@ -2632,7 +2633,10 @@ const vat = computed(() => {
   const all_vat = products.value.map(item=>{
     return (item.vat_price || 0)*item.product_amount
   })
-  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b, 0 ) : 0
+  const result = discount.value > 0 
+  ? (netPrices.value) * 0.07
+  : all_vat.reduce((a,b) => a + b, 0 )
+  
   return result
 });
 

@@ -92,7 +92,7 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง : </span>
-                    {{ data.data.invoice }}
+                    {{ data.data.invoice }}{{ data.data.invoiceRef_detail?.period ? '-' + data.data.invoiceRef_detail?.period : '' }}
                   </div>
                 
                   <br />
@@ -141,16 +141,17 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="data.data.project.name" class="border">
+                  <tr v-if="data.data.project.name || data.data.invoiceRef_detail?.paid_detail" class="border">
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2 font-bold">
                         โครงการ project
                       </div>
                     </td>
-                    <td class=".td border" style="text-align: center">
+                    <td class=".td border" style="text-align: start">
                       <div class="flex justify-start font-bold h-full py-2">
-                        {{ data.data.project.name }}
+                        {{ data.data.project.name || '' }}
                       </div>
+                      {{ data.data.invoiceRef_detail?.paid_detail || '' }}
                     </td>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
@@ -172,7 +173,7 @@
                         }}
                       </div>
                     </td>
-                    <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: center">
+                    <td v-if="data.data?.isVat" class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
                         <pre class="hidden">{{ 
                             data.data.project.isVat && data.data.sumVat 
@@ -242,7 +243,7 @@
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
-                    <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: right">
+                    <td v-if="data.data?.isVat" class=".td border" style="text-align: right">
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
@@ -430,7 +431,7 @@
               <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-green-200 text-center py-2 border-b border-r border-l flex justify-center items-center"
               :style="{ backgroundColor: `#${data.color}` }">
               <p class="font-bold">
-                ( {{ formatNumberToText((data.data.amount_price)) + 'ถ้วน' }} )
+                ( {{ formatNumberToText((data.data.amount_price)).replace('หนึ่งสิบ', 'สิบ') + 'ถ้วน' }} )
               </p>
             </div>
               <tr v-if="data.data.vat.percen_deducted" class="flex justify-between items-center w-full border-b border-l border-r pt-2 pb-2" :style="{ backgroundColor: `#${data.color}` }">

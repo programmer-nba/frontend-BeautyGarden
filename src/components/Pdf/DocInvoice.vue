@@ -310,7 +310,7 @@
                           }}
                         </span>บาท</td>
                       </tr>
-                      <tr class="flex justify-between w-full pb-1">
+                      <tr class="hidden justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ชำระค่ามัดจำแล้ว</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.paid) }}</span>บาท</td>
                       </tr>
@@ -327,13 +327,13 @@
                             {{ 
                               formatCurrency(totalPrice+(data.data.project.total || 0)
                               -data.data.discount
-                              +(vat+(data.data.project.vat_price || 0)) - data.data.paid ) 
+                              +(vat+(data.data.project.vat_price || 0)) ) 
                             }}
                           </strong>
                           <strong class="pr-3" v-else>
                             {{ 
                               formatCurrency(totalPrice+(data.data.project.total || 0)
-                              - data.data.discount - data.data.paid
+                              - data.data.discount
                               ) 
                             }}
                           </strong>
@@ -350,7 +350,7 @@
                           <strong class="pr-3" v-else>
                             {{ 
                               formatCurrency(totalPrice+(data.data.project.total || 0)
-                              - data.data.discount - data.data.paid
+                              - data.data.discount
                               ) 
                             }}
                           </strong>
@@ -411,8 +411,8 @@
                 <p v-if="!data.data.discount > 0" class="font-bold">
                   ( {{ 
                     data.data.customer_branch?.isVat
-                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat) - data.data.paid).replace('หนึ่งบาท', 'เอ็ดบาท')
-                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount) - data.data.paid).replace('หนึ่งบาท', 'เอ็ดบาท')
+                    ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat)).replace('หนึ่งบาท', 'เอ็ดบาท').replace("หนึ่งสิบ", "สิบ")
+                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount)).replace('หนึ่งบาท', 'เอ็ดบาท').replace("หนึ่งสิบ", "สิบ")
                   }} )
                 </p>
                 <p v-else class="font-bold">
@@ -420,8 +420,8 @@
                     data.data.customer_branch?.isVat
                     ? formatNumberToText((totalPrice+(data.data.project.total || 0)
                     -data.data.discount
-                    +(totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07)).replace('หนึ่งบาท', 'เอ็ดบาท')
-                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount) - data.data.paid).replace('หนึ่งบาท', 'เอ็ดบาท')
+                    +(totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07)).replace('หนึ่งบาท', 'เอ็ดบาท').replace("หนึ่งสิบ", "สิบ")
+                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount)).replace('หนึ่งบาท', 'เอ็ดบาท').replace("หนึ่งสิบ", "สิบ")
                   }} )
                 </p>
               </div>
