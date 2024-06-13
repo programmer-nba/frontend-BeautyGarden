@@ -2198,13 +2198,13 @@ watchEffect(()=> {
     cur_period.value = parseInt(invref.value?.code?.split('-')[1])
     console.log('refInvoice', refInvoice.value)
     amount_price.value = ivref?.price
-    paid_detail.value = ivref?.remark
+    paid_detail.value = ivref?.remark?.join(' ')
     receiptRefInvoiceDialog.value = true
   } else if (invref.value && !invref.value?.code?.includes('-')) {
     console.log('invref', invref.value)
     refInvoice.value = invoices.value.find(i=>i.invoice===invref.value?.invoice)
     cur_period.value = 1
-    paid_detail.value = ivref?.remark
+    paid_detail.value = ivref?.remark?.join(' ')
     console.log('refInvoice', refInvoice.value)
     receiptRefInvoiceDialog.value = true
   }
@@ -3044,6 +3044,11 @@ const createNewReceipt = async () => {
   }
 };
 
+watch(start_date, (newVal, oldVal)=>{
+  console.log('newVal', newVal)
+  console.log('oldVal', oldVal)
+})
+
 const editingReceipt = async () => {
   loading.value = true;
   //let img = [];
@@ -3076,6 +3081,7 @@ const editingReceipt = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
+    sumVat: sumVat.value,
     isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     transfer: transfer.value,
     bank: bank.value
