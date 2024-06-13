@@ -1688,7 +1688,7 @@
         <div v-if="project.isVat && !sumVat">
           <p>ราคารวม
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+vat+(project.total || 0)) || 0
+              formatCurrency(sumProductsPrice+(project.total || 0)-discount+vat) || 0
             }}</span>
           </p>
         </div>
@@ -1696,7 +1696,7 @@
         <div v-if="project.isVat && sumVat">
           <p>ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+(project.total || 0)) || 0
+              formatCurrency(sumProductsPrice+(project.total || 0)-discount+vat) || 0
             }}</span>
           </p>
         </div>
