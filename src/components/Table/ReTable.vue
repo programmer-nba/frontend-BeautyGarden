@@ -2198,7 +2198,7 @@ watchEffect(()=> {
     cur_period.value = parseInt(invref.value?.code?.split('-')[1])
     console.log('refInvoice', refInvoice.value)
     amount_price.value = ivref?.price
-    paid_detail.value = ivref?.remark?.join(' ')
+    paid_detail.value = ivref?.remark
     receiptRefInvoiceDialog.value = true
   } else if (invref.value && !invref.value?.code?.includes('-')) {
     console.log('invref', invref.value)

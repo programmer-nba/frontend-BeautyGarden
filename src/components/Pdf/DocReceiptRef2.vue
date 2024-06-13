@@ -217,7 +217,8 @@
                       <tr class="flex justify-between w-full">
                         <td v-if="data.data.isVat" class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ (ก่อน Vat)</span></td>
                         <td v-else class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
-                        <td class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.amount_price*100/107) }}</span>บาท</td>
+                        <td v-if="data.data.isVat" class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.amount_price*100/107) }}</span>บาท</td>
+                        <td v-else class="" style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.amount_price) }}</span>บาท</td>
                       </tr>
                       <tr class="hidden justify-between w-full">
                         <td style="text-align: left"><span class="pl-5">ส่วนลด</span></td>
