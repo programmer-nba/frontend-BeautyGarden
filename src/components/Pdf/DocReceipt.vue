@@ -334,11 +334,11 @@
                           บาท
                         </td>
                       </tr>
-                      <tr class="flex justify-between w-full">
+                      <tr class="hidden justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ยอดชำระงวดปัจจุบัน</span></td>
                         <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.amount_price) }}</span>บาท</td>
                       </tr>
-                      <tr class="flex justify-between w-full">
+                      <tr class="hidden justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงเหลือ</span></td>
                         <td style="text-align: right"><span class="pr-3">
                           
@@ -406,11 +406,11 @@
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดค้างก่อนชำระ</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice-data.data.discount+vat)-(data.data.invoiceRef_detail?.paid - data.data.amount_price)) }}</span>บาท</td>
                     </tr>
-                    <tr class="flex justify-between w-full">
+                    <tr class="hidden justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดชำระงวดปัจจุบัน</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.amount_price) }}</span>บาท</td>
                     </tr>
-                    <tr class="flex justify-between w-full">
+                    <tr class="hidden justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงเหลือ</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice-data.data.discount+vat)-(data.data.invoiceRef_detail?.paid)) }}</span>บาท</td>
                     </tr>
