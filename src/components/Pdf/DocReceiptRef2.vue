@@ -340,17 +340,17 @@
                       <td v-else class="self-start" style="text-align: left; padding:0;"><span class="pl-5 font-semibold">ราคาสินค้า/บริการ</span></td>
                       <td class="" style="text-align: right"><span class="pr-3">
                         {{ 
-                          formatCurrency(data.data.amount_price-(vat/(parseInt(data.data.invoiceRef_detail?.period_text[-1]) || 1))) 
-                      }}
+                          formatCurrency(data.data.amount_price-(vat/(parseInt(data.data.invoiceRef_detail?.period_text[2] || 1)))) 
+                        }}
                       </span>บาท</td>
                     </tr>
                     <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat/(parseInt(data.data.invoiceRef_detail?.period_text[-1]) || 1)) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat/(parseInt(data.data.invoiceRef_detail?.period_text[2] || 1))) }}</span>บาท</td>
                     </tr>
-                    <tr class="flex justify-between w-full">
+                    <tr class="hidden justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงเหลือ</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(Math.abs((totalPrice+(data.data.project.total || 0)-data.data.discount+vat)-(data.data.invoiceRef_detail.paid))) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(Math.abs((totalPrice+(data.data.project.total || 0)-data.data.discount)-(data.data.invoiceRef_detail.paid))) }}</span>บาท</td>
                     </tr>
                     
                     <tr class="flex justify-between items-center w-full py-2 mt-2 bg-green-200 " :style="{ backgroundColor: `#${data.color}` }">
