@@ -122,9 +122,11 @@
           <template #body="slotProps">
             <p v-if="slotProps.data.isBillVat" class="text-orange-500">
               {{ slotProps.data.receiptVat }}
+              {{ slotProps.data.receipt }}
             </p>
             <p v-else-if="slotProps.data.isBillVat === false" class="text-black">
               {{ slotProps.data.receiptNoVat }}
+              {{ slotProps.data.receipt }}
             </p>
             <p v-else class="text-gray-500">
               {{ slotProps.data.receipt }}
@@ -164,7 +166,9 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            {{ slotProps.data.start_date_format }}
+            fotmat: {{ slotProps.data.start_date_format }}
+            rawstart: {{ new Date(slotProps.data.start_date).toLocaleDateString() }}
+            created: {{ new Date(slotProps.data.createdAt).toLocaleDateString() }}
           </template>
         </Column>
 
@@ -2058,10 +2062,10 @@ onMounted(async () => {
   Documents.getReceipts().then((data) => {
     originalReceipts.value = data.data.reverse()
     originalReceipts.value.forEach(re => {
-      re.receipt = 
+      /* re.receipt = 
         re.isBillVat ? re.receiptVat
         : re.isBillVat === false ? re.receiptNoVat
-        : re.receipt
+        : re.receipt */
 
       re.vat.totalvat = 
         re.isVat && re.sumVat ? (re.project?.vat_price || 0) + totalVat(re)
@@ -2384,10 +2388,10 @@ const refresh = () => {
   Documents.getReceipts().then((data) => {
     originalReceipts.value = data.data.reverse()
     originalReceipts.value.forEach(re => {
-      re.receipt = 
+      /* re.receipt = 
         re.isBillVat ? re.receiptVat
         : re.isBillVat === false ? re.receiptNoVat
-        : re.receipt
+        : re.receipt */
 
       re.vat.totalvat = 
         re.isVat && re.sumVat ? (re.project?.vat_price || 0) + totalVat(re)
@@ -2492,10 +2496,10 @@ const seeFullReceipt = (data) => {
   selectedReceipt.value.customer_branch.Branch_iden = company.Branch_iden
   selectedReceipt.value.customer_branch.Branch_company_name = company.Branch_company_name
 
-  selectedReceipt.value.customer_detail.tax_id = customered.customer_taxnumber
+  //selectedReceipt.value.customer_detail.tax_id = customered.customer_taxnumber
 
   openFullReceipt.value = true;
-  selectedReceipt.value.customer_detail.customer_address = customered.customer_position
+  //selectedReceipt.value.customer_detail.customer_address = customered.customer_position
   console.log("data", selectedReceipt.value);
   const body = document.body;
   body.style.backgroundColor = "white";
@@ -2794,13 +2798,16 @@ const editReceipt = (prod) => {
   const company = cpStore.myCompanies.find(
     (item) => item.taxnumber.trim() === prod.customer_branch.taxnumber.trim()
   );
-  console.log(cpStore.myCompanies)
+  //console.log(cpStore.myCompanies)
   console.log(prod.customer_branch)
   selectedCompany.value = company;
 
-  const customered = customers.value.find(
+  let customered = customers.value.find(
     (item) => item.customer_name === prod.customer_detail.customer_name
   );
+  if (!customered) {
+    customered = prod.customer_detail
+  }
   selectedCustomer.value = customered;
   console.log('cus', selectedCustomer.value)
   refCustomer();
@@ -3051,15 +3058,8 @@ watch(start_date, (newVal, oldVal)=>{
 
 const editingReceipt = async () => {
   loading.value = true;
-  //let img = [];
-  //let qtId = null;
-  /* products.value.forEach((product) => {
-    product.product_logo64 = "";
-  }); */
-  //console.log(refQuotation.value);
   const data = {
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
-    //invoice: refInvoice.value.invoice,
     customer_number: customer.value ? customer.value.customer_number : null,
     amount_price: amount_price.value,
     project: project.value,
@@ -3096,41 +3096,10 @@ const editingReceipt = async () => {
           status: "",
         },
   };
+  console.log('editPayload', data)
   try {
     const response = await Documents.editReceipt(receipt.value?._id, data);
     if (response.data) {
-      /* img = response.data.product_detail;
-      qtId = response.data._id;
-      const imgId = img.map((id) => id._id);
-      if (imgId.length > 0 && qtId) {
-        uploadfiles.value.forEach(async (file, index) => {
-          const formData = new FormData();
-          formData.append("imgCollection", file);
-          const res = await Documents.uploadFileReceipt(imgId[index], qtId, formData);
-          if (res) {
-            reStore.getReceipts().then((data) => (receipts.value = data.data.reverse()));
-            receiptDialog.value = false;
-            toast.add({
-              severity: "success",
-              summary: "Successful",
-              detail: "แก้ไขใบเสร็จรับเงินแล้ว",
-              life: 3000,
-            });
-            loading.value = false;
-          }
-        });
-      } else {
-        reStore.getReceipts();
-        refresh();
-        receiptEditDialog.value = false;
-        toast.add({
-          severity: "success",
-          summary: "Successful",
-          detail: "แก้ไขใบเสร็จรับเงินแล้ว",
-          life: 3000,
-        });
-        loading.value = false;
-      } */
       toast.add({
         severity: "success",
         summary: "Successful",
