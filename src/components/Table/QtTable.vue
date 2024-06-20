@@ -175,11 +175,22 @@
           style="max-width: 7rem"
         >
           <template #body="slotProps">
+            <pre class="hidden">
+              {{slotProps.data.customer_branch?.isVat}}
+              {{slotProps.data.net}}
+              {{slotProps.data.sumVat}}
+              {{totalVat(slotProps.data)}}
+            </pre>
+            
             {{ 
               slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && !slotProps.data.discount > 0
               ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
               : slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && slotProps.data.discount > 0
-              ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (((slotProps.data.project?.total || 0))*0.07))
+              ? formatCurrency(totalPrice(slotProps.data) 
+              - slotProps.data.discount 
+              + totalVat(slotProps.data) 
+              + (slotProps.data.project?.total || 0) 
+              + (((slotProps.data.project?.total || 0))*0.07))
               : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
               ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
               : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 

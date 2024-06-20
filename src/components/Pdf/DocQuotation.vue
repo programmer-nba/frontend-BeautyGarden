@@ -286,8 +286,11 @@
                         <td v-if="!data.data.discount > 0" style="text-align: right"><span class="pr-3">{{ 
                           formatCurrency(vat+(data.data.project.vat_price || 0)) 
                         }}</span>บาท</td>
-                        <td v-else style="text-align: right"><span class="pr-3">{{ 
+                        <td v-if="data.data.discount > 0 && vat > 0" style="text-align: right"><span class="pr-3">{{ 
                           formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07) 
+                        }}</span>บาท</td>
+                        <td v-else style="text-align: right"><span class="pr-3">{{ 
+                          formatCurrency(vat) 
                         }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
@@ -299,11 +302,16 @@
                             +(vat+(data.data.project.vat_price || 0))) 
                           }}
                         </span>บาท</td>
-                        <td v-else style="text-align: right"><span class="pr-3">
+                        <td v-if="data.data.discount > 0 && vat > 0" style="text-align: right"><span class="pr-3">
                           {{ 
                             formatCurrency(totalPrice+(data.data.project.total || 0)
                             -data.data.discount
                             +((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07))
+                          }}
+                        </span>บาท</td>
+                        <td v-else style="text-align: right"><span class="pr-3">
+                          {{ 
+                            formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount)
                           }}
                         </span>บาท</td>
                       </tr>
@@ -392,11 +400,11 @@
                 :style="{ backgroundColor: `#${data.color}` }">
                 <p class="font-bold">
                   ( {{ 
-                    data.data.customer_branch?.isVat && !data.data.discount > 0 ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat))?.replace('หนึ่งบาท', 'เอ็ดบาท')
-                    : data.data.customer_branch?.isVat && data.data.discount > 0 ? formatNumberToText((totalPrice+(data.data.project.total || 0)
+                    data.data?.customer_branch?.isVat && !data.data.discount > 0 ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat))?.replace('หนึ่งบาท', 'เอ็ดบาท')?.replace('หนึ่งสิบ', 'สิบ')
+                    : data.data?.customer_branch?.isVat && data.data.discount > 0 ? formatNumberToText((totalPrice+(data.data.project.total || 0)
                     -data.data.discount
-                    +((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07)) )?.replace('หนึ่งบาท', 'เอ็ดบาท')
-                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount))?.replace('หนึ่งบาท', 'เอ็ดบาท')
+                    +((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07)) )?.replace('หนึ่งบาท', 'เอ็ดบาท')?.replace('หนึ่งสิบ', 'สิบ')
+                    : formatNumberToText((totalPrice+(data.data.project.total || 0)-data.data.discount))?.replace('หนึ่งบาท', 'เอ็ดบาท')?.replace('หนึ่งสิบ', 'สิบ')
                   }} )
                 </p>
               </div>
