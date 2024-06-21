@@ -195,6 +195,8 @@
               ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
               : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
             }}
+            <br>
+            or {{formatCurrency(slotProps.data.net)}}
           </template>
         </Column>
         <Column
