@@ -302,7 +302,7 @@
                       
                       <tr v-if="data.data?.isVat" class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+((data.data.project.total || 0)*0.07)) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(vat) }}</span>บาท</td>
                       </tr>
                       <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
@@ -486,7 +486,7 @@ const vat = computed(()=>{
   const price = 
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
     : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
-  const result = all_vat.length && data.data.discount > 0 ? price*0.07 : all_vat.length && data.data.discount <= 0 ? all_vat.reduce((a,b) => a + b) : 0
+  const result = all_vat.length && data.data.discount > 0 ? all_vat.reduce((a,b) => a + b) : all_vat.length && data.data.discount <= 0 ? all_vat.reduce((a,b) => a + b) : 0
   return result
 })
 
@@ -617,7 +617,7 @@ const formatDate = (isoDateString) => {
   const thaiYear = isoDate.getUTCFullYear() + 543;
 
   // Get the day and month in UTC
-  const day = String(isoDate.getUTCDate()).padStart(2, '0');
+  const day = String(isoDate.getUTCDate() - 1).padStart(2, '0');
   const month = String(isoDate.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
 
   // Format the date in "dd/mm/yyyy" format with the Thai year

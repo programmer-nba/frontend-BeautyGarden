@@ -2771,7 +2771,10 @@ const vat = computed(() => {
   const all_vat = products.value.map(item=>{
     return (item.vat_price || 0)*item.product_amount
   })
-  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b, 0 ) : 0
+  const result = 
+    all_vat.length > 0 && discount.value <= 0 ? all_vat.reduce((a,b) => a + b, 0 ) 
+    : all_vat.length > 0 && discount.value > 0 && sumVat.value ? netPrices.value*0.07
+    : 0
   return result
 });
 
