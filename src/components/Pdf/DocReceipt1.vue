@@ -486,7 +486,7 @@ const vat = computed(()=>{
   const price = 
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
     : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
-  const result = data.data.discount > 0 ? price*0.07 : all_vat.reduce((a,b) => a + b)
+  const result = all_vat.length && data.data.discount > 0 ? price*0.07 : all_vat.length && data.data.discount <= 0 ? all_vat.reduce((a,b) => a + b) : 0
   return result
 })
 

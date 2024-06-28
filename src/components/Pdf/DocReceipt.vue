@@ -141,7 +141,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-if="data.data.project.name || data.data.invoiceRef_detail?.paid_detail" class="border">
+                  <tr v-if="data.data.project.name || !data.data.invoiceRef_detail?.paid_detail" class="border">
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2 font-bold">
                         โครงการ project
@@ -396,7 +396,7 @@
                     </tr>
                     <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice + (data.data.project.total || 0) - data.data.discount) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice + (data.data.project.total || 0) - data.data.discount + (vat + (data.data.project?.vat_price || 0))) }}</span>บาท</td>
                     </tr>
                     <tr v-if="data.data.invoiceRef_detail?.paid - data.data.amount_price > 0" class="flex justify-between w-full pt-2 mt-2 border-t">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดที่ชำระแล้ว</span></td>
@@ -427,7 +427,7 @@
                     </tr>
                     <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงค้าง</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice + (data.data.project.total || 0) - data.data.discount - (data.data.invoiceRef_detail?.paid || 0)) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice + (data.data.project.total || 0) - data.data.discount + (vat + (data.data.project?.vat_price || 0)) - (data.data.invoiceRef_detail?.paid || 0)) }}</span>บาท</td>
                     </tr>
                   </tbody>
                 </table>
