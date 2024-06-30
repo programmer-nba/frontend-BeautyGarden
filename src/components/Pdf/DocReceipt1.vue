@@ -122,7 +122,7 @@
                       <small class="font-normal">Quantity</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
-                      <p>ราคา/หน่วย (รวม)</p>
+                      <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
                     <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
@@ -233,7 +233,7 @@
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
-                        {{ formatCurrency(product.product_price) }} ({{ formatCurrency(product.product_price*product.product_amount) }})
+                        {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
                     <td v-if="data.data.isVat" class=".td border" style="text-align: right">
