@@ -1932,7 +1932,7 @@
           </span>
         </p>
         <p v-if="prod.project.isVat || selectedCompany?.isVat">
-          VAT 7% 
+          VAT 7%
           <span class="border-b px-2">
             {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
           </span>
@@ -2771,9 +2771,10 @@ const vat = computed(() => {
   const all_vat = products.value.map(item=>{
     return (item.vat_price || 0)*item.product_amount
   })
+  const p = all_vat.length ? all_vat.reduce((a,b) => a + b, 0 ) : 0
   const result = 
-    all_vat.length > 0 && discount.value <= 0 ? all_vat.reduce((a,b) => a + b, 0 ) 
-    : all_vat.length > 0 && discount.value > 0 && sumVat.value ? netPrices.value*0.07
+    all_vat.length > 0 && discount.value <= 0 ? p
+    : all_vat.length > 0 && discount.value > 0 && sumVat.value && p > 0 ? netPrices.value*0.07
     : 0
   return result
 });

@@ -295,13 +295,13 @@
                       
                       <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">VAT 7%</span></td>
-                        <td v-if="!data.data.discount > 0" style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
+                        <td v-if="!data.data.discount >= 0" style="text-align: right"><span class="pr-3">{{ formatCurrency(vat+(data.data.project.vat_price || 0)) }}</span>บาท</td>
                         <td v-else style="text-align: right"> {{ formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07) }} บาท </td>
                       </tr>
 
                       <tr v-if="data.data?.customer_branch?.isVat" class="flex justify-between w-full pb-1">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
-                        <td v-if="!data.data.discount > 0" style="text-align: right"><span class="pr-3">
+                        <td v-if="!data.data.discount >= 0" style="text-align: right"><span class="pr-3">
                           {{ 
                             formatCurrency(totalPrice+(data.data.project.total || 0)
                             -data.data.discount
@@ -327,7 +327,7 @@
                             </strong>
                           </div>
                         </td>
-                        <td v-if="!data.data.discount > 0" style="text-align: right">
+                        <td v-if="!data.data.discount >= 0" style="text-align: right">
                           <strong class="pr-3" v-if="data.data?.project?.isVat">
                             {{ 
                               formatCurrency(totalPrice+(data.data.project.total || 0)
@@ -413,7 +413,7 @@
               </div>
               <div class="w-full min-w-[100px] h-fit min-h-[35px] bg-sky-200 text-center border-b border-r border-l flex justify-center items-center"
                 :style="{ backgroundColor: `#${data.color}` }">
-                <p v-if="!data.data.discount > 0" class="font-bold">
+                <p v-if="!data.data.discount >= 0" class="font-bold">
                   ( {{ 
                     data.data.customer_branch?.isVat
                     ? formatNumberToText((totalPrice+(data.data.project.total_net || 0)-data.data.discount+vat)).replace('หนึ่งบาท', 'เอ็ดบาท').replace("หนึ่งสิบ", "สิบ")
