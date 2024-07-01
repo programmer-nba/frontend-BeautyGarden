@@ -108,7 +108,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th v-if="data.data.customer_branch?.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.customer_branch?.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th hidden border pb-0 pt-2" style="text-align: center">
                       <p>VAT 7%</p>
                       <small class="font-normal"></small>
                     </th>
@@ -220,14 +220,14 @@
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
-                    <td v-if="data.data.customer_branch?.isVat" class=".td border" style="text-align: right">
+                    <td v-if="data.data.customer_branch?.isVat" class=".td border hidden" style="text-align: right">
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
                         {{ 
-                          product.vat_price > 0
+                          product.vat_price > 0 && data.data.discount <= 0
                           ? formatCurrency(product.vat_price)
-                          : '0.00'
+                          : formatCurrency((totalPrice+(data.data.project.total || 0)-data.data.discount)*0.07)
                         }}
                       </div>
                     </td>
@@ -235,7 +235,9 @@
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
-                        {{ formatCurrency((product.product_price + (product.vat_price || 0))*product.product_amount) }}
+                        {{
+                          formatCurrency(product.product_price*product.product_amount)
+                        }}
                       </div>
                     </td>
                     
