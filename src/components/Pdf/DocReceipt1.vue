@@ -125,7 +125,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border hidden pb-0 pt-2" style="text-align: center">
                       <p>VAT 7%</p>
                       <small class="font-normal"></small>
                     </th>
@@ -236,7 +236,7 @@
                         {{ formatCurrency(product.product_price) }}
                       </div>
                     </td>
-                    <td v-if="data.data.isVat" class=".td border" style="text-align: right">
+                    <td v-if="data.data.isVat" class=".td border hidden" style="text-align: right">
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
@@ -250,12 +250,15 @@
                       </div>
                     </td>
                     <td class=".td border" style="text-align: right">
-                      <div class="flex justify-center h-full py-2"
+                      <div class="hidden justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
                         {{ data.data.isVat && !data.data.sumVat && product.vat_price > 0 ? formatCurrency((product.vat_price*product.product_amount)+(product.product_price*product.product_amount)) : '' }}
                         {{ data.data.isVat && data.data.sumVat && product.vat_price > 0 ? formatCurrency((product.product_price*product.product_amount) + ((product.product_amount/totalAmount)*vat)) : '' }}
                         {{ product.vat_price === 0 ? formatCurrency((product.product_price*product.product_amount)) : '' }}
+                      </div>
+                      <div class="flex justify-center h-full py-2">
+                        {{ formatCurrency(product.product_price * product.product_amount) }}
                       </div>
                     </td>
                     
