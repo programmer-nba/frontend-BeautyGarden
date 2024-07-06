@@ -113,7 +113,7 @@
 
         <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
         <Column
-          field="receipt"
+          field="receiptVat"
           header="เลขที่"
           sortable
           style="min-width: 8rem"
@@ -121,7 +121,7 @@
         >
           <template #body="slotProps">
             <p v-if="slotProps.data.isBillVat" class="text-orange-500">
-              {{ slotProps.data.receiptVat }}
+              {{ slotProps.data.receiptVat }} -
               {{ slotProps.data.receipt }}
             </p>
             <p v-else-if="slotProps.data.isBillVat === false" class="text-black">
