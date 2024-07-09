@@ -77,7 +77,7 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่ : </span>
-                    {{ formatDate(data.data.start_date) }}
+                    {{ data.data.start_date_format }}
                   </div>
 
                   <div class="flex justify-between">
@@ -384,13 +384,13 @@
                     formatNumberToText(
                       (totalPrice - data.data.discount + vat 
                       + (data.data.project.total || 0) + ((data.data.project.total || 0)*0.07)
-                      )).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด') 
+                      )).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด') 
                     + 'ถ้วน' 
                   }} )
                 </p>
                 <p v-else class="font-bold">
                   ( {{ 
-                    formatNumberToText(data.data.amount_price).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด')
+                    formatNumberToText(data.data.amount_price).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด') 
                     + 'ถ้วน' 
                   }} )
                 </p>

@@ -2553,7 +2553,7 @@ const formatDateRef = (isoDateString) => {
   const thaiYear = isoDate.getUTCFullYear() + 543;
 
   // Get the day and month in UTC
-  const day = String(isoDate.getUTCDate()).padStart(2, '0');
+  const day = String(isoDate.getUTCDate()+1).padStart(2, '0');
   const month = String(isoDate.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-indexed
 
   // Format the date in "dd/mm/yyyy" format with the Thai year

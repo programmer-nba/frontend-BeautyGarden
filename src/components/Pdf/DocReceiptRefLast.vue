@@ -79,7 +79,7 @@
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">วันที่เริ่ม Date : </span>
-                    {{ formatDate(data.data.start_date) }}
+                    {{ data.data.start_date_format }}
                   </div>
                   <div class="flex justify-between">
                     <span class="font-bold pr-4">อ้างอิง : </span>
