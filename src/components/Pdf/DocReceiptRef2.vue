@@ -29,7 +29,7 @@
               <div class="flex justify-between">
                 <div class="from">
                   <article class="text-wrap w-[250px]">
-                    <p>{{ data.data.customer_branch?.Branch_company_address }}</p>
+                    <p>{{ data.data.customer_branch?.Branch_company_address?.replace("เขตบางมด", "เขตจอมทอง") }}</p>
                   </article>
                   โทร : {{ data.data.customer_branch?.Branch_company_number !== 'undefind' ? data.data.customer_branch?.Branch_company_number : null }}<br />
                   อีเมลล์ : {{ data.data.customer_branch?.company_email !=='undefine' ? data.data.customer_branch?.company_email : null }}
