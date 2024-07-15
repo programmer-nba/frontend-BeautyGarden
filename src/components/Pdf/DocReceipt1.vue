@@ -483,13 +483,31 @@ const print = () => {
 }
 
 const vat = computed(()=>{
-  const all_vat = data.data.product_detail.map((item)=>{
+ /*  const all_vat = data.data.product_detail.map((item)=>{
     return (item.vat_price || 0) * item.product_amount
   })
   const price = 
     data.data.sumVat ? totalPrice.value + (data.data.project.total || 0) - data.data.discount
     : totalPrice.value + (data.data.project.total || 0) - (data.data.project.vat_price || 0) - data.data.discount
   const result = all_vat.length && data.data.discount > 0 ? all_vat.reduce((a,b) => a + b) : all_vat.length && data.data.discount <= 0 ? all_vat.reduce((a,b) => a + b) : 0
+  return result */
+  const all_vat = data.data.product_detail.map((item)=>{
+    return item.vat_price * item.product_amount
+  })
+  let result = 0
+  if (data.data.discount <= 0) {
+    result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : 0
+  } else {
+    if (data.data.sumVat && all_vat.reduce((a,b) => a + b, 0) > 0) {
+      result = (totalPrice.value - data.data.discount)*0.07
+    } else if (data.data.sumVat && all_vat.reduce((a,b) => a + b, 0) <= 0) {
+      result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : 0
+    } 
+    else {
+      result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : 0
+    }
+  }
+  
   return result
 })
 

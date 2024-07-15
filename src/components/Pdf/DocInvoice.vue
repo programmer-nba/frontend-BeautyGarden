@@ -527,7 +527,20 @@ const vat = computed(()=>{
   const all_vat = data.data.product_detail.map((item)=>{
     return item.vat_price * item.product_amount
   })
-  const result = all_vat.length > 0 ? all_vat.reduce((a,b) => a + b, 0) : 0
+  let result = 0
+  if (data.data.discount <= 0) {
+    result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : 0
+  } else {
+    if (data.data.sumVat && all_vat.reduce((a,b) => a + b, 0) > 0) {
+      result = (totalPrice.value - data.data.discount)*0.07
+    } else if (data.data.sumVat && all_vat.reduce((a,b) => a + b, 0) <= 0) {
+      result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : 0
+    } 
+    else {
+      result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : 0
+    }
+  }
+  
   return result
 })
 
