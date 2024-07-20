@@ -125,9 +125,9 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border hidden pb-0 pt-2" style="text-align: center">
-                      <p>VAT 7%</p>
-                      <small class="font-normal"></small>
+                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th hidden border pb-0 pt-2" style="text-align: center">
+                      <p>VAT</p>
+                      <small class="font-normal">VAT 7%</small>
                     </th>
                     <th :style="{ backgroundColor: `#${data.color}` }" class="th border pb-0 pt-2 rounded-tr-xl" style="text-align: center">
                       <p>จำนวนเงิน</p>
@@ -309,7 +309,7 @@
                       </tr>
                       <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                         <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
-                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount+vat+((data.data.project.total || 0)*0.07)) }}</span>บาท</td>
+                        <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice+(data.data.project.total || 0)-data.data.discount+vat) }}</span>บาท</td>
                       </tr>
 
                       <tr class="flex justify-between items-center w-full mt-2 py-2 bg-green-200 " :style="{ backgroundColor: `#${data.color}` }">
@@ -383,7 +383,7 @@
                   ( {{ 
                     formatNumberToText(
                       (totalPrice - data.data.discount + vat 
-                      + (data.data.project.total || 0) + ((data.data.project.total || 0)*0.07)
+                      + (data.data.project.total || 0)
                       )).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด') 
                     + 'ถ้วน' 
                   }} )
@@ -496,7 +496,7 @@ const vat = computed(()=>{
   })
   let result = 0
   if (data.data.discount <= 0) {
-    result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : 0
+    result = all_vat.length ? all_vat.reduce((a,b) => a + b, 0) : data.data?.project?.vat_price || 0
   } else {
     if (data.data.sumVat && all_vat.reduce((a,b) => a + b, 0) > 0) {
       result = (totalPrice.value - data.data.discount)*0.07
