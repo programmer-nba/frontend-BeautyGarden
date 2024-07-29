@@ -125,7 +125,7 @@
                       <p>ราคา/หน่วย</p>
                       <small class="font-normal">Unit Price</small>
                     </th>
-                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th hidden border pb-0 pt-2" style="text-align: center">
+                    <th v-if="data.data.isVat" :style="{ backgroundColor: `#${data.color}` }" class="th border hidden pb-0 pt-2" style="text-align: center">
                       <p>VAT</p>
                       <small class="font-normal">VAT 7%</small>
                     </th>
@@ -167,7 +167,7 @@
                         }}
                       </div>
                     </td>
-                    <td v-if="data.data.isVat" class=".td border" style="text-align: center">
+                    <td v-if="data.data.isVat" class=".td border hidden" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
                         <pre class="hidden">{{ 
                             data.data.project.isVat && data.data.sumVat 
@@ -191,10 +191,12 @@
                     </pre>
                     <td class=".td border" style="text-align: center">
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(data.data.project.total_net) }}
+                        <!-- {{ formatCurrency(data.data.project.total_net) }} -->
+                          {{ formatCurrency(data.data.project.total) }}
                       </div>
                     </td>
                   </tr>
+
                   <tr class="border" v-for="(product, index) in data.data.product_detail" :key="index">
                     <td class=".td flex justify-center" style="text-align: center">
                       <p v-if="product.product_name">
@@ -381,17 +383,16 @@
               :style="{ backgroundColor: `#${data.color}` }">
                 <p v-if="data.data.isVat && data.data.sumVat" class="font-bold">
                   ( {{ 
-                    formatNumberToText(
+                    (formatNumberToText(
                       (totalPrice - data.data.discount + vat 
                       + (data.data.project.total || 0)
-                      )).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด') 
-                    + 'ถ้วน' 
+                      )).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด')+ 'ถ้วน').replace('สตางค์ถ้วน', 'สตางค์')  
                   }} )
                 </p>
                 <p v-else class="font-bold">
                   ( {{ 
-                    formatNumberToText(data.data.amount_price).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด') 
-                    + 'ถ้วน' 
+                    (formatNumberToText(data.data.amount_price).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด')
+                    + 'ถ้วน' ).replace('สตางค์ถ้วน', 'สตางค์') 
                   }} )
                 </p>
               </div>
