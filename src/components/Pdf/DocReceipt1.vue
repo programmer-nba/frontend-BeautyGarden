@@ -235,7 +235,7 @@
                       <div class="flex justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
-                        {{ formatCurrency(product.product_price) }}
+                        {{ formatCurrency(product.product_price+(product.vat_price || 0)) }}
                       </div>
                     </td>
                     <td v-if="data.data.isVat" class=".td border hidden" style="text-align: right">
@@ -255,12 +255,12 @@
                       <div class="hidden justify-center h-full py-2"
                       :class="product.product_price < 1 ? 'hidden' : ''"
                       >
-                        {{ data.data.isVat && !data.data.sumVat && product.vat_price > 0 ? formatCurrency((product.vat_price*product.product_amount)+(product.product_price*product.product_amount)) : '' }}
+                        {{ data.data.isVat && !data.data.sumVat && product.vat_price > 0 ? formatCurrency((product.vat_price*product.product_amount)+((product.product_price+(product.vat_price || 0))*product.product_amount)) : '' }}
                         {{ data.data.isVat && data.data.sumVat && product.vat_price > 0 ? formatCurrency((product.product_price*product.product_amount) + ((product.product_amount/totalAmount)*vat)) : '' }}
                         {{ product.vat_price === 0 ? formatCurrency((product.product_price*product.product_amount)) : '' }}
                       </div>
                       <div class="flex justify-center h-full py-2">
-                        {{ formatCurrency(product.product_price * product.product_amount) }}
+                        {{ formatCurrency((product.product_price+(product.vat_price || 0)) * product.product_amount) }}
                       </div>
                     </td>
                     
@@ -372,7 +372,7 @@
                       <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.amount_price) }}</strong>บาท</td>
                     </tr>
                     
-                    <tr class="flex justify-between w-full">
+                    <tr class="hidden justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงค้าง</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(Math.abs((totalPrice+(vat+(data.data.project?.vat_price))+(data.data.project.total || 0))-data.data.discount-data.data.amount_price)) }}</span>บาท</td>
                     </tr>
