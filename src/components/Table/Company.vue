@@ -655,7 +655,7 @@ const removeLogo = async () => {
       `${import.meta.env.VITE_API_URL}/Company/deleteImgBy/${id}`,
       {
         headers: {
-          'auth-token' : import.meta.env.VITE_TOKEN
+          'auth-token' : localStorage.getItem("ssgdToken")
         }
       }
     )
@@ -702,7 +702,7 @@ const uploadNewLogo = async () => {
       formData,
       {
         headers: {
-          "auth-token": import.meta.env.VITE_TOKEN,
+          "auth-token": localStorage.getItem("ssgdToken"),
           "Content-types": "multipart/form-data",
         },
       }
@@ -821,7 +821,7 @@ const addSign = async () => {
       formData,
       {
         headers: {
-          "auth-token": import.meta.env.VITE_TOKEN,
+          "auth-token": localStorage.getItem("ssgdToken"),
           "Content-Type": "multipart/form-data",
         },
       }
@@ -861,7 +861,7 @@ const deleteSign = async (id) => {
       `${import.meta.env.VITE_API_URL}/signature/deleteSugnature/${id}`,
       {
         headers: {
-          "auth-token": import.meta.env.VITE_TOKEN,
+          "auth-token": localStorage.getItem("ssgdToken"),
         },
       }
     );
@@ -910,7 +910,7 @@ const editHeadData = async (id) => {
   await axios
     .put(`${import.meta.env.VITE_API_URL}/Company/EditCompany/${id}`, body, {
       headers: {
-        "auth-token": import.meta.env.VITE_TOKEN,
+        "auth-token": localStorage.getItem("ssgdToken"),
       },
     })
     .then(async (response) => {
@@ -1004,7 +1004,7 @@ const createHeadData = async () => {
   await axios
     .post(`${import.meta.env.VITE_API_URL}/Company/createCompany`, body, {
       headers: {
-        "auth-token": import.meta.env.VITE_TOKEN,
+        "auth-token": localStorage.getItem("ssgdToken"),
       },
     })
     .then((response) => {
@@ -1041,7 +1041,7 @@ const getHeaders = async () => {
   await axios
     .get(`${import.meta.env.VITE_API_URL}/Company/getCompannyAll`, {
       headers: {
-        "auth-token": import.meta.env.VITE_TOKEN,
+        "auth-token": localStorage.getItem("ssgdToken"),
       },
     })
     .then(async (response) => {
@@ -1061,7 +1061,7 @@ const getLogos = async () => {
   await axios
     .get(`${import.meta.env.VITE_API_URL}/Company/getImgAll`, {
       headers: {
-        "auth-token": import.meta.env.VITE_TOKEN,
+        "auth-token": localStorage.getItem("ssgdToken"),
       },
     })
     .then(async (response) => {
@@ -1080,7 +1080,7 @@ const getSignatures = async () => {
   await axios
     .get(`${import.meta.env.VITE_API_URL}/signature/getSugnatureAlls`, {
       headers: {
-        "auth-token": import.meta.env.VITE_TOKEN,
+        "auth-token": localStorage.getItem("ssgdToken"),
       },
     })
     .then(async (response) => {

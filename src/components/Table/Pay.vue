@@ -626,7 +626,7 @@
         `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/getPOSBy/${pay_to_delete._id}`,
         {
           headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN
+            'auth-token' : localStorage.getItem("ssgdToken")
           }
         }
       )
@@ -670,7 +670,7 @@
           `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/getPOSBy/${sp._id}`,
           {
             headers: {
-              'auth-token' : import.meta.env.VITE_TOKEN
+              'auth-token' : localStorage.getItem("ssgdToken")
             }
           }
         )
@@ -739,7 +739,7 @@
         data,
         {
           headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN,
+            'auth-token' : localStorage.getItem("ssgdToken"),
             'Content-type' : 'application/json'
           }
         }
@@ -799,7 +799,7 @@
         data,
         {
           headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN,
+            'auth-token' : localStorage.getItem("ssgdToken"),
             'Content-type' : 'application/json'
           }
         }
@@ -906,7 +906,7 @@
         `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/getPosAll`,
         {
           headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN
+            'auth-token' : localStorage.getItem("ssgdToken")
           }
         }
       )
@@ -1031,7 +1031,7 @@ const uploadPicture = async () => {
         },
         {
           headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN
+            'auth-token' : localStorage.getItem("ssgdToken")
           }
         }
       )

@@ -1992,7 +1992,7 @@ const uploadProductPicture = async () => {
       data,
       {
         headers: {
-          'auth-token': import.meta.env.VITE_TOKEN
+          'auth-token': localStorage.getItem("ssgdToken")
         }
       }
     )
@@ -2580,7 +2580,7 @@ const createNewQuotation = async () => {
               image,
               {
                 headers: {
-                  'auth-token' : import.meta.env.VITE_TOKEN
+                  'auth-token' : localStorage.getItem("ssgdToken")
                 }
               }
             )
@@ -2770,7 +2770,7 @@ const uploadPicture = async () => {
         },
         {
           headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN
+            'auth-token' : localStorage.getItem("ssgdToken")
           }
         }
       )

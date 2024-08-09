@@ -657,7 +657,7 @@
         `${import.meta.env.VITE_API_URL}/PurchaseOrderSupllier/getBySup/${supName}`,
         {
           headers: {
-            'auth-token' : import.meta.env.VITE_TOKEN
+            'auth-token' : localStorage.getItem("ssgdToken")
           }
         }
       )

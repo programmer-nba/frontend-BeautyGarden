@@ -6,7 +6,7 @@ export const Customers = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/customer/getCustomerAll`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             console.log(response.data)
@@ -22,7 +22,7 @@ export const Customers = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/customer/getCustomerBy/${id}`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             console.log(response.data)
@@ -38,7 +38,7 @@ export const Customers = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/customer/deleteCustomer/${id}`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             console.log(response.data)
@@ -54,7 +54,7 @@ export const Customers = {
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/customer/create`, data,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             console.log(response.data)
@@ -70,7 +70,7 @@ export const Customers = {
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/customer/EditCustomer/${id}`, data,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             console.log(response.data)

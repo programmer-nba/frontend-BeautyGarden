@@ -6,7 +6,7 @@ export const Company = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/Company/getCompannyAll`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             return response.data
@@ -21,7 +21,7 @@ export const Company = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/Company/getCompanyBy/${id}`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             return response.data
@@ -36,7 +36,7 @@ export const Company = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/signature/getSugnatureAlls`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             return response.data
@@ -51,7 +51,7 @@ export const Company = {
             const response = await axios.get(`${import.meta.env.VITE_API_URL}/signature/getSugnatureBy/${id}`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             return response.data
@@ -66,7 +66,7 @@ export const Company = {
             const response = await axios.delete(`${import.meta.env.VITE_API_URL}/Company/deleteCompany/${id}`,
             {
                 headers: {
-                    'auth-token': import.meta.env.VITE_TOKEN
+                    'auth-token': localStorage.getItem("ssgdToken")
                 }
             })
             return response.data

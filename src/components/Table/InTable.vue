@@ -46,10 +46,32 @@
           />
           <Button icon="pi pi-refresh" @click="refresh" />
           <small class="opacity-60">{{ lastRefreshed }}</small>
-          <Calendar :disabled="seeAll" class="px-5" v-model="month" showIcon :showOnFocus="false" :showButtonBar="true" inputClass="p-2 bg-sky-100 text-center w-24" inputId="buttondisplay" view="month" dateFormat="mm/yy" />
-          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">ประจำเดือน <span class="font-bold text-sky-700 underline">{{ getMonthString(month.getMonth()) }} {{ month.getFullYear() + 543 }}</span></p>
+          <Calendar
+            :disabled="seeAll"
+            class="px-5"
+            v-model="month"
+            showIcon
+            :showOnFocus="false"
+            :showButtonBar="true"
+            inputClass="p-2 bg-sky-100 text-center w-24"
+            inputId="buttondisplay"
+            view="month"
+            dateFormat="mm/yy"
+          />
+          <p :class="seeAll ? 'opacity-0' : ''" class="pr-2">
+            ประจำเดือน
+            <span class="font-bold text-sky-700 underline"
+              >{{ getMonthString(month.getMonth()) }}
+              {{ month.getFullYear() + 543 }}</span
+            >
+          </p>
           <div class="flex items-center border px-2 py-1 rounded bg-slate-100">
-            <Checkbox v-model="seeAll" inputId="dateFilter" name="dateFilter" :binary="true" />
+            <Checkbox
+              v-model="seeAll"
+              inputId="dateFilter"
+              name="dateFilter"
+              :binary="true"
+            />
             <label for="dateFilter" class="ml-2"> ดูทั้งหมด </label>
           </div>
         </template>
@@ -62,7 +84,7 @@
             severity="help"
             @click="exportCSV($event)"
           />
-            เปลี่ยนสี 
+          เปลี่ยนสี
           <ColorPicker class="px-3" v-model="color" />
           {{ color }}
         </template>
@@ -87,42 +109,60 @@
         <template #header>
           <div class="flex flex-wrap gap-2 items-center justify-between">
             <div class="flex items-center gap-3">
-              <p class="m-0">
-                จัดการเอกสาร
-              </p>
-              <SelectButton v-model="curfilter" :options="['ทั้งหมด', 'ยังไม่ครบ', 'ครบแล้ว']" aria-labelledby="basic" />
+              <p class="m-0">จัดการเอกสาร</p>
+              <SelectButton
+                v-model="curfilter"
+                :options="['ทั้งหมด', 'ยังไม่ครบ', 'ครบแล้ว']"
+                aria-labelledby="basic"
+              />
             </div>
-            
+
             <span class="p-input-icon-right border rounded">
               <i class="pi pi-search" />
-              <InputText v-model="filters['global'].value" class="px-3" placeholder="ค้นหา..." />
+              <InputText
+                v-model="filters['global'].value"
+                class="px-3"
+                placeholder="ค้นหา..."
+              />
             </span>
-            
-            <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
+
+            <div
+              class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded"
+            >
               <Checkbox v-model="showCustomerName" :binary="true" />
               <p>ลายเซ็นแสดงชื่อลูกค้า</p>
             </div>
-            <div class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded">
+            <div
+              class="flex gap-3 self-end items-center bg-slate-300 px-3 py-1 rounded"
+            >
               <Checkbox v-model="sign" :binary="true" />
               <p>ลายเซ็นอิเล็กทรอนิกส์</p>
             </div>
-            
           </div>
           <div class="flex justify-center relative top-3">
             <p>
               หน้าปัจจุบัน
-              <span class="bg-sky-500 w-fit px-2 rounded-full text-white text-center">{{ curPage }}</span>
+              <span
+                class="bg-sky-500 w-fit px-2 rounded-full text-white text-center"
+                >{{ curPage }}</span
+              >
             </p>
           </div>
         </template>
 
         <template #empty>
-          <div class="w-full flex justify-center items-center py-48 border-t border-b">
+          <div
+            class="w-full flex justify-center items-center py-48 border-t border-b"
+          >
             <p class="tex-lg animate-bounce">กำลังโหลดข้อมูล...</p>
           </div>
         </template>
 
-        <Column selectionMode="multiple" style="width: 3rem" :exportable="false"></Column>
+        <Column
+          selectionMode="multiple"
+          style="width: 3rem"
+          :exportable="false"
+        ></Column>
         <Column
           field="invoice"
           header="เลขที่"
@@ -130,17 +170,17 @@
           style="min-width: 12rem"
           class="border-b"
         >
-        <template #body="slotProps">
-          <span class="text-xs">
-            {{ slotProps.data.invoice }}
-            <i 
-              @click="onCoppy(slotProps.data)" 
-              class="pi text-xs pi-file-export cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full" 
-              v-tooltip.top="'ใช้อ้างอิงใบเสร็จ'"
+          <template #body="slotProps">
+            <span class="text-xs">
+              {{ slotProps.data.invoice }}
+              <i
+                @click="onCoppy(slotProps.data)"
+                class="pi text-xs pi-file-export cursor-pointer hover:text-sky-500 hover:bg-sky-100 duration-300 ease-in-out p-2 rounded-full"
+                v-tooltip.top="'ใช้อ้างอิงใบเสร็จ'"
               >
-            </i>
-          </span>
-        </template>
+              </i>
+            </span>
+          </template>
         </Column>
         <Column
           field="customer_detail.customer_name"
@@ -157,7 +197,9 @@
           style="min-width: 8rem"
         >
           <template #body="slotProps">
-            <p class="text-sm">{{ formatDateRef(slotProps.data.start_date) }}</p>
+            <p class="text-sm">
+              {{ formatDateRef(slotProps.data.start_date) }}
+            </p>
           </template>
         </Column>
         <Column
@@ -179,26 +221,36 @@
           style="min-width: 9rem"
         >
           <template #body="slotProps">
-            <span 
-              v-if="slotProps.data.invoice && totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0) > 0"
+            <span
+              v-if="
+                slotProps.data.invoice &&
+                totalPrice(slotProps.data) -
+                  slotProps.data.discount +
+                  totalVat(slotProps.data) +
+                  (slotProps.data.project?.total || 0) +
+                  (slotProps.data.project?.vat_price || 0) -
+                  (slotProps.data.paid || 0) >
+                  0
+              "
               :class="
-              countdownToEndDate(slotProps.data.end_date).days > 0 ? 'font-bold' 
-              : countdownToEndDate(slotProps.data.end_date).days === 0  ? 'text-orange-500 font-bold animate-bounce'
-              : 'text-red-700 font-bold'
-            ">
-            {{ 
-              countdownToEndDate(slotProps.data.end_date).days > 0
-              ? countdownToEndDate(slotProps.data.end_date).days + ' วัน'
-              : countdownToEndDate(slotProps.data.end_date).days === 0 ? 'วันนี้'
-              : 'เกินกำหนด ' + countdownToEndDate(slotProps.data.end_date).days*(-1) + ' วัน'
-            }}
-            </span>
-            <span 
-              class="font-bold text-green-700"
-              v-else
+                countdownToEndDate(slotProps.data.end_date).days > 0
+                  ? 'font-bold'
+                  : countdownToEndDate(slotProps.data.end_date).days === 0
+                  ? 'text-orange-500 font-bold animate-bounce'
+                  : 'text-red-700 font-bold'
+              "
             >
-              เสร็จสมบูรณ์
+              {{
+                countdownToEndDate(slotProps.data.end_date).days > 0
+                  ? countdownToEndDate(slotProps.data.end_date).days + " วัน"
+                  : countdownToEndDate(slotProps.data.end_date).days === 0
+                  ? "วันนี้"
+                  : "เกินกำหนด " +
+                    countdownToEndDate(slotProps.data.end_date).days * -1 +
+                    " วัน"
+              }}
             </span>
+            <span class="font-bold text-green-700" v-else> เสร็จสมบูรณ์ </span>
           </template>
         </Column>
 
@@ -211,24 +263,56 @@
         >
           <template #body="slotProps">
             <div v-if="!slotProps.data.discount > 0">
-              {{ 
+              {{
                 slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
-                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
-                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0) +
+                        (slotProps.data.project?.vat_price || 0)
+                    )
+                  : slotProps.data.customer_branch?.isVat &&
+                    !slotProps.data.sumVat
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0)
+                    )
+                  : formatCurrency(
+                      slotProps.data.total -
+                        slotProps.data.discount +
+                        (slotProps.data.project?.total || 0)
+                    )
               }}
             </div>
             <div v-else>
-              {{ 
+              {{
                 slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + ((totalPrice(slotProps.data) - slotProps.data.discount)*0.07) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0)) 
-                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0)) 
-                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0)) 
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        (totalPrice(slotProps.data) - slotProps.data.discount) *
+                          0.07 +
+                        (slotProps.data.project?.total || 0) +
+                        (slotProps.data.project?.vat_price || 0)
+                    )
+                  : slotProps.data.customer_branch?.isVat &&
+                    !slotProps.data.sumVat
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0)
+                    )
+                  : formatCurrency(
+                      slotProps.data.total -
+                        slotProps.data.discount +
+                        (slotProps.data.project?.total || 0)
+                    )
               }}
             </div>
-            
           </template>
         </Column>
         <Column
@@ -240,47 +324,125 @@
         >
           <template #body="slotProps">
             <pre class="hidden">
-              {{ slotProps.data.project.vat_price = slotProps.data.isVat ? slotProps.data.project?.vat_price : 0 }}
+              {{
+                (slotProps.data.project.vat_price = slotProps.data.isVat
+                  ? slotProps.data.project?.vat_price
+                  : 0)
+              }}
             </pre>
-            <div v-if="!slotProps.data.discount > 0"
+            <div
+              v-if="!slotProps.data.discount > 0"
               :class="[
-                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0))) === '0.00' 
-                ? 'bg-green-200 font-bold'
-                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) === '0.00')
-                ? 'bg-green-200 font-bold'
-                : 'font-bold'
+                slotProps.data.customer_branch?.isVat &&
+                slotProps.data.sumVat &&
+                formatCurrency(
+                  totalPrice(slotProps.data) -
+                    slotProps.data.discount +
+                    totalVat(slotProps.data) +
+                    (slotProps.data.project?.total || 0) +
+                    (slotProps.data.project?.vat_price || 0) -
+                    (slotProps.data.paid || 0)
+                ) === '0.00'
+                  ? 'bg-green-200 font-bold'
+                  : slotProps.data.customer_branch?.isVat &&
+                    !slotProps.data.sumVat &&
+                    formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0) -
+                        (slotProps.data.paid || 0)
+                    ) === '0.00'
+                  ? 'bg-green-200 font-bold'
+                  : 'font-bold',
               ]"
             >
-              {{ 
+              {{
                 slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
-                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
-                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0) +
+                        (slotProps.data.project?.vat_price || 0) -
+                        (slotProps.data.paid || 0)
+                    )
+                  : slotProps.data.customer_branch?.isVat &&
+                    !slotProps.data.sumVat
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0) -
+                        (slotProps.data.paid || 0)
+                    )
+                  : formatCurrency(
+                      slotProps.data.total -
+                        slotProps.data.discount +
+                        (slotProps.data.project?.total || 0) -
+                        (slotProps.data.paid || 0)
+                    )
               }}
             </div>
-            <div v-else
+            <div
+              v-else
               :class="[
-                slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
-                && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + ((totalPrice(slotProps.data) - slotProps.data.discount)*0.07) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0))) === '0.00'
-                ? 'bg-green-200 font-bold'
-                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
-                && (formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0))) === '0.00' 
-                ? 'bg-green-200 font-bold'
-                : 'font-bold' 
+                slotProps.data.customer_branch?.isVat &&
+                slotProps.data.sumVat &&
+                formatCurrency(
+                  totalPrice(slotProps.data) -
+                    slotProps.data.discount +
+                    (totalPrice(slotProps.data) - slotProps.data.discount) *
+                      0.07 +
+                    (slotProps.data.project?.total || 0) +
+                    (slotProps.data.project?.vat_price || 0) -
+                    (slotProps.data.paid || 0)
+                ) === '0.00'
+                  ? 'bg-green-200 font-bold'
+                  : slotProps.data.customer_branch?.isVat &&
+                    !slotProps.data.sumVat &&
+                    formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0) -
+                        (slotProps.data.paid || 0)
+                    ) === '0.00'
+                  ? 'bg-green-200 font-bold'
+                  : 'font-bold',
               ]"
             >
-              {{ 
+              {{
                 slotProps.data.customer_branch?.isVat && slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + ((totalPrice(slotProps.data) - slotProps.data.discount)*0.07) + (slotProps.data.project?.total || 0) + (slotProps.data.project?.vat_price || 0) - (slotProps.data.paid || 0)) 
-                : slotProps.data.customer_branch?.isVat && !slotProps.data.sumVat
-                ? formatCurrency(totalPrice(slotProps.data) - slotProps.data.discount + totalVat(slotProps.data) + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
-                : formatCurrency(slotProps.data.total - slotProps.data.discount + (slotProps.data.project?.total || 0) - (slotProps.data.paid || 0)) 
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        (totalPrice(slotProps.data) - slotProps.data.discount) *
+                          0.07 +
+                        (slotProps.data.project?.total || 0) +
+                        (slotProps.data.project?.vat_price || 0) -
+                        (slotProps.data.paid || 0)
+                    )
+                  : slotProps.data.customer_branch?.isVat &&
+                    !slotProps.data.sumVat
+                  ? formatCurrency(
+                      totalPrice(slotProps.data) -
+                        slotProps.data.discount +
+                        totalVat(slotProps.data) +
+                        (slotProps.data.project?.total || 0) -
+                        (slotProps.data.paid || 0)
+                    )
+                  : formatCurrency(
+                      slotProps.data.total -
+                        slotProps.data.discount +
+                        (slotProps.data.project?.total || 0) -
+                        (slotProps.data.paid || 0)
+                    )
               }}
             </div>
           </template>
         </Column>
-        
+
         <Column
           field="status[0]"
           header="ออกงวดแล้ว"
@@ -289,31 +451,41 @@
           class="border-b text-xs text-center"
         >
           <template #body="slotProps">
-            <button v-tooltip.top="'รายละเอียดงวดย่อย'" class="border p-2 rounded hover:bg-sky-200" @click="openChildDetailHandle(slotProps.data)">
-              {{ slotProps.data.end_period > 1 ? slotProps.data.childs?.length : 1 }} / {{ slotProps.data.end_period }}
+            <button
+              v-tooltip.top="'รายละเอียดงวดย่อย'"
+              class="border p-2 rounded hover:bg-sky-200"
+              @click="openChildDetailHandle(slotProps.data)"
+            >
+              {{
+                slotProps.data.end_period > 1
+                  ? slotProps.data.childs?.length
+                  : 1
+              }}
+              / {{ slotProps.data.end_period }}
             </button>
-            <Button 
-                class="text-sky-600 hover:bg-sky-100" 
-                v-tooltip.top="'ออกใบแจ้งหนี้งวดย่อย'"
-                icon="pi pi-plus-circle" 
-                outlined 
-                rounded
-                :loading="loading"
-                @click="openRefInvoiceHandle(slotProps.data)" 
-              />
+            <Button
+              class="text-sky-600 hover:bg-sky-100"
+              v-tooltip.top="'ออกใบแจ้งหนี้งวดย่อย'"
+              icon="pi pi-plus-circle"
+              outlined
+              rounded
+              :loading="loading"
+              @click="openRefInvoiceHandle(slotProps.data)"
+            />
           </template>
         </Column>
         <Column :exportable="false" style="min-width: 13rem" class="border-b">
           <template #body="slotProps">
             <div class="flex flex-wrap gap-1 justify-center items-center">
-              <Button 
-                class="text-green-600 hover:bg-green-100" 
+              <Button
+                class="text-green-600 hover:bg-green-100"
                 v-tooltip.top="'ดูใบเสร็จ'"
-                icon="pi pi-dollar" 
-                outlined 
+                icon="pi pi-dollar"
+                outlined
                 :loading="loading"
                 rounded
-                @click="openRefReceipt(slotProps.data)" />
+                @click="openRefReceipt(slotProps.data)"
+              />
               <div class="relative">
                 <!-- <Button
                   v-if="slotProps.data.status.length > 0 && slotProps.data.end_period > 1"
@@ -327,15 +499,13 @@
                   @blur="blurMenu(slotProps.data._id)"
                 /> -->
                 <Button
-                  
-                  class="text-blue-600 hover:bg-blue-100" 
+                  class="text-blue-600 hover:bg-blue-100"
                   v-tooltip.top="'ปริ้นท์'"
-                  icon="pi pi-file" 
-                  outlined 
+                  icon="pi pi-file"
+                  outlined
                   :loading="loading"
                   rounded
-                  @click.prevent="seeInvoice(slotProps.data)" 
-                  
+                  @click.prevent="seeInvoice(slotProps.data)"
                 />
                 <!-- <div v-show="openMenus===slotProps.data._id" class="absolute -top-12 bg-black text-white z-10 shadow-lg flex flex-col divide-y-2 w-[100px] overflow-x-hidden">
                   <p v-for="i in slotProps.data.end_period" :key="i" class="py-1 px-2 cursor-pointer hover:bg-white hover:text-black duration-300 ease-in-out"
@@ -376,19 +546,21 @@
       :modal="true"
       class="p-fluid"
     >
-    <div class="card flex flex-col gap-y-2 justify-content-center border-b py-4">
-      <p class="font-bold">อ้างอิงใบเสนอราคา</p>
-      <Dropdown
-        v-model="refQuotation"
-        editable
-        :options="quotations"
-        optionLabel="quotation"
-        placeholder="เลือกใบเสนอราคา"
-        class="w-full md:w-14rem"
-        @input="referQuotationInput"
-        @change="referQuotation"
-      />
-    </div>
+      <div
+        class="card flex flex-col gap-y-2 justify-content-center border-b py-4"
+      >
+        <p class="font-bold">อ้างอิงใบเสนอราคา</p>
+        <Dropdown
+          v-model="refQuotation"
+          editable
+          :options="quotations"
+          optionLabel="quotation"
+          placeholder="เลือกใบเสนอราคา"
+          class="w-full md:w-14rem"
+          @input="referQuotationInput"
+          @change="referQuotation"
+        />
+      </div>
       <div
         v-if="loading"
         class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
@@ -397,23 +569,45 @@
       </div>
       <div class="flex flex-col items-center justify-center mt-3">
         <p class="text-xl font-semibold">หัวเอกสาร</p>
-        <InputText class="py-2 px-2 text-center bg-sky-100 text-xl" v-model="inputHeader" />
+        <InputText
+          class="py-2 px-2 text-center bg-sky-100 text-xl"
+          v-model="inputHeader"
+        />
       </div>
       <div class="card pt-5">
         <div class="card flex gap-2 justify-start items-center">
           <p>วันที่เริ่มต้น</p>
-          <Calendar class="border rounded" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
+          <Calendar
+            class="border rounded"
+            v-model="start_date"
+            showButtonBar
+            dateFormat="dd/mm/yy"
+          />
         </div>
         <div class="card flex gap-2 justify-start items-center pt-3">
           <p>วันครบกำหนด</p>
-          <Calendar class="border rounded" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
+          <Calendar
+            class="border rounded"
+            v-model="end_date"
+            showButtonBar
+            dateFormat="dd/mm/yy"
+          />
         </div>
         <div class="card py-2 justify-start items-center">
-          <p class="min-w-fit" for="credit">เครดิต <span class="px-2 text-bold text-green-700">{{ credit }}</span>วัน</p>
+          <p class="min-w-fit" for="credit">
+            เครดิต
+            <span class="px-2 text-bold text-green-700">{{ credit }}</span
+            >วัน
+          </p>
         </div>
         <div class="card py-2 flex gap-2 justify-start items-center pb-5">
           <p class="min-w-fit" for="credit">จำนวนงวดชำระ</p>
-          <input type="number" min="1" v-model="end_period" class="border rounded max-w-[4rem] text-center" />
+          <input
+            type="number"
+            min="1"
+            v-model="end_period"
+            class="border rounded max-w-[4rem] text-center"
+          />
         </div>
         <div class="pt-2 border-t">
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -437,14 +631,14 @@
               class="flex w-full py-2 justify-center items-center pl-2 bg-emerald-600 rounded-lg text-white"
             >
               <Avatar
-                v-if="selectedCompany?.Branch_iden_number!=='-'"
+                v-if="selectedCompany?.Branch_iden_number !== '-'"
                 class="w-[75px]"
                 :image="`https://drive.google.com/thumbnail?id=${selectedCompany?.Branch_iden_number}`"
                 shape="circle"
               />
               <span class="font-bold"
                 >{{ selectedCompany?.Branch_company_name }}
-                
+
                 <Chip
                   class="px-2 text-xs ml-3"
                   :class="selectedCompany?.isVat ? 'bg-yellow-300' : 'hidden'"
@@ -458,27 +652,43 @@
             <p class="m-0">
               {{ selectedCompany?.Branch_company_address }}
             </p>
-            <p class="m-0">เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}</p>
-            <p class="m-0">โทร : {{ selectedCompany?.Branch_company_number }}</p>
+            <p class="m-0">
+              เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}
+            </p>
+            <p class="m-0">
+              โทร : {{ selectedCompany?.Branch_company_number }}
+            </p>
             <p class="m-0">อีเมล์ : {{ selectedCompany?.company_email }}</p>
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
-            <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
+            <p class="m-0">
+              เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}
+            </p>
             <br />
             <div>
               <p class="pb-2">ช่องทางการชำระเงิน</p>
               <div class="card flex justify-center bg-slate-200 rounded py-2">
                 <div class="flex flex-wrap gap-3">
-                    <div class="flex items-center">
-                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
-                        <label for="cash" class="ml-2">เงินสด</label>
-                    </div>
-                    <div class="flex items-center">
-                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
-                        <label for="bank" class="ml-2">เงินโอน</label>
-                    </div>
+                  <div class="flex items-center">
+                    <RadioButton
+                      v-model="transfer"
+                      inputId="cash"
+                      name="cash"
+                      value="cash"
+                    />
+                    <label for="cash" class="ml-2">เงินสด</label>
+                  </div>
+                  <div class="flex items-center">
+                    <RadioButton
+                      v-model="transfer"
+                      inputId="bank"
+                      name="bank"
+                      value="bank"
+                    />
+                    <label for="bank" class="ml-2">เงินโอน</label>
+                  </div>
                 </div>
               </div>
-              <div class="pt-2" v-if="transfer==='bank'">
+              <div class="pt-2" v-if="transfer === 'bank'">
                 <h1>เลือกบัญชีธนาคาร</h1>
                 <div class="card flex justify-content-center">
                   <Dropdown
@@ -504,27 +714,35 @@
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
           <div class="flex justify-center">
-            <Dropdown @change="refCustomer" v-model="selectedCustomer" :options="customers" filter optionLabel="customer_name" placeholder="เลือกลูกค้า" class="w-full md:w-14rem p-2">
+            <Dropdown
+              @change="refCustomer"
+              v-model="selectedCustomer"
+              :options="customers"
+              filter
+              optionLabel="customer_name"
+              placeholder="เลือกลูกค้า"
+              class="w-full md:w-14rem p-2"
+            >
               <template #value="slotProps">
-                  <div v-if="slotProps.value" class="flex items-center">
-                      <div>
-                        <p>{{ slotProps.value.customer_name }}</p>
-                        <p>{{ slotProps.value.customer_lastname }}</p>
-                      </div>
+                <div v-if="slotProps.value" class="flex items-center">
+                  <div>
+                    <p>{{ slotProps.value.customer_name }}</p>
+                    <p>{{ slotProps.value.customer_lastname }}</p>
                   </div>
-                  <span v-else>
-                      {{ slotProps.placeholder }}
-                  </span>
+                </div>
+                <span v-else>
+                  {{ slotProps.placeholder }}
+                </span>
               </template>
               <template #option="slotProps">
-                  <div class="flex items-center"> 
-                      <div>
-                        <p>
-                          {{ slotProps.option.customer_name }}
-                          <small>{{ slotProps.option.customer_lastname }}</small>
-                        </p>
-                      </div>
+                <div class="flex items-center">
+                  <div>
+                    <p>
+                      {{ slotProps.option.customer_name }}
+                      <small>{{ slotProps.option.customer_lastname }}</small>
+                    </p>
                   </div>
+                </div>
               </template>
             </Dropdown>
           </div>
@@ -542,7 +760,11 @@
             </div>
             <span class="font-bold"
               >{{ customer?.customer_name }}
-              {{ customer?.customer_lastname ? `(${customer?.customer_lastname})` : "" }}
+              {{
+                customer?.customer_lastname
+                  ? `(${customer?.customer_lastname})`
+                  : ""
+              }}
             </span>
           </div>
         </div>
@@ -554,8 +776,7 @@
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
-            :class="{ 'p-invalid': !customer?.customer_name }"
-          />
+            />
           <small class="p-error" v-if="!customer?.customer_name"
             >กรุณาเพิ่มชื่อลูกค้า</small
           >
@@ -578,7 +799,6 @@
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
-            :class="{ 'p-invalid': !customer.customer_number }"
           />
           <small class="p-error" v-if="!customer.customer_number"
             >กรุณาเพิ่มรหัสลูกค้า</small
@@ -586,7 +806,9 @@
         </div>
 
         <div class="field py-2">
-          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+          <label for="customer_taxnumber"
+            >เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label
+          >
           <InputText
             class="p-2 border"
             id="customer_taxnumber"
@@ -601,7 +823,6 @@
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             required="false"
-            :class="{ 'p-invalid': !customer.customer_phone }"
           />
         </div>
         <div class="field py-2">
@@ -610,9 +831,7 @@
             class="p-2 border"
             id="customer_position"
             v-model.trim="customer.customer_position"
-            required="true"
-            :class="{ 'p-invalid': !customer.customer_position }"
-          />
+            required="true"/>
         </div>
         <div class="field py-2">
           <label for="customer_email">อีเมล์ลูกค้า</label>
@@ -621,7 +840,6 @@
             id="customer_email"
             v-model.trim="customer.customer_email"
             required="false"
-            :class="{ 'p-invalid': !customer.customer_email }"
           />
         </div>
         <div class="field py-2">
@@ -661,7 +879,6 @@
               id="customer_contact"
               v-model.trim="customer.customer_contact"
               required="false"
-              :class="{ 'p-invalid': !customer.customer_contact }"
             />
           </div>
           <div class="field py-2">
@@ -671,7 +888,6 @@
               id="customer_contact_number"
               v-model.trim="customer.customer_contact_number"
               required="false"
-              :class="{ 'p-invalid': !customer.customer_contact_number }"
             />
           </div>
 
@@ -685,7 +901,9 @@
             />
           </div>
 
-          <div class="flex gap-x-2 items-center border my-4 px-2 rounded bg-yellow-100">
+          <div
+            class="flex gap-x-2 items-center border my-4 px-2 rounded bg-yellow-100"
+          >
             <div class="flex py-2 items-center">
               <Checkbox
                 v-model="isWithholding"
@@ -705,7 +923,6 @@
             %
           </div>
         </div>
-        
       </div>
       <br />
 
@@ -713,12 +930,27 @@
         <InputSwitch v-model="sumVat" /> <span>{{ !sumVat ? 'Vat ใน' : 'Vat นอก' }}</span>
       </span> -->
 
-      <div v-if="selectedCompany?.isVat"  class="flex justify-between bg-slate-200 px-3 py-2">
+      <div
+        v-if="selectedCompany?.isVat"
+        class="flex justify-between bg-slate-200 px-3 py-2"
+      >
         <div class="flex items-center">
-          <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
+          <Checkbox
+            v-model="prod.project.isVat"
+            inputId="headIsVat"
+            name="isVat"
+            :binary="true"
+          />
           <label for="isVat" class="ml-2"> VAT 7% </label>
         </div>
-        <SelectButton class="w-1/2" @change="changesumVat()" v-show="prod.project.isVat" v-model="choosesumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
+        <SelectButton
+          class="w-1/2"
+          @change="changesumVat()"
+          v-show="prod.project.isVat"
+          v-model="choosesumVat"
+          :options="['Vat ใน', 'Vat นอก']"
+          aria-labelledby="basic"
+        />
       </div>
 
       <!-- <div class="py-4 px-2 bg-slate-100 rounded">
@@ -813,57 +1045,98 @@
             <div>
               <p>จำนวน</p>
               <div class="flex gap-2">
-                <inputNumber v-model="prod.project.amount" inputId="integeronly" />
-                <inputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+                <inputNumber
+                  v-model="prod.project.amount"
+                  inputId="integeronly"
+                />
+                <inputText
+                  v-model="prod.project.unit"
+                  class="text-center"
+                  placeholder="หน่วย"
+                />
               </div>
             </div>
             <div>
               <p>ราคา/หน่วย</p>
-              <InputNumber v-model="prod.project.price" inputId="locale-user" :minFractionDigits="2" :maxFractionDigits="2" />
+              <InputNumber
+                v-model="prod.project.price"
+                inputId="locale-user"
+                :minFractionDigits="2"
+                :maxFractionDigits="2"
+              />
             </div>
             <pre class="hidden">
-              {{ 
+              {{
                 prod.project.isVat && sumVat
-                ? prod.project.vat_price = prod.project.total*0.07
-                : prod.project.isVat && !sumVat
-                ? prod.project.vat_price = prod.project.total*7/107
-                : 0
+                  ? (prod.project.vat_price = prod.project.total * 0.07)
+                  : prod.project.isVat && !sumVat
+                  ? (prod.project.vat_price = (prod.project.total * 7) / 107)
+                  : 0
               }}
             </pre>
 
             <div class="py-3" v-if="sumVat">
               <p>ราคาสินค้า/บริการ</p>
-              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <pre class="hidden">{{
+                (prod.project.total =
+                  prod.project.price * prod.project.amount || 0)
+              }}</pre>
               <inputNumber v-model="prod.project.total" />
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && !sumVat">
-              <p>ราคาสินค้า/บริการ</p> 
-              <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
+            <div
+              class="py-2"
+              v-if="
+                prod.project.isVat && prod.project.vat_price !== 0 && !sumVat
+              "
+            >
+              <p>ราคาสินค้า/บริการ</p>
+              <p class="">
+                {{
+                  formatCurrency(prod.project.total - prod.project.vat_price)
+                }}
+              </p>
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project?.vat_price!==0">
-              <p>VAT 7%</p> 
+            <div
+              class="py-2"
+              v-if="prod.project.isVat && prod.project?.vat_price !== 0"
+            >
+              <p>VAT 7%</p>
               <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
             </div>
-            
+
             <div class="py-3" v-if="!sumVat">
-              <p>ราคาสินค้า/บริการ 
+              <p>
+                ราคาสินค้า/บริการ
                 <span class="px-2 text-sm bg-yellow-300">
-                  {{ 'รวม Vat' }}
+                  {{ "รวม Vat" }}
                 </span>
               </p>
-              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <pre class="hidden">{{
+                (prod.project.total =
+                  prod.project.price * prod.project.amount || 0)
+              }}</pre>
               <inputNumber v-model="prod.project.total" />
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && sumVat">
-              <p>ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
-                {{ 'รวม Vat' }}
-              </span></p> 
-              <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
+            <div
+              class="py-2"
+              v-if="
+                prod.project.isVat && prod.project.vat_price !== 0 && sumVat
+              "
+            >
+              <p>
+                ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
+                  {{ "รวม Vat" }}
+                </span>
+              </p>
+              <p class="">
+                {{
+                  formatCurrency(prod.project.total + prod.project.vat_price)
+                }}
+              </p>
             </div>
-
           </div>
         </div>
         <DataView :value="products">
@@ -875,8 +1148,15 @@
                   :class="{ 'surface-border': index !== 0 }"
                 >
                   <div class="overflow-x-auto w-[120px]">
-                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
-                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
+                    <div
+                      v-if="item.product_logo?.length > 0"
+                      class="flex border overflow-x-auto"
+                    >
+                      <div
+                        v-for="(pic, picindex) in item.product_logo"
+                        :key="picindex"
+                        class="h-[100px] w-full"
+                      >
                         <img
                           class="w-full h-full object-cover"
                           :src="pic"
@@ -885,14 +1165,28 @@
                       </div>
                     </div>
                   </div>
-              
+
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
                     <div>
                       <div>
-                        <p class="text-clip font-semibold overflow-hidden w-[100px]">
-                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
+                        <p
+                          class="text-clip font-semibold overflow-hidden w-[100px]"
+                        >
+                          <span
+                            class="text-orange-500"
+                            :class="
+                              item.product_name
+                                ? 'font-bold bg-orange-200 px-5'
+                                : ''
+                            "
+                            >{{
+                              item.product_name
+                                ? item.product_no
+                                : item.product_no + "." + item.product_text_no
+                            }}</span
+                          >
                           {{ item.product_name || null }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
@@ -907,21 +1201,32 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
-                          {{ item.product_amount }} {{ item.unit }}
                           {{
-                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
-                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
-                            : null 
+                            formatCurrency(
+                              item.product_price + (item.vat_price || 0)
+                            )
+                          }}
+                          x {{ item.product_amount }} {{ item.unit }}
+                          {{
+                            item.vat_price && item.vat_price > 0 && sumVat
+                              ? " (" + "VAT นอก" + ")"
+                              : item.vat_price && item.vat_price > 0 && !sumVat
+                              ? " (" + "VAT ใน" + ")"
+                              : null
                           }}
                         </p>
                       </div>
                     </div>
                     <div class="flex items-center md:items-end gap-5">
-                      <span v-if="item.product_price > 0" class="font-semibold text-900"
-                        >
+                      <span
+                        v-if="item.product_price > 0"
+                        class="font-semibold text-900"
+                      >
                         {{
-                          formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
+                          formatCurrency(
+                            (item.product_price + (item.vat_price || 0)) *
+                              item.product_amount
+                          )
                         }}.-</span
                       >
                       <div class="flex flex-col h-fit">
@@ -955,10 +1260,10 @@
           class="px-2 py-2 w-fit text-lg font-bold text-white"
           label="เพิ่มสินค้า/บริการ"
           @click="
-            ()=>{
-              openProductForm = true
-              product.isVat = false
-              product.vat_price = 0
+            () => {
+              openProductForm = true;
+              product.isVat = false;
+              product.vat_price = 0;
             }
           "
         />
@@ -968,19 +1273,42 @@
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
       >
-
         <div class="card flex justify-center">
           <div class="card">
-            <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
-                <template #content>
-                  
-                  <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
-                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
-                      <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
-                      <i @click="product?.product_logo.splice(picindex, 1)" class="pi pi-times" style="color: red"></i>
+            <FileUpload
+              name="demo[]"
+              auto
+              @uploader="customBase64Uploader"
+              :multiple="true"
+              accept="image/*"
+              :maxFileSize="1000000"
+              customUpload
+            >
+              <template #content>
+                <div
+                  v-if="product?.product_logo?.length > 0"
+                  class="card flex flex-col justify-center"
+                >
+                  <div
+                    class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center"
+                    v-for="(pic, picindex) in product?.product_logo"
+                    :key="picindex"
+                  >
+                    <Image
+                      :src="pic"
+                      alt="Image"
+                      class="h-[100px] flex items-center"
+                      width="100"
+                      preview
+                    />
+                    <i
+                      @click="product?.product_logo.splice(picindex, 1)"
+                      class="pi pi-times"
+                      style="color: red"
+                    ></i>
                   </div>
-                  </div>
-                </template>
+                </div>
+              </template>
             </FileUpload>
           </div>
         </div>
@@ -990,18 +1318,29 @@
           <div class="field">
             <div class="flex gap-2 items-center">
               <label class="font-semibold text-lg">หัวข้อที่</label>
-              <input type="text" v-model="product.product_no" class="border-b text-center rounded w-20" />
+              <input
+                type="text"
+                v-model="product.product_no"
+                class="border-b text-center rounded w-20"
+              />
             </div>
-            
+
             <div class="card flex justify-content-center">
               <InputText class="px-2 py-2" v-model="product.product_name" />
             </div>
-            
+
             <div class="flex gap-2 items-center">
-              <label class="font-semibold py-3 text-lg">รายละเอียดที่ <span>{{ product.product_no }}.</span></label>
-              <input type="text" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
+              <label class="font-semibold py-3 text-lg"
+                >รายละเอียดที่ <span>{{ product.product_no }}.</span></label
+              >
+              <input
+                type="text"
+                v-model="product.product_text_no"
+                class="border-b text-center rounded w-10"
+                min="1"
+              />
             </div>
-            
+
             <div
               v-for="(text, textInputIndex) in product.product_text"
               class="card flex flex-col gap-y-5 items-center justify-center"
@@ -1017,19 +1356,23 @@
             </div>
             <div class="flex gap-2">
               <Button
-              label="ลดบรรทัด"
-              class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
-              @click="product.product_text.pop()"
-              :disabled="product.product_text.length < 2"
-            />
-            <Button
-              label="เพิ่มบรรทัดใหม่"
-              class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
-              @click="product.product_text.push('')"
-            />
+                label="ลดบรรทัด"
+                class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
+                @click="product.product_text.pop()"
+                :disabled="product.product_text.length < 2"
+              />
+              <Button
+                label="เพิ่มบรรทัดใหม่"
+                class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
+                @click="product.product_text.push('')"
+              />
             </div>
           </div>
-          <pre class="hidden">{{ !isPrice ? product.product_price = 0 : product.product_price = product.product_price }}</pre>
+          <pre class="hidden">{{
+            !isPrice
+              ? (product.product_price = 0)
+              : (product.product_price = product.product_price)
+          }}</pre>
           <div class="field grid w-full px-5">
             <div class="field grid">
               <div class="flex items-center mt-3 gap-2">
@@ -1045,7 +1388,11 @@
                 :disabled="!isPrice"
               />
             </div>
-            <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
+            <pre class="hidden">{{
+              !isAmount
+                ? (product.product_amount = 0)
+                : (product.product_price = product.product_price)
+            }}</pre>
             <div class="field grid">
               <div class="flex items-center mt-3 gap-2">
                 <label for="quantity">จำนวน</label>
@@ -1068,19 +1415,31 @@
                 :disabled="!isAmount"
               />
             </div>
-            <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
+            <div
+              v-if="selectedCompany?.isVat"
+              class="flex items-center my-3 gap-2"
+            >
               <p>VAT</p>
               <InputSwitch v-model="product.isVat" @change="changeProductVat" />
-              <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
+              <p>{{ product.isVat ? "มี" : "ไม่มี" }}</p>
             </div>
-            <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+            <div
+              class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg"
+            >
               <label for="quantity" class="font-semibold">รวม</label>
               <p class="font-semibold px-2">
-                {{ 
+                {{
                   sumVat
-                  ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
-                  : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
-                }} บาท
+                    ? formatCurrency(
+                        product.product_amount * product.product_price +
+                          (product.vat_price || 0) * product.product_amount
+                      )
+                    : formatCurrency(
+                        product.product_amount * product.product_price -
+                          (product.vat_price || 0) * product.product_amount
+                      )
+                }}
+                บาท
               </p>
             </div>
           </div>
@@ -1100,10 +1459,11 @@
             />
           </div>
         </div>
-        
       </div>
 
-      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
+      <div
+        class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b"
+      >
         <p>ส่วนลด</p>
         <InputNumber
           v-model="discount"
@@ -1114,39 +1474,48 @@
       </div>
 
       <div class="flex flex-col gap-y-2">
-
         <div v-if="prod.project.isVat && !sumVat">
-          <p>ราคารวม
+          <p>
+            ราคารวม
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
+              formatCurrency(
+                sumProductsPrice + vat + (prod.project.total || 0)
+              ) || 0
             }}</span>
           </p>
         </div>
 
         <div v-if="prod.project.isVat && sumVat">
-          <p>ราคาสินค้า/บริการ
+          <p>
+            ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
+              formatCurrency(sumProductsPrice + (prod.project.total || 0)) || 0
             }}</span>
           </p>
         </div>
 
         <div v-if="prod.project.isVat && !sumVat">
-          <p>ราคาสินค้า/บริการ
+          <p>
+            ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
+              formatCurrency(
+                sumProductsPrice +
+                  (prod.project.total || 0) -
+                  prod.project.vat_price
+              ) || 0
             }}</span>
           </p>
         </div>
 
         <div v-if="!prod.project.isVat">
-          <p>ราคาสินค้า/บริการ
+          <p>
+            ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+(prod.project.total || 0))
+              formatCurrency(sumProductsPrice + (prod.project.total || 0))
             }}</span>
           </p>
         </div>
-        
+
         <p>
           ส่วนลด
           <span class="border-b px-2">
@@ -1160,15 +1529,19 @@
           </span>
         </p>
         <p v-if="prod.project.isVat || selectedCompany?.isVat">
-          VAT 7% 
+          VAT 7%
           <span class="border-b px-2">
-            {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
+            {{ formatCurrency(vat + (prod.project.vat_price || 0)) || 0 }}
           </span>
         </p>
         <pre class="hidden">
           {{
-            prod.project.total_net = prod.project.isVat && sumVat ? prod.project.total + prod.project.vat_price : prod.project.isVat && !sumVat ? prod.project.total
-            : 0
+            (prod.project.total_net =
+              prod.project.isVat && sumVat
+                ? prod.project.total + prod.project.vat_price
+                : prod.project.isVat && !sumVat
+                ? prod.project.total
+                : 0)
           }}
         </pre>
         <p v-if="prod.project.isVat || selectedCompany?.isVat">
@@ -1177,29 +1550,37 @@
         </p>
         <span v-if="isWithholding">
           หัก ณ ที่จ่าย {{ withholdingPercent }}%
-            <p class="border-b px-2">
-              {{
-                formatCurrency(withholdingPrice) || 0
-              }}
-            </p>
-          </span>
+          <p class="border-b px-2">
+            {{ formatCurrency(withholdingPrice) || 0 }}
+          </p>
+        </span>
         <span class="font-bold py-3"
           >ราคาสุทธิ
-          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
+          <span class="border-b px-2">{{
+            formatCurrency(allEnd) || 0
+          }}</span></span
         >
       </div>
 
       <div class="flex flex-col gap-y-2 py-5 items-center justify-center">
         <div class="">
           <label>หัวข้อลายเซ็น (ฝั่งผู้เสนอ)</label>
-          <InputText class="p-2" v-model="prod.footer1" placeholder="ผู้เสนอราคา" />
+          <InputText
+            class="p-2"
+            v-model="prod.footer1"
+            placeholder="ผู้เสนอราคา"
+          />
         </div>
         <div class="">
           <label>หัวข้อลายเซ็น (ฝั่งลูกค้า)</label>
-          <InputText class="p-2" v-model="prod.footer2" placeholder="ผู้อนุมัติการสั่งซื้อ" />
+          <InputText
+            class="p-2"
+            v-model="prod.footer2"
+            placeholder="ผู้อนุมัติการสั่งซื้อ"
+          />
         </div>
       </div>
-      
+
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
         <p>หมายเหตุ</p>
         <Textarea
@@ -1209,7 +1590,11 @@
           rows="5"
           cols="30"
         />
-        <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
+        <Button
+          class="px-2 bg-yellow-200"
+          label="เพิ่ม"
+          @click="remark.push('')"
+        />
       </div>
 
       <template #footer>
@@ -1231,8 +1616,8 @@
       :modal="true"
       class="p-fluid"
     >
-    <div class="card flex flex-col gap-y-2 justify-content-center">
-      <Dropdown
+      <div class="card flex flex-col gap-y-2 justify-content-center">
+        <Dropdown
           v-model="refQuotation"
           editable
           :options="quotations"
@@ -1242,7 +1627,7 @@
           @input="referQuotationInput"
           @change="referQuotation"
         />
-    </div>
+      </div>
       <div
         v-if="loading"
         class="card w-full h-full absolute top-1/2 lef-1/2 translate-x-1/2 translate-y-1/2"
@@ -1251,23 +1636,45 @@
       </div>
       <div class="flex flex-col items-center justify-center mt-3">
         <p class="text-xl font-semibold">หัวเอกสาร</p>
-        <InputText class="py-2 px-2 text-center bg-sky-100 text-xl" v-model="inputHeader" />
+        <InputText
+          class="py-2 px-2 text-center bg-sky-100 text-xl"
+          v-model="inputHeader"
+        />
       </div>
       <div class="card pt-5">
         <div class="card flex flex-col gap-y-2 justify-center items-center">
           <p>วันที่เริ่มต้น</p>
-          <Calendar class="border" v-model="start_date" showButtonBar dateFormat="dd/mm/yy" />
+          <Calendar
+            class="border"
+            v-model="start_date"
+            showButtonBar
+            dateFormat="dd/mm/yy"
+          />
         </div>
         <div class="card flex gap-2 justify-start items-center pt-3">
           <p>วันครบกำหนด</p>
-          <Calendar class="border rounded" v-model="end_date" showButtonBar dateFormat="dd/mm/yy" />
+          <Calendar
+            class="border rounded"
+            v-model="end_date"
+            showButtonBar
+            dateFormat="dd/mm/yy"
+          />
         </div>
         <div class="card py-2 justify-start items-center">
-          <p class="min-w-fit" for="credit">เครดิต <span class="px-2 text-bold text-green-700">{{ credit }}</span>วัน</p>
+          <p class="min-w-fit" for="credit">
+            เครดิต
+            <span class="px-2 text-bold text-green-700">{{ credit }}</span
+            >วัน
+          </p>
         </div>
         <div class="card py-2 flex gap-2 justify-start items-center pb-5">
           <p class="min-w-fit" for="credit">จำนวนงวดชำระ</p>
-          <input type="number" min="1" v-model="end_period" class="border rounded max-w-[4rem] text-center" />
+          <input
+            type="number"
+            min="1"
+            v-model="end_period"
+            class="border rounded max-w-[4rem] text-center"
+          />
         </div>
         <div>
           <h1 class="text-lg font-semibold py-1">เลือกหัวเอกสาร</h1>
@@ -1291,7 +1698,7 @@
               class="flex w-full py-2 justify-center items-center pl-2 bg-emerald-600 rounded-lg text-white"
             >
               <Avatar
-                v-if="selectedCompany?.Branch_iden_number!=='-'"
+                v-if="selectedCompany?.Branch_iden_number !== '-'"
                 class="w-[75px]"
                 :image="`https://drive.google.com/thumbnail?id=${selectedCompany?.Branch_iden_number}`"
                 shape="circle"
@@ -1299,7 +1706,9 @@
               <span class="font-bold"
                 >{{ selectedCompany?.Branch_company_name }}
                 {{
-                  selectedCompany?.Branch_iden ? `(${selectedCompany?.Branch_iden})` : ""
+                  selectedCompany?.Branch_iden
+                    ? `(${selectedCompany?.Branch_iden})`
+                    : ""
                 }}
                 <Chip
                   class="px-2 text-xs ml-3"
@@ -1314,27 +1723,43 @@
             <p class="m-0">
               {{ selectedCompany?.Branch_company_address }}
             </p>
-            <p class="m-0">เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}</p>
-            <p class="m-0">โทร : {{ selectedCompany?.Branch_company_number }}</p>
+            <p class="m-0">
+              เลขประจำตัวผู้เสียภาษี : {{ selectedCompany?.taxnumber }}
+            </p>
+            <p class="m-0">
+              โทร : {{ selectedCompany?.Branch_company_number }}
+            </p>
             <p class="m-0">อีเมล์ : {{ selectedCompany?.company_email }}</p>
             <p class="m-0">ผู้ติดต่อ : {{ selectedCompany?.contact_name }}</p>
-            <p class="m-0">เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}</p>
+            <p class="m-0">
+              เบอร์ผู้ติดต่อ : {{ selectedCompany?.contact_number }}
+            </p>
             <br />
             <div>
               <p class="pb-2">ช่องทางการชำระเงิน</p>
               <div class="card flex justify-center bg-slate-200 rounded py-2">
                 <div class="flex flex-wrap gap-3">
-                    <div class="flex items-center">
-                        <RadioButton v-model="transfer" inputId="cash" name="cash" value="cash" />
-                        <label for="cash" class="ml-2">เงินสด</label>
-                    </div>
-                    <div class="flex items-center">
-                        <RadioButton v-model="transfer" inputId="bank" name="bank" value="bank" />
-                        <label for="bank" class="ml-2">เงินโอน</label>
-                    </div>
+                  <div class="flex items-center">
+                    <RadioButton
+                      v-model="transfer"
+                      inputId="cash"
+                      name="cash"
+                      value="cash"
+                    />
+                    <label for="cash" class="ml-2">เงินสด</label>
+                  </div>
+                  <div class="flex items-center">
+                    <RadioButton
+                      v-model="transfer"
+                      inputId="bank"
+                      name="bank"
+                      value="bank"
+                    />
+                    <label for="bank" class="ml-2">เงินโอน</label>
+                  </div>
                 </div>
               </div>
-              <div v-if="transfer==='bank'" class="pt-2">
+              <div v-if="transfer === 'bank'" class="pt-2">
                 <h1>เลือกบัญชีธนาคาร</h1>
                 <div class="card flex justify-content-center">
                   <Dropdown
@@ -1360,27 +1785,35 @@
         <div class="mb-5">
           <h1 class="text-lg font-semibold py-1">เลือกลูกค้า</h1>
           <div class="flex justify-center">
-            <Dropdown @change="refCustomer" v-model="selectedCustomer" :options="customers" filter optionLabel="customer_name" placeholder="เลือกลูกค้า" class="w-full md:w-14rem p-2">
+            <Dropdown
+              @change="refCustomer"
+              v-model="selectedCustomer"
+              :options="customers"
+              filter
+              optionLabel="customer_name"
+              placeholder="เลือกลูกค้า"
+              class="w-full md:w-14rem p-2"
+            >
               <template #value="slotProps">
-                  <div v-if="slotProps.value" class="flex items-center">
-                      <div>
-                        <p>{{ slotProps.value.customer_name }}</p>
-                        <p>{{ slotProps.value.customer_lastname }}</p>
-                      </div>
+                <div v-if="slotProps.value" class="flex items-center">
+                  <div>
+                    <p>{{ slotProps.value.customer_name }}</p>
+                    <p>{{ slotProps.value.customer_lastname }}</p>
                   </div>
-                  <span v-else>
-                      {{ slotProps.placeholder }}
-                  </span>
+                </div>
+                <span v-else>
+                  {{ slotProps.placeholder }}
+                </span>
               </template>
               <template #option="slotProps">
-                  <div class="flex items-center"> 
-                      <div>
-                        <p>
-                          {{ slotProps.option.customer_name }}
-                          <small>{{ slotProps.option.customer_lastname }}</small>
-                        </p>
-                      </div>
+                <div class="flex items-center">
+                  <div>
+                    <p>
+                      {{ slotProps.option.customer_name }}
+                      <small>{{ slotProps.option.customer_lastname }}</small>
+                    </p>
                   </div>
+                </div>
               </template>
             </Dropdown>
           </div>
@@ -1398,7 +1831,11 @@
             </div>
             <span class="font-bold"
               >{{ customer.customer_name }}
-              {{ customer.customer_lastname ? `(${customer.customer_lastname})` : "" }}
+              {{
+                customer.customer_lastname
+                  ? `(${customer.customer_lastname})`
+                  : ""
+              }}
             </span>
           </div>
         </div>
@@ -1410,7 +1847,6 @@
             id="customer_name"
             v-model="customer.customer_name"
             required="true"
-            :class="{ 'p-invalid': !customer.customer_name }"
           />
           <small class="p-error" v-if="submitted && !customer.customer_name"
             >กรุณาเพิ่มชื่อลูกค้า</small
@@ -1434,7 +1870,6 @@
             id="customer_number"
             v-model.trim="customer.customer_number"
             required="true"
-            :class="{ 'p-invalid': !customer.customer_number }"
           />
           <small class="p-error" v-if="!customer.customer_number"
             >กรุณาเพิ่มรหัสลูกค้า</small
@@ -1442,7 +1877,9 @@
         </div>
 
         <div class="field py-2">
-          <label for="customer_taxnumber">เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label>
+          <label for="customer_taxnumber"
+            >เลขประจำตัวผู้เสีภาษี หรือ รหัสประชาชน</label
+          >
           <InputText
             class="p-2 border"
             id="customer_taxnumber"
@@ -1457,10 +1894,9 @@
             id="customer_phone"
             v-model.trim="customer.customer_phone"
             required="false"
-            :class="{ 'p-invalid': !customer.customer_phone }"
           />
         </div>
-        
+
         <div class="field py-2">
           <label for="customer_position">ที่อยู่ลูกค้า</label>
           <InputText
@@ -1468,7 +1904,6 @@
             id="customer_position"
             v-model.trim="customer.customer_position"
             required="true"
-            :class="[{ 'p-invalid': !customer.customer_position }, { 'p-invalid': !customer.customer_position }]"
           />
           <small class="p-error" v-if="!customer.customer_position"
             >กรุณาเพิ่มที่อยู่ลูกค้า</small
@@ -1532,7 +1967,6 @@
               />
             </div>
           </div>
-
         </div>
         <div class="field py-2">
           <label for="customer_contact">ผู้ติดต่อ</label>
@@ -1541,7 +1975,6 @@
             id="customer_contact"
             v-model.trim="customer.customer_contact"
             required="false"
-            :class="{ 'p-invalid': !customer.customer_contact }"
           />
         </div>
         <div class="field py-2">
@@ -1551,7 +1984,6 @@
             id="customer_contact_number"
             v-model.trim="customer.customer_contact_number"
             required="false"
-            :class="{ 'p-invalid': !customer.customer_contact_number }"
           />
         </div>
         <div class="field py-2">
@@ -1561,18 +1993,32 @@
             id="customer_contact_sign"
             v-model.trim="customer.customer_contact_sign"
             required="false"
-            :class="{ 'p-invalid': !customer.customer_contact_sign }"
           />
         </div>
       </div>
       <br />
 
-      <div v-if="selectedCompany?.isVat"  class="flex justify-between bg-slate-200 px-3 py-2">
+      <div
+        v-if="selectedCompany?.isVat"
+        class="flex justify-between bg-slate-200 px-3 py-2"
+      >
         <div class="flex items-center">
-          <Checkbox v-model="prod.project.isVat" inputId="headIsVat" name="isVat" :binary="true" />
+          <Checkbox
+            v-model="prod.project.isVat"
+            inputId="headIsVat"
+            name="isVat"
+            :binary="true"
+          />
           <label for="isVat" class="ml-2"> VAT 7% </label>
         </div>
-        <SelectButton class="w-1/2" @change="changesumVat()" v-show="prod.project.isVat" v-model="choosesumVat" :options="['Vat ใน', 'Vat นอก']" aria-labelledby="basic" />
+        <SelectButton
+          class="w-1/2"
+          @change="changesumVat()"
+          v-show="prod.project.isVat"
+          v-model="choosesumVat"
+          :options="['Vat ใน', 'Vat นอก']"
+          aria-labelledby="basic"
+        />
       </div>
 
       <div class="card">
@@ -1585,57 +2031,98 @@
             <div>
               <p>จำนวน</p>
               <div class="flex gap-2">
-                <InputNumber v-model="prod.project.amount" inputId="integeronly" />
-                <InputText v-model="prod.project.unit" class="text-center" placeholder="หน่วย" />
+                <InputNumber
+                  v-model="prod.project.amount"
+                  inputId="integeronly"
+                />
+                <InputText
+                  v-model="prod.project.unit"
+                  class="text-center"
+                  placeholder="หน่วย"
+                />
               </div>
             </div>
             <div>
               <p>ราคา/หน่วย</p>
-              <InputNumber v-model="prod.project.price" inputId="locale-user" :minFractionDigits="2" :maxFractionDigits="2" />
+              <InputNumber
+                v-model="prod.project.price"
+                inputId="locale-user"
+                :minFractionDigits="2"
+                :maxFractionDigits="2"
+              />
             </div>
             <pre class="hidden">
-              {{ 
+              {{
                 prod.project.isVat && sumVat
-                ? prod.project.vat_price = prod.project.total*0.07
-                : prod.project.isVat && !sumVat
-                ? prod.project.vat_price = prod.project.total*7/107
-                : 0
+                  ? (prod.project.vat_price = prod.project.total * 0.07)
+                  : prod.project.isVat && !sumVat
+                  ? (prod.project.vat_price = (prod.project.total * 7) / 107)
+                  : 0
               }}
             </pre>
 
             <div class="py-3" v-if="sumVat">
               <p>ราคาสินค้า/บริการ</p>
-              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <pre class="hidden">{{
+                (prod.project.total =
+                  prod.project.price * prod.project.amount || 0)
+              }}</pre>
               <inputNumber v-model="prod.project.total" />
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && !sumVat">
-              <p>ราคาสินค้า/บริการ</p> 
-              <p class="">{{ formatCurrency(prod.project.total-prod.project.vat_price) }}</p>
+            <div
+              class="py-2"
+              v-if="
+                prod.project.isVat && prod.project.vat_price !== 0 && !sumVat
+              "
+            >
+              <p>ราคาสินค้า/บริการ</p>
+              <p class="">
+                {{
+                  formatCurrency(prod.project.total - prod.project.vat_price)
+                }}
+              </p>
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project?.vat_price!==0">
-              <p>VAT 7%</p> 
+            <div
+              class="py-2"
+              v-if="prod.project.isVat && prod.project?.vat_price !== 0"
+            >
+              <p>VAT 7%</p>
               <p class="">{{ formatCurrency(prod.project.vat_price) }}</p>
             </div>
-            
+
             <div class="py-3" v-if="!sumVat">
-              <p>ราคาสินค้า/บริการ 
+              <p>
+                ราคาสินค้า/บริการ
                 <span class="px-2 text-sm bg-yellow-300">
-                  {{ 'รวม Vat' }}
+                  {{ "รวม Vat" }}
                 </span>
               </p>
-              <pre class="hidden">{{ prod.project.total = (prod.project.price * prod.project.amount) || 0 }}</pre>
+              <pre class="hidden">{{
+                (prod.project.total =
+                  prod.project.price * prod.project.amount || 0)
+              }}</pre>
               <inputNumber v-model="prod.project.total" />
             </div>
 
-            <div class="py-2" v-if="prod.project.isVat && prod.project.vat_price!==0 && sumVat">
-              <p>ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
-                {{ 'รวม Vat' }}
-              </span></p> 
-              <p class="">{{ formatCurrency(prod.project.total+prod.project.vat_price) }}</p>
+            <div
+              class="py-2"
+              v-if="
+                prod.project.isVat && prod.project.vat_price !== 0 && sumVat
+              "
+            >
+              <p>
+                ราคาสินค้า/บริการ<span class="px-2 text-sm bg-yellow-300">
+                  {{ "รวม Vat" }}
+                </span>
+              </p>
+              <p class="">
+                {{
+                  formatCurrency(prod.project.total + prod.project.vat_price)
+                }}
+              </p>
             </div>
-
           </div>
         </div>
         <DataView :value="products">
@@ -1647,8 +2134,15 @@
                   :class="{ 'surface-border': index !== 0 }"
                 >
                   <div class="overflow-x-auto w-[120px]">
-                    <div v-if="item.product_logo?.length > 0" class="flex border overflow-x-auto">
-                      <div v-for="(pic, picindex) in item.product_logo" :key="picindex" class="h-[100px] w-full">
+                    <div
+                      v-if="item.product_logo?.length > 0"
+                      class="flex border overflow-x-auto"
+                    >
+                      <div
+                        v-for="(pic, picindex) in item.product_logo"
+                        :key="picindex"
+                        class="h-[100px] w-full"
+                      >
                         <img
                           class="w-full h-full object-cover"
                           :src="pic"
@@ -1657,14 +2151,28 @@
                       </div>
                     </div>
                   </div>
-              
+
                   <div
                     class="flex flex-column md:flex-row justify-between md:items-center flex-1 gap-4"
                   >
                     <div>
                       <div>
-                        <p class="text-clip font-semibold overflow-hidden w-[100px]">
-                          <span class="text-orange-500" :class="item.product_name ? 'font-bold bg-orange-200 px-5' : ''">{{ item.product_name ? item.product_no : item.product_no+'.'+item.product_text_no }}</span> 
+                        <p
+                          class="text-clip font-semibold overflow-hidden w-[100px]"
+                        >
+                          <span
+                            class="text-orange-500"
+                            :class="
+                              item.product_name
+                                ? 'font-bold bg-orange-200 px-5'
+                                : ''
+                            "
+                            >{{
+                              item.product_name
+                                ? item.product_no
+                                : item.product_no + "." + item.product_text_no
+                            }}</span
+                          >
                           {{ item.product_name || null }}
                         </p>
                         <div class="w-[100px] overflow-y-hidden">
@@ -1679,21 +2187,32 @@
                         <p
                           class="font-normal text-xs text-clip overflow-hidden w-[100px]"
                         >
-                          {{ formatCurrency(item.product_price+(item.vat_price || 0)) }} x
-                          {{ item.product_amount }} {{ item.unit }}
                           {{
-                            item.vat_price && item.vat_price>0 && sumVat ? ' (' + 'VAT นอก' + ')' 
-                            : item.vat_price && item.vat_price>0 && !sumVat ? ' (' + 'VAT ใน' + ')' 
-                            : null 
+                            formatCurrency(
+                              item.product_price + (item.vat_price || 0)
+                            )
+                          }}
+                          x {{ item.product_amount }} {{ item.unit }}
+                          {{
+                            item.vat_price && item.vat_price > 0 && sumVat
+                              ? " (" + "VAT นอก" + ")"
+                              : item.vat_price && item.vat_price > 0 && !sumVat
+                              ? " (" + "VAT ใน" + ")"
+                              : null
                           }}
                         </p>
                       </div>
                     </div>
                     <div class="flex items-center md:items-end gap-5">
-                      <span v-if="item.product_price > 0" class="font-semibold text-900"
-                        >
+                      <span
+                        v-if="item.product_price > 0"
+                        class="font-semibold text-900"
+                      >
                         {{
-                          formatCurrency((item.product_price+(item.vat_price || 0)) * item.product_amount)
+                          formatCurrency(
+                            (item.product_price + (item.vat_price || 0)) *
+                              item.product_amount
+                          )
                         }}.-</span
                       >
                       <div class="flex flex-col h-fit">
@@ -1727,10 +2246,10 @@
           class="px-2 py-2 w-fit text-lg font-bold text-white"
           label="เพิ่มสินค้า/บริการ"
           @click="
-            ()=>{
-              openProductForm = true
-              product.isVat = false
-              product.vat_price = 0
+            () => {
+              openProductForm = true;
+              product.isVat = false;
+              product.vat_price = 0;
             }
           "
         />
@@ -1740,19 +2259,42 @@
         v-if="openProductForm"
         class="flex flex-col gap-2 w-full py-6 justify-start items-center px-2 bg-gray-200 rounded-lg text-slate-700"
       >
-
         <div class="card flex justify-center">
           <div class="card">
-            <FileUpload name="demo[]" auto @uploader="customBase64Uploader" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload>
-                <template #content>
-                  
-                  <div v-if="product?.product_logo?.length>0" class="card flex flex-col justify-center">
-                    <div class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center" v-for="(pic, picindex) in product?.product_logo" :key="picindex">
-                      <Image :src="pic" alt="Image" class="h-[100px] flex items-center" width="100" preview />
-                      <i @click="product?.product_logo.splice(picindex, 1)" class="pi pi-times" style="color: red"></i>
+            <FileUpload
+              name="demo[]"
+              auto
+              @uploader="customBase64Uploader"
+              :multiple="true"
+              accept="image/*"
+              :maxFileSize="1000000"
+              customUpload
+            >
+              <template #content>
+                <div
+                  v-if="product?.product_logo?.length > 0"
+                  class="card flex flex-col justify-center"
+                >
+                  <div
+                    class="flex gap-2 w-full pr-5 justify-between h-[100px] items-center"
+                    v-for="(pic, picindex) in product?.product_logo"
+                    :key="picindex"
+                  >
+                    <Image
+                      :src="pic"
+                      alt="Image"
+                      class="h-[100px] flex items-center"
+                      width="100"
+                      preview
+                    />
+                    <i
+                      @click="product?.product_logo.splice(picindex, 1)"
+                      class="pi pi-times"
+                      style="color: red"
+                    ></i>
                   </div>
-                  </div>
-                </template>
+                </div>
+              </template>
             </FileUpload>
           </div>
         </div>
@@ -1762,18 +2304,29 @@
           <div class="field">
             <div class="flex gap-2 items-center">
               <label class="font-semibold text-lg">หัวข้อที่</label>
-              <input type="text" v-model="product.product_no" class="border-b text-center rounded w-20" />
+              <input
+                type="text"
+                v-model="product.product_no"
+                class="border-b text-center rounded w-20"
+              />
             </div>
-            
+
             <div class="card flex justify-content-center">
               <InputText class="px-2 py-2" v-model="product.product_name" />
             </div>
-            
+
             <div class="flex gap-2 items-center">
-              <label class="font-semibold py-3 text-lg">รายละเอียดที่ <span>{{ product.product_no }}.</span></label>
-              <input type="text" v-model="product.product_text_no" class="border-b text-center rounded w-10" min="1" />
+              <label class="font-semibold py-3 text-lg"
+                >รายละเอียดที่ <span>{{ product.product_no }}.</span></label
+              >
+              <input
+                type="text"
+                v-model="product.product_text_no"
+                class="border-b text-center rounded w-10"
+                min="1"
+              />
             </div>
-            
+
             <div
               v-for="(text, textInputIndex) in product.product_text"
               class="card flex flex-col gap-y-5 items-center justify-center"
@@ -1789,19 +2342,23 @@
             </div>
             <div class="flex gap-2">
               <Button
-              label="ลดบรรทัด"
-              class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
-              @click="product.product_text.pop()"
-              :disabled="product.product_text.length < 2"
-            />
-            <Button
-              label="เพิ่มบรรทัดใหม่"
-              class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
-              @click="product.product_text.push('')"
-            />
+                label="ลดบรรทัด"
+                class="border-gray-400 text-gray-500 hover:bg-red-200 border-2 px-2 py-2"
+                @click="product.product_text.pop()"
+                :disabled="product.product_text.length < 2"
+              />
+              <Button
+                label="เพิ่มบรรทัดใหม่"
+                class="border-orange-300 text-orange-500 hover:bg-orange-200 border-2 px-2 py-2"
+                @click="product.product_text.push('')"
+              />
             </div>
           </div>
-          <pre class="hidden">{{ !isPrice ? product.product_price = 0 : product.product_price = product.product_price }}</pre>
+          <pre class="hidden">{{
+            !isPrice
+              ? (product.product_price = 0)
+              : (product.product_price = product.product_price)
+          }}</pre>
           <div class="field grid w-full px-5">
             <div class="field grid">
               <div class="flex items-center mt-3 gap-2">
@@ -1817,7 +2374,11 @@
                 :disabled="!isPrice"
               />
             </div>
-            <pre class="hidden">{{ !isAmount ? product.product_amount = 0 : product.product_price = product.product_price }}</pre>
+            <pre class="hidden">{{
+              !isAmount
+                ? (product.product_amount = 0)
+                : (product.product_price = product.product_price)
+            }}</pre>
             <div class="field grid">
               <div class="flex items-center mt-3 gap-2">
                 <label for="quantity">จำนวน</label>
@@ -1840,19 +2401,31 @@
                 :disabled="!isAmount"
               />
             </div>
-            <div v-if="selectedCompany?.isVat" class="flex items-center my-3 gap-2">
+            <div
+              v-if="selectedCompany?.isVat"
+              class="flex items-center my-3 gap-2"
+            >
               <p>VAT</p>
               <InputSwitch v-model="product.isVat" @change="changeProductVat" />
-              <p>{{ product.isVat ? 'มี' : 'ไม่มี' }}</p>
+              <p>{{ product.isVat ? "มี" : "ไม่มี" }}</p>
             </div>
-            <div class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg">
+            <div
+              class="field gap-3 flex border border-black pl-3 py-1 mt-3 rounded-lg"
+            >
               <label for="quantity" class="font-semibold">รวม</label>
               <p class="font-semibold px-2">
-                {{ 
+                {{
                   sumVat
-                  ? formatCurrency((product.product_amount * product.product_price)+((product.vat_price || 0)*product.product_amount)) 
-                  : formatCurrency((product.product_amount * product.product_price)-((product.vat_price || 0)*product.product_amount)) 
-                }} บาท
+                    ? formatCurrency(
+                        product.product_amount * product.product_price +
+                          (product.vat_price || 0) * product.product_amount
+                      )
+                    : formatCurrency(
+                        product.product_amount * product.product_price -
+                          (product.vat_price || 0) * product.product_amount
+                      )
+                }}
+                บาท
               </p>
             </div>
           </div>
@@ -1872,10 +2445,11 @@
             />
           </div>
         </div>
-        
       </div>
-      
-      <div class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b">
+
+      <div
+        class="flex flex-col gap-y-2 px-5 rounded-xl my-3 py-4 bg-slate-200 border-b"
+      >
         <p>ส่วนลด</p>
         <InputNumber
           v-model="discount"
@@ -1886,39 +2460,48 @@
       </div>
 
       <div class="flex flex-col gap-y-2">
-
         <div v-if="prod.project.isVat && !sumVat">
-          <p>ราคารวม
+          <p>
+            ราคารวม
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+vat+(prod.project.total || 0)) || 0
+              formatCurrency(
+                sumProductsPrice + vat + (prod.project.total || 0)
+              ) || 0
             }}</span>
           </p>
         </div>
 
         <div v-if="prod.project.isVat && sumVat">
-          <p>ราคาสินค้า/บริการ
+          <p>
+            ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+(prod.project.total || 0)) || 0
+              formatCurrency(sumProductsPrice + (prod.project.total || 0)) || 0
             }}</span>
           </p>
         </div>
 
         <div v-if="prod.project.isVat && !sumVat">
-          <p>ราคาสินค้า/บริการ
+          <p>
+            ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+(prod.project.total || 0)-prod.project.vat_price) || 0
+              formatCurrency(
+                sumProductsPrice +
+                  (prod.project.total || 0) -
+                  prod.project.vat_price
+              ) || 0
             }}</span>
           </p>
         </div>
 
         <div v-if="!prod.project.isVat">
-          <p>ราคาสินค้า/บริการ
+          <p>
+            ราคาสินค้า/บริการ
             <span class="border-b px-2">{{
-              formatCurrency(sumProductsPrice+(prod.project.total || 0))
+              formatCurrency(sumProductsPrice + (prod.project.total || 0))
             }}</span>
           </p>
         </div>
-        
+
         <p>
           ส่วนลด
           <span class="border-b px-2">
@@ -1934,13 +2517,17 @@
         <p v-if="prod.project.isVat || selectedCompany?.isVat">
           VAT 7%
           <span class="border-b px-2">
-            {{ formatCurrency(vat+(prod.project.vat_price || 0)) || 0 }}
+            {{ formatCurrency(vat + (prod.project.vat_price || 0)) || 0 }}
           </span>
         </p>
         <pre class="hidden">
           {{
-            prod.project.total_net = prod.project.isVat && sumVat ? prod.project.total + prod.project.vat_price : prod.project.isVat && !sumVat ? prod.project.total
-            : 0
+            (prod.project.total_net =
+              prod.project.isVat && sumVat
+                ? prod.project.total + prod.project.vat_price
+                : prod.project.isVat && !sumVat
+                ? prod.project.total
+                : 0)
           }}
         </pre>
         <p v-if="prod.project.isVat || selectedCompany?.isVat">
@@ -1949,29 +2536,37 @@
         </p>
         <span v-if="isWithholding">
           หัก ณ ที่จ่าย {{ withholdingPercent }}%
-            <p class="border-b px-2">
-              {{
-                formatCurrency(withholdingPrice) || 0
-              }}
-            </p>
-          </span>
+          <p class="border-b px-2">
+            {{ formatCurrency(withholdingPrice) || 0 }}
+          </p>
+        </span>
         <span class="font-bold py-3"
           >ราคาสุทธิ
-          <span class="border-b px-2">{{ formatCurrency(allEnd) || 0 }}</span></span
+          <span class="border-b px-2">{{
+            formatCurrency(allEnd) || 0
+          }}</span></span
         >
       </div>
 
       <div class="flex flex-col gap-y-2 py-5 items-center justify-center">
         <div class="">
           <label>หัวข้อลายเซ็น (ฝั่งผู้เสนอ)</label>
-          <InputText class="p-2" v-model="prod.footer1" placeholder="ผู้เสนอราคา" />
+          <InputText
+            class="p-2"
+            v-model="prod.footer1"
+            placeholder="ผู้เสนอราคา"
+          />
         </div>
         <div class="">
           <label>หัวข้อลายเซ็น (ฝั่งลูกค้า)</label>
-          <InputText class="p-2" v-model="prod.footer2" placeholder="ผู้อนุมัติการสั่งซื้อ" />
+          <InputText
+            class="p-2"
+            v-model="prod.footer2"
+            placeholder="ผู้อนุมัติการสั่งซื้อ"
+          />
         </div>
       </div>
-      
+
       <div class="card flex flex-col gap-y-2 py-5 justify-center items-center">
         <p>หมายเหตุ</p>
         <Textarea
@@ -1981,7 +2576,11 @@
           rows="5"
           cols="30"
         />
-        <Button class="px-2 bg-yellow-200" label="เพิ่ม" @click="remark.push('')" />
+        <Button
+          class="px-2 bg-yellow-200"
+          label="เพิ่ม"
+          @click="remark.push('')"
+        />
       </div>
 
       <template #footer>
@@ -2053,15 +2652,21 @@
       </template>
     </Dialog>
 
-    <RefReceipt 
-      v-if="openRefReceiptDialog" 
-      :invoice="selected_invoice" 
-      @open_close="val=>openRefReceiptDialog=val" 
+    <RefReceipt
+      v-if="openRefReceiptDialog"
+      :invoice="selected_invoice"
+      @open_close="(val) => (openRefReceiptDialog = val)"
     />
-
   </div>
 
-  <Dialog v-model:visible="openNextInvoiceDialog" modal :header="`${selectedInvoice.invoice}-${selectedInvoice.cur_period+1}/${selectedInvoice.end_period}`" :style="{ width: '25rem' }">
+  <Dialog
+    v-model:visible="openNextInvoiceDialog"
+    modal
+    :header="`${selectedInvoice.invoice}-${selectedInvoice.cur_period + 1}/${
+      selectedInvoice.end_period
+    }`"
+    :style="{ width: '25rem' }"
+  >
     <div class="flex flex-col gap-5">
       <div class="flex flex-col gap-3">
         <p>วันที่ออกเอกสาร</p>
@@ -2072,18 +2677,38 @@
         <Calendar v-model="nextInvoice.end_date" class="border" />
       </div>
     </div>
-    <Button class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createNextInvoice" />
+    <Button
+      class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5"
+      label="บันทึก"
+      @click="createNextInvoice"
+    />
   </Dialog>
 
-  <Dialog v-model:visible="openRefInvoice" modal :header="`${selectedInvoice.invoice}`" :style="{ width: '25rem' }">
+  <Dialog
+    v-model:visible="openRefInvoice"
+    modal
+    :header="`${selectedInvoice.invoice}`"
+    :style="{ width: '25rem' }"
+  >
     <div class="flex flex-col gap-5">
       <div class="flex flex-col items-center gap-y-1">
         <label>หัวเอกสาร</label>
-        <InputText class="p-2 border text-center" v-model="refInvoice.header" placeholder="ใบแจ้งหนี้/ใบวางบิล" />
+        <InputText
+          class="p-2 border text-center"
+          v-model="refInvoice.header"
+          placeholder="ใบแจ้งหนี้/ใบวางบิล"
+        />
       </div>
       <div class="flex-auto">
-        <label for="minmaxfraction" class="font-bold block mb-2"> จำนวน (บาท) </label>
-        <InputNumber v-model="refInvoice.price" inputId="minmaxfraction" :minFractionDigits="2" :maxFractionDigits="2" />
+        <label for="minmaxfraction" class="font-bold block mb-2">
+          จำนวน (บาท)
+        </label>
+        <InputNumber
+          v-model="refInvoice.price"
+          inputId="minmaxfraction"
+          :minFractionDigits="2"
+          :maxFractionDigits="2"
+        />
       </div>
       <div class="flex flex-col gap-3">
         <p>วันที่ออกเอกสาร</p>
@@ -2096,15 +2721,25 @@
       <div class="flex flex-col gap-y-2 py-5 items-center justify-center">
         <div class="">
           <label>หัวข้อลายเซ็น (ฝั่งผู้เสนอ)</label>
-          <InputText class="p-2" v-model="refInvoice.footer1" placeholder="ผู้เสนอราคา" />
+          <InputText
+            class="p-2"
+            v-model="refInvoice.footer1"
+            placeholder="ผู้เสนอราคา"
+          />
         </div>
         <div class="">
           <label>หัวข้อลายเซ็น (ฝั่งลูกค้า)</label>
-          <InputText class="p-2" v-model="refInvoice.footer2" placeholder="ผู้อนุมัติการสั่งซื้อ" />
+          <InputText
+            class="p-2"
+            v-model="refInvoice.footer2"
+            placeholder="ผู้อนุมัติการสั่งซื้อ"
+          />
         </div>
       </div>
       <div class="flex-auto">
-        <label for="refInvoice_remark" class="font-bold block mb-2"> หมายเหตุ </label>
+        <label for="refInvoice_remark" class="font-bold block mb-2">
+          หมายเหตุ
+        </label>
         <Textarea
           id="refInvoice_remark"
           v-model="refInvoice.remark"
@@ -2114,34 +2749,74 @@
         />
       </div>
     </div>
-    <Button v-if="!refInvoice.edit" :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึก" @click="createChild(selectedInvoice)" />
-    <Button v-else :loading="loading" class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5" label="บันทึกการแก้ไข" @click="updateChild(refInvoice._id)" />
+    <Button
+      v-if="!refInvoice.edit"
+      :loading="loading"
+      class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5"
+      label="บันทึก"
+      @click="createChild(selectedInvoice)"
+    />
+    <Button
+      v-else
+      :loading="loading"
+      class="px-2 py-1 bg-orange-400 w-full text-center text-white my-5"
+      label="บันทึกการแก้ไข"
+      @click="updateChild(refInvoice._id)"
+    />
   </Dialog>
 
-  <Dialog v-model:visible="openChildDetail" :header="selectedInvoice.invoice" :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }">
-    <DataTable :value="selectedInvoice.childs" scrollable scrollHeight="flex" tableStyle="min-width: 50rem">
-      <Column field="period" header="งวดที่"></Column>  
+  <Dialog
+    v-model:visible="openChildDetail"
+    :header="selectedInvoice.invoice"
+    :style="{ width: '75vw' }"
+    maximizable
+    modal
+    :contentStyle="{ height: '300px' }"
+  >
+    <DataTable
+      :value="selectedInvoice.childs"
+      scrollable
+      scrollHeight="flex"
+      tableStyle="min-width: 50rem"
+    >
+      <Column field="period" header="งวดที่"></Column>
       <Column field="code" header="เลขที่เอกสาร">
         <template #body="item">
-          <p>{{ item.data.code }}
-            <span v-if="!selectedInvoice.status.some(c => c.period === item.data.period)"><i class="pi pi-file-export text-green-500 cursor-pointer" @click="onCoppy(item.data)"></i></span>
+          <p>
+            {{ item.data.code }}
+            <span
+              v-if="
+                !selectedInvoice.status.some(
+                  (c) => c.period === item.data.period
+                )
+              "
+              ><i
+                class="pi pi-file-export text-green-500 cursor-pointer"
+                @click="onCoppy(item.data)"
+              ></i
+            ></span>
           </p>
         </template>
       </Column>
       <Column field="start_date" header="วันที่เริ่ม">
         <template #body="item">
-          <p>{{ formatDateRef(item.data.start_date) || '-' }}</p>
+          <p>{{ formatDateRef(item.data.start_date) || "-" }}</p>
         </template>
       </Column>
       <Column field="end_date" header="วันที่สิ้นสุด">
         <template #body="item">
-          <p>{{ formatDateRef(item.data.end_date) || '-' }}</p>
+          <p>{{ formatDateRef(item.data.end_date) || "-" }}</p>
         </template>
       </Column>
       <Column field="price" header="ราคา"></Column>
       <Column header="ออกใบเสร็จ">
         <template #body="item">
-          <div class="flex justify-center items-center" v-if="selectedInvoice.status.some(c => c.period === item.data.period)">
+          <div
+            class="flex justify-center items-center"
+            v-if="
+              selectedInvoice.status.some((c) => c.period === item.data.period)
+            "
+          >
             <i class="pi pi-check text-center"></i>
           </div>
           <p v-else class="text-center">-</p>
@@ -2149,19 +2824,39 @@
       </Column>
       <Column field="" header="">
         <template #body="item">
-          <Button :loading="loading" icon="pi pi-file" @click="() => {
-            openChildDetail = false
-            selectedInvoice.selectedChild = item.data
-            seeInvoiceII(selectedInvoice, item.data.period, selectedInvoice.paid)
-          }" />
-          <Button :loading="loading" icon="pi pi-pencil" @click="() => {
-            openChildDetail = false
-            selectedInvoice.selectedChild = item.data
-            openRefInvoiceHandle(selectedInvoice, true)
-          }" />
-          <Button :loading="loading" icon="pi pi-trash" @click="confirmDeleteChild($event, item.data._id)" />
+          <Button
+            :loading="loading"
+            icon="pi pi-file"
+            @click="
+              () => {
+                openChildDetail = false;
+                selectedInvoice.selectedChild = item.data;
+                seeInvoiceII(
+                  selectedInvoice,
+                  item.data.period,
+                  selectedInvoice.paid
+                );
+              }
+            "
+          />
+          <Button
+            :loading="loading"
+            icon="pi pi-pencil"
+            @click="
+              () => {
+                openChildDetail = false;
+                selectedInvoice.selectedChild = item.data;
+                openRefInvoiceHandle(selectedInvoice, true);
+              }
+            "
+          />
+          <Button
+            :loading="loading"
+            icon="pi pi-trash"
+            @click="confirmDeleteChild($event, item.data._id)"
+          />
         </template>
-        </Column>
+      </Column>
     </DataTable>
   </Dialog>
 </template>
@@ -2176,39 +2871,39 @@ import { useInvoiceStore } from "@/stores/invoice";
 import { useCompanyStore } from "@/stores/company";
 import DocInvoice from "@/components/Pdf/DocInvoice.vue";
 import DocInvoiceII from "@/components/Pdf/DocInvoiceII.vue";
-import RefReceipt from '@/components/Dialog/RefReceipt.vue';
+import RefReceipt from "@/components/Dialog/RefReceipt.vue";
 //import { formatThaiDate } from '@/functions/DateTime'
-import axios from "axios"
+import axios from "axios";
 import { useConfirm } from "primevue/useconfirm";
 
 onMounted(async () => {
-  loading.value = true
+  loading.value = true;
   Documents.getInvoices().then((data) => {
-    loading.value = false
-    originalInvoices.value = data.data?.reverse()
-    fetchChilds()
+    loading.value = false;
+    originalInvoices.value = data.data?.reverse();
+    fetchChilds();
     //invoices.value = originalInvoices.value
   });
   Documents.getQuotations().then((data) => (quotations.value = data.data));
   Customers.getCustomers().then((data) => {
-    customers.value = data.data
+    customers.value = data.data;
     if (refQt) {
-      refQuotation.value = refQt
-      refQuotation.value.quotation = refQt.quotation
-      referQuotation()
-      invoiceDialog.value = true
+      refQuotation.value = refQt;
+      refQuotation.value.quotation = refQt.quotation;
+      referQuotation();
+      invoiceDialog.value = true;
     }
   });
   await cpStore.getMyCompanies();
   await cpStore.getMySignatures();
-})
+});
 
 const confirm = useConfirm();
 
-const childs = ref()
-const curPage = ref(1)
-const originalInvoices = ref([])
-const quotations = ref([])
+const childs = ref();
+const curPage = ref(1);
+const originalInvoices = ref([]);
+const quotations = ref([]);
 const lastRefreshed = ref();
 const openInvoice = ref(false);
 const openInvoiceII = ref(false);
@@ -2242,73 +2937,76 @@ const uploadfiles = ref([]);
 const invoiceEditDialog = ref(false);
 const color = ref();
 const bank = ref({});
-const refQuotation = ref()
-const end_period = ref(1)
-const cur_period = ref(0)
-const product_head = ref('')
-const edittingProduct = ref()
-const files = ref([])
-const transfer = ref('bank')
-const inputHeader = ref('ใบแจ้งหนี้')
-const sign = ref(false)
+const refQuotation = ref();
+const end_period = ref(1);
+const cur_period = ref(0);
+const product_head = ref("");
+const edittingProduct = ref();
+const files = ref([]);
+const transfer = ref("bank");
+const inputHeader = ref("ใบแจ้งหนี้");
+const sign = ref(false);
 const isAmount = ref(true);
 const showCustomerName = ref(true);
-const month = ref(new Date())
-const seeAll = ref(false)
+const month = ref(new Date());
+const seeAll = ref(false);
 const prod = ref({
   project: {},
-  product_detail: []
+  product_detail: [],
 });
-const refInvoice = ref({})
-const openRefInvoice = ref(false)
-const openChildDetail = ref(false)
+const refInvoice = ref({});
+const openRefInvoice = ref(false);
+const openChildDetail = ref(false);
 
-const monthYear = computed(()=>{
-  const thisMonth = (month.value.getMonth()+1).toString().padStart(2, '0')
-  const thisYear = month.value.getFullYear()
-  const thisMonthYear = `${thisYear}${thisMonth}`
-  return thisMonthYear
-})
+const monthYear = computed(() => {
+  const thisMonth = (month.value.getMonth() + 1).toString().padStart(2, "0");
+  const thisYear = month.value.getFullYear();
+  const thisMonthYear = `${thisYear}${thisMonth}`;
+  return thisMonthYear;
+});
 
-const filterdInvoices = computed(()=>{
-  let result = []
+const filterdInvoices = computed(() => {
+  let result = [];
   if (!seeAll.value) {
-    result = originalInvoices.value?.filter( inv => 
-      inv.invoice.substring(2, 8) === monthYear.value
-    )
+    result = originalInvoices.value?.filter(
+      (inv) => inv.invoice.substring(2, 8) === monthYear.value
+    );
   } else {
-    result = originalInvoices.value
+    result = originalInvoices.value;
   }
 
-  return result
-})
+  return result;
+});
 
-const invoices = computed(()=>{
-  let result = []
-  const filter = curfilter.value
-  if ( filter === 'ยังไม่ครบ' ) {
-    result = filterdInvoices.value.filter((inv)=>(
-      totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) > 0
-    ))
-  } else if ( filter === 'ครบแล้ว' ) {
-    result = filterdInvoices.value.filter((inv)=>(
-      totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) <= 0
-    ))
-  }
-  else {
-    result = filterdInvoices.value
+const invoices = computed(() => {
+  let result = [];
+  const filter = curfilter.value;
+  if (filter === "ยังไม่ครบ") {
+    result = filterdInvoices.value.filter(
+      (inv) =>
+        totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) > 0
+    );
+  } else if (filter === "ครบแล้ว") {
+    result = filterdInvoices.value.filter(
+      (inv) =>
+        totalPrice(inv) - inv.discount + totalVat(inv) - (inv.paid || 0) <= 0
+    );
+  } else {
+    result = filterdInvoices.value;
   }
 
-  return result
-})
+  return result;
+});
 
-watch(() => dt?.value?.d_first, (newVal, oldVal) => {
-  if (dt.value) {
-    curPage.value = 
-    dt.value.d_first === 0 ? 1 
-    : (dt.value.d_first/dt.value.d_rows) + 1
+watch(
+  () => dt?.value?.d_first,
+  (newVal, oldVal) => {
+    if (dt.value) {
+      curPage.value =
+        dt.value.d_first === 0 ? 1 : dt.value.d_first / dt.value.d_rows + 1;
+    }
   }
-})
+);
 
 const fetchChilds = async () => {
   try {
@@ -2316,41 +3014,40 @@ const fetchChilds = async () => {
       `${import.meta.env.VITE_API_URL}/invoice/child/all`,
       {
         headers: {
-          'auth-token' : import.meta.env.VITE_TOKEN
-        }
+          "auth-token": localStorage.getItem("ssgdToken"),
+        },
       }
-    )
+    );
     if (data.status) {
-      console.log(data.data)
-      childs.value = data.data
-      originalInvoices.value?.forEach(inv => {
-        inv.childs = childs.value.filter( ch => ch.refInvoice === inv._id )
-      })
+      console.log(data.data);
+      childs.value = data.data;
+      originalInvoices.value?.forEach((inv) => {
+        inv.childs = childs.value.filter((ch) => ch.refInvoice === inv._id);
+      });
     }
+  } catch (err) {
+    console.log(err);
   }
-  catch (err) {
-    console.log(err)
-  }
-}
+};
 
 const openChildDetailHandle = (data) => {
-  selectedInvoice.value = data
-  openChildDetail.value = true
-}
+  selectedInvoice.value = data;
+  openChildDetail.value = true;
+};
 
 const openRefInvoiceHandle = (data, edit) => {
   if (edit) {
-    refInvoice.value = data.selectedChild
-    refInvoice.value.edit = true
+    refInvoice.value = data.selectedChild;
+    refInvoice.value.edit = true;
   } else {
-    refInvoice.value = {}
+    refInvoice.value = {};
   }
-  selectedInvoice.value = data
-  openRefInvoice.value = true
-}
+  selectedInvoice.value = data;
+  openRefInvoice.value = true;
+};
 
 const createChild = async (mainInvoice) => {
-  loading.value = true
+  loading.value = true;
   const payload = {
     refInvoice: mainInvoice._id,
     price: refInvoice.value.price,
@@ -2358,147 +3055,151 @@ const createChild = async (mainInvoice) => {
     end_date: refInvoice.value.end_date,
     remark: refInvoice.value.remark,
     header: refInvoice.value.header,
-    period: mainInvoice.childs.length + 1
-  }
+    period: mainInvoice.childs.length + 1,
+  };
   try {
     const { data } = await axios.post(
       `${import.meta.env.VITE_API_URL}/invoice/child/create`,
       payload,
       {
         headers: {
-          'auth-token' : import.meta.env.VITE_TOKEN
-        }
+          "auth-token": localStorage.getItem("ssgdToken"),
+        },
       }
-    )
+    );
     if (data.status) {
-      refresh()
-      console.log(data.data)
-      openRefInvoice.value = false
+      refresh();
+      console.log(data.data);
+      openRefInvoice.value = false;
       toast.add({
         severity: "success",
         summary: "Successful",
         detail: "สร้างใบแจ้งหนี้แล้ว",
         life: 3000,
-      })
+      });
     }
-  }
-  catch (err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     toast.add({
       severity: "error",
       summary: "ERROR",
       detail: "สร้างใบแจ้งหนี้ล้มเหลว",
       life: 3000,
-    })
-    refresh()
+    });
+    refresh();
+  } finally {
+    loading.value = false;
   }
-  finally {
-    loading.value = false
-  }
-}
+};
 
 const updateChild = async (id) => {
-  loading.value = true
+  loading.value = true;
   const payload = {
     price: refInvoice.value.price,
     start_date: refInvoice.value.start_date,
     end_date: refInvoice.value.end_date,
     remark: refInvoice.value.remark,
-    header: refInvoice.value.header
-  }
+    header: refInvoice.value.header,
+  };
   try {
     const { data } = await axios.put(
       `${import.meta.env.VITE_API_URL}/invoice/child/update/${id}`,
       payload,
       {
         headers: {
-          'auth-token' : import.meta.env.VITE_TOKEN
-        }
+          "auth-token": localStorage.getItem("ssgdToken"),
+        },
       }
-    )
+    );
     if (data.status) {
-      console.log(data.data)
-      openRefInvoice.value = false
-      refInvoice.value = {}
+      console.log(data.data);
+      openRefInvoice.value = false;
+      refInvoice.value = {};
       toast.add({
         severity: "success",
         summary: "Successful",
         detail: "แก้ไขใบแจ้งหนี้แล้ว",
         life: 3000,
-      })
-      refresh()
+      });
+      refresh();
     }
-  }
-  catch (err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     toast.add({
       severity: "error",
       summary: "ERROR",
       detail: "แก้ไขใบแจ้งหนี้ล้มเหลว",
       life: 3000,
-    })
-    refresh()
+    });
+    refresh();
+  } finally {
+    loading.value = false;
   }
-  finally {
-    loading.value = false
-  }
-}
+};
 
 const deleteChild = async (id) => {
-  loading.value = true
+  loading.value = true;
   try {
     const { data } = await axios.delete(
       `${import.meta.env.VITE_API_URL}/invoice/child/delete/${id}`,
       {
         headers: {
-          'auth-token' : import.meta.env.VITE_TOKEN
-        }
+          "auth-token": localStorage.getItem("ssgdToken"),
+        },
       }
-    )
+    );
     if (data.status) {
-      console.log(data)
-      openChildDetail.value = false
+      console.log(data);
+      openChildDetail.value = false;
       toast.add({
         severity: "success",
         summary: "Successful",
         detail: "ลบใบแจ้งหนี้แล้ว",
         life: 3000,
-      })
-      refresh()
+      });
+      refresh();
     }
-  }
-  catch (err) {
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     toast.add({
       severity: "error",
       summary: "ERROR",
       detail: "ลบใบแจ้งหนี้ล้มเหลว",
       life: 3000,
-    })
-    refresh()
+    });
+    refresh();
+  } finally {
+    loading.value = false;
   }
-  finally {
-    loading.value = false
-  }
-}
+};
 
 const getMonthString = (monIndex) => {
   const thaiMonths = [
-    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-  ]
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
+  ];
 
-  return thaiMonths[monIndex]
-}
+  return thaiMonths[monIndex];
+};
 
-const { refQt } = defineProps(["refQt"])
+const { refQt } = defineProps(["refQt"]);
 
-const choosesumVat = ref('Vat นอก');
+const choosesumVat = ref("Vat นอก");
 const changesumVat = () => {
-  if (prod.value.project.isVat && choosesumVat.value === 'Vat นอก') {
-    sumVat.value = true
+  if (prod.value.project.isVat && choosesumVat.value === "Vat นอก") {
+    sumVat.value = true;
   } else {
-    sumVat.value = false
+    sumVat.value = false;
   }
 };
 
@@ -2508,24 +3209,30 @@ const changesumVat = () => {
   }
 }) */
 
-const reStore = useInvoiceStore()
-const cpStore = useCompanyStore()
+const reStore = useInvoiceStore();
+const cpStore = useCompanyStore();
 
-const emits = defineEmits(["chooseRef", "refIv"])
+const emits = defineEmits(["chooseRef", "refIv"]);
 const onCoppy = (value) => {
-  console.log(value)
-  emits("chooseRef")
-  emits("refIv", value)
-}
+  console.log(value);
+  emits("chooseRef");
+  emits("refIv", value);
+};
 
 // open reference receipts list
-const selected_invoice = ref()
+const selected_invoice = ref();
 const openRefReceiptDialog = ref(false);
 const filters = ref({
   global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-})
+});
 const submitted = ref(false);
-const statuses = ref(["Normal", "องค์กร", "หน่วยงานราชการ", "ลูกค้ารายเดือน", "VIP"]);
+const statuses = ref([
+  "Normal",
+  "องค์กร",
+  "หน่วยงานราชการ",
+  "ลูกค้ารายเดือน",
+  "VIP",
+]);
 const percents = ref([1, 3, 5]);
 
 function countdownToEndDate(end_date) {
@@ -2539,8 +3246,10 @@ function countdownToEndDate(end_date) {
   const timeDifference = endDate - currentDate;
 
   // Calculate the remaining time in days, hours, minutes, and seconds
-  const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000))+1;
-  const hours = Math.floor((timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+  const days = Math.floor(timeDifference / (24 * 60 * 60 * 1000)) + 1;
+  const hours = Math.floor(
+    (timeDifference % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
+  );
   const minutes = Math.floor((timeDifference % (60 * 60 * 1000)) / (60 * 1000));
   const seconds = Math.floor((timeDifference % (60 * 1000)) / 1000);
 
@@ -2548,29 +3257,29 @@ function countdownToEndDate(end_date) {
     days,
     hours,
     minutes,
-    seconds
+    seconds,
   };
 }
 
 const openRefReceipt = (invoice) => {
-  selected_invoice.value = invoice
-  openRefReceiptDialog.value = true
-  console.log(openRefReceiptDialog.value)
-}
+  selected_invoice.value = invoice;
+  openRefReceiptDialog.value = true;
+  console.log(openRefReceiptDialog.value);
+};
 
 const closeHandle = () => {
-  openInvoice.value = false
-  openInvoiceII.value = false
+  openInvoice.value = false;
+  openInvoiceII.value = false;
   const body = document.body;
-  body.style.backgroundColor = 'aliceblue';   
-}
+  body.style.backgroundColor = "aliceblue";
+};
 
 const refresh = () => {
-  loading.value = true
+  loading.value = true;
   Documents.getInvoices().then((data) => {
-    originalInvoices.value = data.data?.reverse()
-    fetchChilds()
-    loading.value = false
+    originalInvoices.value = data.data?.reverse();
+    fetchChilds();
+    loading.value = false;
     //invoices.value = originalInvoices.value
   });
 
@@ -2580,99 +3289,121 @@ const refresh = () => {
     new Date(currentTimestamp)
   );
   lastRefreshed.value = formattedTime;
-}
+};
 
 const referQuotation = async () => {
-  if ( refQuotation.value && refQuotation.value.customer_detail ) {
-    console.log(refQuotation.value)
-    customer.value = customers.value.find((item)=>item?.customer_name===refQuotation.value.customer_detail?.customer_name)
-    if(!customer.value) {
-      customer.value = refQuotation.value.customer_detail
+  if (refQuotation.value && refQuotation.value.customer_detail) {
+    console.log(refQuotation.value);
+    customer.value = customers.value.find(
+      (item) =>
+        item?.customer_name ===
+        refQuotation.value.customer_detail?.customer_name
+    );
+    if (!customer.value) {
+      customer.value = refQuotation.value.customer_detail;
     }
-    selectedCustomer.value = customer.value
-    selectedCustomer.value.customer_contact_sign = refQuotation.value.customer_detail.customer_contact_sign
-    selectedCompany.value = cpStore.myCompanies.find((item)=>item.taxnumber === refQuotation.value.customer_branch.taxnumber)
-    company.value = selectedCompany.value
-    openProductForm.value = false
-    products.value = refQuotation.value.product_detail
-    prod.value.project = {...refQuotation.value.project}
-    discount.value = refQuotation.value.discount
-    selectedSignature.value = refQuotation.value.signature
-    bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
-    sumVat.value = refQuotation.value.sumVat
-    isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
-    withholdingPercent.value = refQuotation.value.vat.percen_deducted ? refQuotation.value.vat.percen_deducted : null
-    product_head.value = refQuotation.value.product_head
-  } 
-}
+    selectedCustomer.value = customer.value;
+    selectedCustomer.value.customer_contact_sign =
+      refQuotation.value.customer_detail.customer_contact_sign;
+    selectedCompany.value = cpStore.myCompanies.find(
+      (item) => item.taxnumber === refQuotation.value.customer_branch.taxnumber
+    );
+    company.value = selectedCompany.value;
+    openProductForm.value = false;
+    products.value = refQuotation.value.product_detail;
+    prod.value.project = { ...refQuotation.value.project };
+    discount.value = refQuotation.value.discount;
+    selectedSignature.value = refQuotation.value.signature;
+    bank.value = company.value.bank.find(
+      (item) => item.number === refQuotation.value.bank.status
+    );
+    sumVat.value = refQuotation.value.sumVat;
+    isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false;
+    withholdingPercent.value = refQuotation.value.vat.percen_deducted
+      ? refQuotation.value.vat.percen_deducted
+      : null;
+    product_head.value = refQuotation.value.product_head;
+  }
+};
 
 const referQuotationInput = async () => {
-  if ( refQuotation.value && !refQuotation.value.customer_detail ) {
-    refQuotation.value = quotations.value.find(item=>item.quotation===refQuotation.value)
-    product_head.value = refQuotation.value.product_head
-    prod.value.project = {...refQuotation.value.project}
-    console.log('rfQT', refQuotation.value)   
-    console.log('customers', customers.value)
-    customer.value = customers.value.find((item)=>item?.customer_name===refQuotation.value.customer_detail?.customer_name)
-    if(!customer.value) {
-      customer.value = refQuotation.value.customer_detail
+  if (refQuotation.value && !refQuotation.value.customer_detail) {
+    refQuotation.value = quotations.value.find(
+      (item) => item.quotation === refQuotation.value
+    );
+    product_head.value = refQuotation.value.product_head;
+    prod.value.project = { ...refQuotation.value.project };
+    console.log("rfQT", refQuotation.value);
+    console.log("customers", customers.value);
+    customer.value = customers.value.find(
+      (item) =>
+        item?.customer_name ===
+        refQuotation.value.customer_detail?.customer_name
+    );
+    if (!customer.value) {
+      customer.value = refQuotation.value.customer_detail;
     }
-    selectedCustomer.value = customer.value
-    selectedCompany.value = cpStore.myCompanies.find((item)=>item.Branch_company_name === refQuotation.value.customer_branch.Branch_company_name)
-    company.value = selectedCompany.value
-    openProductForm.value = false
-    products.value = refQuotation.value.product_detail
-    discount.value = refQuotation.value.discount
-    selectedSignature.value = refQuotation.value.signature
-    bank.value = company.value.bank.find((item) => item.number === refQuotation.value.bank.status);
-    sumVat.value = refQuotation.value.sumVat
-    isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false
-    transfer.value = refQuotation.value.transfer
+    selectedCustomer.value = customer.value;
+    selectedCompany.value = cpStore.myCompanies.find(
+      (item) =>
+        item.Branch_company_name ===
+        refQuotation.value.customer_branch.Branch_company_name
+    );
+    company.value = selectedCompany.value;
+    openProductForm.value = false;
+    products.value = refQuotation.value.product_detail;
+    discount.value = refQuotation.value.discount;
+    selectedSignature.value = refQuotation.value.signature;
+    bank.value = company.value.bank.find(
+      (item) => item.number === refQuotation.value.bank.status
+    );
+    sumVat.value = refQuotation.value.sumVat;
+    isWithholding.value = refQuotation.value.vat.percen_deducted ? true : false;
+    transfer.value = refQuotation.value.transfer;
   }
-}
+};
 
-const credit = computed(()=>{
-  return countDistinctDays(start_date.value, end_date.value)
-})
+const credit = computed(() => {
+  return countDistinctDays(start_date.value, end_date.value);
+});
 
 const seeInvoice = (data) => {
   openInvoice.value = true;
   selectedInvoice.value = data;
   const company = cpStore.myCompanies.find(
-    item => item.taxnumber === selectedInvoice.value.customer_branch.taxnumber
-  )
+    (item) => item.taxnumber === selectedInvoice.value.customer_branch.taxnumber
+  );
 
   let customered = customers.value.find(
-    item => item.customer_name === selectedInvoice.value.customer_detail?.customer_name
+    (item) =>
+      item.customer_name ===
+      selectedInvoice.value.customer_detail?.customer_name
   );
-  if(!customered) {
-    customered = selectedInvoice.value.customer_detail
+  if (!customered) {
+    customered = selectedInvoice.value.customer_detail;
   }
-  selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber
+  selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber;
 
-  selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
-  selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
-  selectedInvoice.value.showCustomerName = showCustomerName.value
+  selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden;
+  selectedInvoice.value.customer_branch.Branch_company_name =
+    company.Branch_company_name;
+  selectedInvoice.value.showCustomerName = showCustomerName.value;
   console.log("data", selectedInvoice.value);
   const body = document.body;
-  body.style.backgroundColor = 'white';
-}
+  body.style.backgroundColor = "white";
+};
 
 const isPrice = ref(true);
 
 const changeProductVat = () => {
   if (product.value.isVat && sumVat.value) {
-    product.value.vat_price = product.value.product_price*0.07
+    product.value.vat_price = product.value.product_price * 0.07;
   } else if (product.value.isVat && !sumVat.value) {
-    product.value.vat_price = product.value.product_price*7/107
+    product.value.vat_price = (product.value.product_price * 7) / 107;
+  } else {
+    product.value.vat_price = 0;
   }
-  
-  else {
-
-    product.value.vat_price = 0
-
-  }
-}
+};
 
 function countDistinctDays(start_date, end_date) {
   // Convert input strings to Date objects
@@ -2693,49 +3424,49 @@ function countDistinctDays(start_date, end_date) {
 
 const withholdingPrice = computed(() => {
   if (isWithholding.value && sumVat.value) {
-    const result = ((netPrices.value) * withholdingPercent.value ) / 100;
+    const result = (netPrices.value * withholdingPercent.value) / 100;
     return result;
   } else if (isWithholding.value && !sumVat.value) {
-    const result = ((netPrices.value) * withholdingPercent.value ) / 100;
+    const result = (netPrices.value * withholdingPercent.value) / 100;
     return result;
   } else {
     return 0;
   }
-})
+});
 
 const addProduct = () => {
-  if(!product.value) return
+  if (!product.value) return;
   product.value.product_price = sumVat.value
     ? product.value.product_price
-    : product.value.product_price - (product.value.vat_price || 0)
+    : product.value.product_price - (product.value.vat_price || 0);
   if (edittingProduct.value) {
-    products.value[edittingProduct.value] = product.value
+    products.value[edittingProduct.value] = product.value;
   } else {
     products.value.push(product.value);
   }
-  edittingProduct.value = null
+  edittingProduct.value = null;
   product.value = {};
   product.value.product_logo64 = [];
   product.value.product_text = [""];
   openProductForm.value = false;
-  uploadfiles.value.push(files.value)
-  files.value = []
+  uploadfiles.value.push(files.value);
+  files.value = [];
 };
 
 const allEnd = computed(() => {
-  return netVat.value
-})
+  return netVat.value;
+});
 
 const removeProduct = (index) => {
   if (products.value && products.value.length > 0) {
     products.value.splice(index, 1);
   }
-}
+};
 
 const sumProductsPrice = computed(() => {
   if (products.value && products.value.length > 0) {
     const prices = products.value.map((pd) => {
-      const result = (pd.product_price * pd.product_amount)
+      const result = pd.product_price * pd.product_amount;
       return result;
     });
     const sumPrices = prices.reduce((a, b) => a + b, 0);
@@ -2745,12 +3476,12 @@ const sumProductsPrice = computed(() => {
   }
 });
 
-const notSumVatsumProductsPrice = computed(()=>{
+const notSumVatsumProductsPrice = computed(() => {
   if (prod.value.project.isVat && sumVat.value) {
-    const result = sumProductsPrice.value
+    const result = sumProductsPrice.value;
     return result;
-  } else if (prod.value.project.isVat && !sumVat.value){
-    const result = sumProductsPrice.value
+  } else if (prod.value.project.isVat && !sumVat.value) {
+    const result = sumProductsPrice.value;
     return result;
   } else {
     return 0;
@@ -2759,32 +3490,47 @@ const notSumVatsumProductsPrice = computed(()=>{
 
 const netPrices = computed(() => {
   if (prod.value.project.isVat && sumVat.value) {
-    return (sumProductsPrice.value+prod.value.project.total) - discount.value;
-  } else if (prod.value.project.isVat && !sumVat.value){
-    return (sumProductsPrice.value+prod.value.project.total-prod.value.project.vat_price) - discount.value;
+    return sumProductsPrice.value + prod.value.project.total - discount.value;
+  } else if (prod.value.project.isVat && !sumVat.value) {
+    return (
+      sumProductsPrice.value +
+      prod.value.project.total -
+      prod.value.project.vat_price -
+      discount.value
+    );
   } else {
-    return (sumProductsPrice.value+prod.value.project.total) - discount.value;
+    return sumProductsPrice.value + prod.value.project.total - discount.value;
   }
 });
 
 const vat = computed(() => {
-  const all_vat = products.value.map(item=>{
-    return (item.vat_price || 0)*item.product_amount
-  })
-  const p = all_vat.length ? all_vat.reduce((a,b) => a + b, 0 ) : 0
-  const result = 
-    all_vat.length > 0 && discount.value <= 0 ? p
-    : all_vat.length > 0 && discount.value > 0 && sumVat.value && p > 0 ? netPrices.value*0.07
-    : 0
-  return result
+  const all_vat = products.value.map((item) => {
+    return (item.vat_price || 0) * item.product_amount;
+  });
+  const p = all_vat.length ? all_vat.reduce((a, b) => a + b, 0) : 0;
+  const result =
+    all_vat.length > 0 && discount.value <= 0
+      ? p
+      : all_vat.length > 0 && discount.value > 0 && sumVat.value && p > 0
+      ? netPrices.value * 0.07
+      : 0;
+  return result;
 });
 
 const netVat = computed(() => {
-  if ((prod.value.project.isVat || selectedCompany.value?.isVat) && sumVat.value) {
-    const result = vat.value + netPrices.value + (prod.value.project.vat_price || 0);
+  if (
+    (prod.value.project.isVat || selectedCompany.value?.isVat) &&
+    sumVat.value
+  ) {
+    const result =
+      vat.value + netPrices.value + (prod.value.project.vat_price || 0);
     return result;
-  } else if ((prod.value.project.isVat || selectedCompany.value?.isVat) && !sumVat.value){
-    const result = vat.value + netPrices.value + (prod.value.project.vat_price || 0);
+  } else if (
+    (prod.value.project.isVat || selectedCompany.value?.isVat) &&
+    !sumVat.value
+  ) {
+    const result =
+      vat.value + netPrices.value + (prod.value.project.vat_price || 0);
     return result;
   } else {
     return netPrices.value;
@@ -2796,35 +3542,35 @@ const cancleProduct = () => {
     product.value = {};
     openProductForm.value = false;
   }
-}
+};
 
 const customBase64Uploader = async (event) => {
   const file = event.files[0];
   const reader = new FileReader();
   let blob = await fetch(file.objectURL).then((r) => r.blob()); //blob:url
 
-  reader.readAsDataURL(blob)
+  reader.readAsDataURL(blob);
 
   reader.onloadend = function () {
-    const base64data = reader.result
-    product.value.product_logo64 = base64data
-  }
+    const base64data = reader.result;
+    product.value.product_logo64 = base64data;
+  };
 
-  uploadfiles.value.push(file)
-  console.log(uploadfiles.value)
-}
+  uploadfiles.value.push(file);
+  console.log(uploadfiles.value);
+};
 
 const refCustomer = () => {
   if (selectedCustomer.value) {
-    customer.value = {...selectedCustomer.value};
+    customer.value = { ...selectedCustomer.value };
   }
-}
+};
 
 const refCompany = () => {
   if (selectedCompany.value) {
     company.value = selectedCompany.value;
   }
-}
+};
 
 const formatCurrency = (value) => {
   if (value !== undefined && value !== null) {
@@ -2834,7 +3580,7 @@ const formatCurrency = (value) => {
     });
   }
   return;
-}
+};
 
 const resetData = () => {
   invoice.value = {};
@@ -2846,18 +3592,18 @@ const resetData = () => {
   selectedCompany.value = null;
   customer.value = {};
   selectedCustomer.value = null;
-  products.value = []
-  product.value = {}
-  remark.value = []
-  refQuotation.value = null
-}
+  products.value = [];
+  product.value = {};
+  remark.value = [];
+  refQuotation.value = null;
+};
 
 const openNew = () => {
-  resetData()
+  resetData();
   submitted.value = false;
   invoiceDialog.value = true;
   product.value.product_text = [];
-}
+};
 
 const hideDialog = () => {
   product.value = {};
@@ -2866,19 +3612,20 @@ const hideDialog = () => {
   invoiceDialog.value = false;
   invoiceEditDialog.value = false;
   submitted.value = false;
-}
+};
 
 const editInvoice = (prodd) => {
-  resetData()
-  console.log('prodddd', prodd)
+  resetData();
+  console.log("prodddd", prodd);
   invoice.value = { ...prodd };
   console.log("re", invoice.value);
-  inputHeader.value = prodd.header || 'ใบแจ้งหนี้'
+  inputHeader.value = prodd.header || "ใบแจ้งหนี้";
   start_date.value = prodd.start_date;
   end_date.value = prodd.end_date;
 
   const company = cpStore.myCompanies.find(
-    (item) => item.Branch_company_name === prodd.customer_branch?.Branch_company_name
+    (item) =>
+      item.Branch_company_name === prodd.customer_branch?.Branch_company_name
   );
   selectedCompany.value = company;
 
@@ -2887,47 +3634,56 @@ const editInvoice = (prodd) => {
   );
   selectedCustomer.value = customered;
   refCustomer();
-  product_head.value = prodd.product_head
+  product_head.value = prodd.product_head;
   isWithholding.value = invoice.value.vat?.percen_deducted ? true : false;
-  withholdingPercent.value = invoice.value.vat?.percen_deducted ? invoice.value.vat?.percen_deducted : null;
+  withholdingPercent.value = invoice.value.vat?.percen_deducted
+    ? invoice.value.vat?.percen_deducted
+    : null;
   discount.value = prodd.discount;
   products.value = prodd.product_detail;
   remark.value = prodd.remark;
-  bank.value = company ? company.bank.find((item) => item.number === prodd.bank.status) : null;
-  selectedSignature.value = cpStore.mySignatures.find((item) => item.name === prodd.signature.name);
+  bank.value = company
+    ? company.bank.find((item) => item.number === prodd.bank.status)
+    : null;
+  selectedSignature.value = cpStore.mySignatures.find(
+    (item) => item.name === prodd.signature.name
+  );
   invoiceEditDialog.value = true;
-  discount.value = 0
-  prod.value.project = prodd.project
-  prod.value.footer1 = prodd.footer1
-  prod.value.footer2 = prodd.footer2
-  product.value = {}
-  product.value.product_text = [""]
-  sumVat.value = prodd.sumVat
-  end_period.value = prodd.end_period
-  refQuotation.value = quotations.value.find(qt=>qt.quotation===invoice.value.quotation)
-}
+  discount.value = 0;
+  prod.value.project = prodd.project;
+  prod.value.footer1 = prodd.footer1;
+  prod.value.footer2 = prodd.footer2;
+  product.value = {};
+  product.value.product_text = [""];
+  sumVat.value = prodd.sumVat;
+  end_period.value = prodd.end_period;
+  refQuotation.value = quotations.value.find(
+    (qt) => qt.quotation === invoice.value.quotation
+  );
+};
 
 const totalPrice = (product) => {
-  const price = product.product_detail.map((item)=>{
-    return !product.sumVat ? (item.product_price*item.product_amount)
-    : (item.product_price*item.product_amount)
-  })
-  const all_price = price.length > 0 ? price.reduce((a,b) => a + b, 0) : 0
-  return all_price
-}
+  const price = product.product_detail.map((item) => {
+    return !product.sumVat
+      ? item.product_price * item.product_amount
+      : item.product_price * item.product_amount;
+  });
+  const all_price = price.length > 0 ? price.reduce((a, b) => a + b, 0) : 0;
+  return all_price;
+};
 
 const totalVat = (product) => {
-  const vat = product.product_detail.map((item)=>{
-    return (item.vat_price || 0) * item.product_amount
-  })
-  const result = vat.length > 0 ? vat.reduce((a,b) => a + b, 0) : 0
-  return result
-}
+  const vat = product.product_detail.map((item) => {
+    return (item.vat_price || 0) * item.product_amount;
+  });
+  const result = vat.length > 0 ? vat.reduce((a, b) => a + b, 0) : 0;
+  return result;
+};
 
 const confirmDeleteInvoice = (prod) => {
   invoice.value = prod;
   deleteInvoiceDialog.value = true;
-}
+};
 
 const deleteInvoice = async () => {
   const invoices_to_delete = invoice.value;
@@ -2935,9 +3691,9 @@ const deleteInvoice = async () => {
     if (invoices_to_delete) {
       console.log(invoices_to_delete._id);
       await Documents.deleteInvoice(invoices_to_delete._id);
-      Documents.getInvoices()
-      reStore.getInvoices()
-      refresh()
+      Documents.getInvoices();
+      reStore.getInvoices();
+      refresh();
       invoice.value = {};
       toast.add({
         severity: "success",
@@ -2946,63 +3702,62 @@ const deleteInvoice = async () => {
         life: 3000,
       });
     }
-  }
-  catch(err){
-    console.log(err)
+  } catch (err) {
+    console.log(err);
     toast.add({
       severity: "error",
       summary: "เกิดข้อผิดพลาด",
       detail: "ลบใบแจ้งหนี้ล้มเหลว",
       life: 3000,
     });
-  }
-  finally {
+  } finally {
     deleteInvoiceDialog.value = false;
   }
-}
+};
 
 const withHolding = (product) => {
-  if(product){
-    const percent = product.vat ? product.vat.percen_deducted : 0
-    const price = totalPrice(product)
-    const result = percent > 0 ? price*percent/100 : 0
-    return result
+  if (product) {
+    const percent = product.vat ? product.vat.percen_deducted : 0;
+    const price = totalPrice(product);
+    const result = percent > 0 ? (price * percent) / 100 : 0;
+    return result;
   }
-}
+};
 
 const exportCSV = () => {
   dt.value.exportCSV();
-}
+};
 
 const editProduct = (item) => {
-  if(!item) return
-  edittingProduct.value = item
-  product.value = item
-  product.value.product_logo64 = item.product_logo64 ? item.product_logo64 : []
-  product.value.product_logo = item.product_logo
-  product.value.isVat = item.vat_price && item.vat_price > 0 ? true : false
-  openProductForm.value = true
-}
+  if (!item) return;
+  edittingProduct.value = item;
+  product.value = item;
+  product.value.product_logo64 = item.product_logo64 ? item.product_logo64 : [];
+  product.value.product_logo = item.product_logo;
+  product.value.isVat = item.vat_price && item.vat_price > 0 ? true : false;
+  openProductForm.value = true;
+};
 
 const confirmDeleteSelected = () => {
   deleteInvoicesDialog.value = true;
-}
+};
 
 const deleteSelectedInvoices = async () => {
   try {
-    const invoices_to_delete = invoices.value
-      .filter((val) => !selectedInvoices.value.includes(val))
-  if (
-    invoices_to_delete.length > 0 &&
-    selectedInvoices.value.length !== invoices.value.length
-  ) {
+    const invoices_to_delete = invoices.value.filter(
+      (val) => !selectedInvoices.value.includes(val)
+    );
+    if (
+      invoices_to_delete.length > 0 &&
+      selectedInvoices.value.length !== invoices.value.length
+    ) {
       for (let qt of selectedInvoices.value) {
         console.log(qt._id);
         await Documents.deleteInvoice(qt._id);
       }
-  } else if (selectedInvoices.value.length === invoices.value.length) {
-    await Documents.deleteInvoices();
-  }
+    } else if (selectedInvoices.value.length === invoices.value.length) {
+      await Documents.deleteInvoices();
+    }
     selectedInvoices.value = null;
     toast.add({
       severity: "success",
@@ -3010,18 +3765,16 @@ const deleteSelectedInvoices = async () => {
       detail: "ลบใบแจ้งหนี้แล้ว",
       life: 3000,
     });
+  } catch (err) {
+    console.log(err);
+  } finally {
+    deleteInvoicesDialog.value = false;
+    loading.value = false;
+    Documents.getInvoices();
+    reStore.getInvoices();
+    refresh();
   }
-  catch (err) {
-    console.log(err)
-  }
-  finally {
-    deleteInvoicesDialog.value = false
-    loading.value = false
-    Documents.getInvoices()
-    reStore.getInvoices()
-    refresh()
-  }
-}
+};
 
 const createNewInvoice = async () => {
   loading.value = true;
@@ -3040,14 +3793,22 @@ const createNewInvoice = async () => {
     customer_detail: {
       tax_id: customer.value ? customer.value.customer_taxnumber : null,
       customer_name: customer.value ? customer.value.customer_name : null,
-      customer_lastname: customer.value ? customer.value.customer_lastname : null,
+      customer_lastname: customer.value
+        ? customer.value.customer_lastname
+        : null,
       customer_phone: customer.value ? customer.value.customer_phone : null,
       customer_email: customer.value ? customer.value.customer_email : null,
-      customer_address: customer.value ? customer.value.customer_position : null,
+      customer_address: customer.value
+        ? customer.value.customer_position
+        : null,
       customer_type: customer.value ? customer.value.customer_type : null,
       customer_contact: customer.value ? customer.value.customer_contact : null,
-      customer_contact_number: customer.value ? customer.value.customer_contact_number : null,
-      customer_contact_sign: customer.value ? customer.value.customer_contact_sign : null,
+      customer_contact_number: customer.value
+        ? customer.value.customer_contact_number
+        : null,
+      customer_contact_sign: customer.value
+        ? customer.value.customer_contact_sign
+        : null,
     },
     project: prod.value.project,
     product_head: product_head.value,
@@ -3058,15 +3819,18 @@ const createNewInvoice = async () => {
     start_date: start_date.value,
     end_date: end_date.value,
     remark: remark.value,
-    bank: bank.value && transfer.value === 'bank' ? {
-      name: bank.value.name,
-      remark_2: bank.value.remark,
-      status: bank.value.number,
-    } : {
-      name: '',
-      remark_2: '',
-      status: '',
-    },
+    bank:
+      bank.value && transfer.value === "bank"
+        ? {
+            name: bank.value.name,
+            remark_2: bank.value.remark,
+            status: bank.value.number,
+          }
+        : {
+            name: "",
+            remark_2: "",
+            status: "",
+          },
     isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
     sumVat: sumVat.value,
     credit: credit.value,
@@ -3074,7 +3838,7 @@ const createNewInvoice = async () => {
     cur_period: cur_period.value,
     transfer: transfer.value,
     footer1: prod.value.footer1,
-    footer2: prod.value.footer2
+    footer2: prod.value.footer2,
   };
   console.log(data);
   let product_detail = [];
@@ -3090,35 +3854,36 @@ const createNewInvoice = async () => {
       if (imgId.length > 0) {
         product_detail.forEach(async (image, index) => {
           try {
-              const response = await axios.put(
-                `${import.meta.env.VITE_API_URL}/quotation/uploadPicProduct/${qtId}/${imgId}`,
-                image,
-                {
-                  headers: {
-                    'auth-token' : import.meta.env.VITE_TOKEN
-                  }
-                }
-              )
-              if (response.data.status) {
-                console.log(response.data)
-                toast.add({
-                  severity: "success",
-                  summary: "สำเร็จ",
-                  detail: "อัพรูปใบเสนอราคาแล้ว",
-                  life: 3000,
-                });
+            const response = await axios.put(
+              `${
+                import.meta.env.VITE_API_URL
+              }/quotation/uploadPicProduct/${qtId}/${imgId}`,
+              image,
+              {
+                headers: {
+                  "auth-token": localStorage.getItem("ssgdToken"),
+                },
               }
-            }
-            catch (e) {
-              console.log(e);
+            );
+            if (response.data.status) {
+              console.log(response.data);
               toast.add({
-                severity: "error",
-                summary: "สร้างใบเสนอราคาแล้ว",
-                detail: "ไม่สามารถอัพโหลดรูปภาพ",
+                severity: "success",
+                summary: "สำเร็จ",
+                detail: "อัพรูปใบเสนอราคาแล้ว",
                 life: 3000,
               });
             }
-        })
+          } catch (e) {
+            console.log(e);
+            toast.add({
+              severity: "error",
+              summary: "สร้างใบเสนอราคาแล้ว",
+              detail: "ไม่สามารถอัพโหลดรูปภาพ",
+              life: 3000,
+            });
+          }
+        });
       } else {
         console.log(response.data.data.product_detail);
         toast.add({
@@ -3128,30 +3893,28 @@ const createNewInvoice = async () => {
           life: 3000,
         });
       }
-    } 
-  } 
-  catch (err) {
+    }
+  } catch (err) {
     console.log(err);
     toast.add({
       severity: "error",
       summary: "มีบางอย่างผิดพลาด",
       detail: "สร้างใบแจ้งหนี้ล้มเหลว",
       life: 3000,
-    })
-  }
-  finally {
+    });
+  } finally {
     invoiceDialog.value = false;
     loading.value = false;
     prod.value.project = {};
     refresh();
   }
-}
+};
 
 const editingProductInvoice = async () => {
   loading.value = true;
   const data = {
-    product_detail: products.value
-  }
+    product_detail: products.value,
+  };
   try {
     const response = await Documents.editInvoice(invoice.value._id, data);
     if (response.data) {
@@ -3161,15 +3924,13 @@ const editingProductInvoice = async () => {
         detail: "อัพเดทใบแจ้งหนี้แล้ว",
         life: 3000,
       });
-    } 
-  } 
-  catch(err) {
+    }
+  } catch (err) {
     console.log(err);
-  }
-  finally {
+  } finally {
     loading.value = false;
     invoiceEditDialog.value = false;
-    refresh()
+    refresh();
   }
 };
 
@@ -3180,26 +3941,28 @@ const editingInvoice = async () => {
   products.value.forEach((product) => {
     product.product_logo64 = "";
   }); */
-  console.log(refQuotation.value)
-  console.log(selectedCompany.value)
+  console.log(refQuotation.value);
+  console.log(selectedCompany.value);
   const data = {
     header: inputHeader.value,
     quotation: refQuotation.value ? refQuotation.value.quotation : null,
     customer_number: customer.value ? customer.value.customer_number : null,
     branchId: selectedCompany.value ? selectedCompany.value._id : null,
-    signatureID: selectedSignature.value ? selectedSignature.value._id : '',
-    customer_detail: customer.value ? {
-      tax_id: customer.value.customer_taxnumber,
-      customer_name: selectedCustomer.value.customer_name,
-      customer_lastname: customer.value.customer_lastname,
-      customer_phone: customer.value.customer_phone,
-      customer_email: customer.value.customer_email,
-      customer_address: customer.value.customer_position,
-      customer_type: customer.value.customer_type,
-      customer_contact: customer.value.customer_contact,
-      customer_contact_number: customer.value.customer_contact_number,
-      customer_contact_sign: customer.value.customer_contact_sign,
-    } : null,
+    signatureID: selectedSignature.value ? selectedSignature.value._id : "",
+    customer_detail: customer.value
+      ? {
+          tax_id: customer.value.customer_taxnumber,
+          customer_name: selectedCustomer.value.customer_name,
+          customer_lastname: customer.value.customer_lastname,
+          customer_phone: customer.value.customer_phone,
+          customer_email: customer.value.customer_email,
+          customer_address: customer.value.customer_position,
+          customer_type: customer.value.customer_type,
+          customer_contact: customer.value.customer_contact,
+          customer_contact_number: customer.value.customer_contact_number,
+          customer_contact_sign: customer.value.customer_contact_sign,
+        }
+      : null,
     product_head: product_head.value,
     project: prod.value.project,
     product_detail: products.value,
@@ -3211,23 +3974,26 @@ const editingInvoice = async () => {
     end_date: end_date.value,
     remark: remark.value,
     isVat: selectedCompany.value ? selectedCompany.value.isVat : null,
-    bank: bank.value && transfer.value === 'bank' ? {
-      name: bank.value.name,
-      remark_2: bank.value.remark,
-      status: bank.value.number,
-    } : {
-      name: '',
-      remark_2: '',
-      status: '',
-    },
+    bank:
+      bank.value && transfer.value === "bank"
+        ? {
+            name: bank.value.name,
+            remark_2: bank.value.remark,
+            status: bank.value.number,
+          }
+        : {
+            name: "",
+            remark_2: "",
+            status: "",
+          },
     cur_period: cur_period.value,
     credit: credit.value,
     end_period: end_period.value,
     transfer: transfer.value,
     footer1: prod.value.footer1,
-    footer2: prod.value.footer2
+    footer2: prod.value.footer2,
   };
-  console.log(data)
+  console.log(data);
   try {
     const response = await Documents.editInvoice(invoice.value._id, data);
     if (response.data) {
@@ -3238,9 +4004,8 @@ const editingInvoice = async () => {
         life: 3000,
       });
       //await editingProductInvoice()
-    } 
-  } 
-  catch(err) {
+    }
+  } catch (err) {
     console.log(err);
     toast.add({
       severity: "error",
@@ -3248,13 +4013,12 @@ const editingInvoice = async () => {
       detail: "อัพเดทใบแจ้งหนี้ล้มเหลว",
       life: 3000,
     });
-  }
-  finally {
+  } finally {
     loading.value = false;
     invoiceEditDialog.value = false;
     refresh();
   }
-}
+};
 
 const getStatusLabel = (status) => {
   switch (status) {
@@ -3269,104 +4033,105 @@ const getStatusLabel = (status) => {
     default:
       return null;
   }
-}
+};
 
-const hoverMenu = ref(false)
-const openMenus = ref(null)
+const hoverMenu = ref(false);
+const openMenus = ref(null);
 const blurMenu = (val) => {
   if (!hoverMenu.value) {
-    openMenus.value = null
+    openMenus.value = null;
   }
-}
+};
 
 const seeInvoiceRef = (val, period) => {
-  console.log(val.status)
-  console.log(period)
-  const index = period-2
-  let prev_paid = 0
+  console.log(val.status);
+  console.log(period);
+  const index = period - 2;
+  let prev_paid = 0;
 
-  if ( index >= 0 ) {
-    let sumPrevPaid = 0
-    for (let i=0; i < index+1 ; i++) {
-      sumPrevPaid += val.status[i].paid
+  if (index >= 0) {
+    let sumPrevPaid = 0;
+    for (let i = 0; i < index + 1; i++) {
+      sumPrevPaid += val.status[i].paid;
     }
-    prev_paid = sumPrevPaid
+    prev_paid = sumPrevPaid;
   } else {
-    prev_paid = 0
+    prev_paid = 0;
   }
-  console.log(prev_paid)
-  seeInvoiceII(val, period, prev_paid)
-  openMenus.value = null
-  hoverMenu.value = false
-}
+  console.log(prev_paid);
+  seeInvoiceII(val, period, prev_paid);
+  openMenus.value = null;
+  hoverMenu.value = false;
+};
 
 const seeInvoiceII = (data, period, prev_paid) => {
   openInvoiceII.value = true;
   selectedInvoice.value = data;
   const company = cpStore.myCompanies.find(
-    item => item.taxnumber === data.customer_branch.taxnumber
-  )
+    (item) => item.taxnumber === data.customer_branch.taxnumber
+  );
 
   let customered = customers.value.find(
-    item => item.customer_name === data.customer_detail?.customer_name
+    (item) => item.customer_name === data.customer_detail?.customer_name
   );
   if (!customered) {
-    customered = data.customer_detail
+    customered = data.customer_detail;
   }
-  selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber
+  selectedInvoice.value.customer_detail.tax_id = customered.customer_taxnumber;
 
-  selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden
-  selectedInvoice.value.customer_branch.Branch_company_name = company.Branch_company_name
-  selectedInvoice.value.prev_paid = prev_paid
-  selectedInvoice.value.thisperiod = period
-  selectedInvoice.value.showCustomerName = showCustomerName.value
+  selectedInvoice.value.customer_branch.Branch_iden = company.Branch_iden;
+  selectedInvoice.value.customer_branch.Branch_company_name =
+    company.Branch_company_name;
+  selectedInvoice.value.prev_paid = prev_paid;
+  selectedInvoice.value.thisperiod = period;
+  selectedInvoice.value.showCustomerName = showCustomerName.value;
   console.log("data", selectedInvoice.value);
   const body = document.body;
-  body.style.backgroundColor = 'white';
-}
+  body.style.backgroundColor = "white";
+};
 
-const nextInvoice = ref({})
-const openNextInvoiceDialog = ref(false)
+const nextInvoice = ref({});
+const openNextInvoiceDialog = ref(false);
 const openNextInvoice = (val) => {
-  openNextInvoiceDialog.value = true
-  selectedInvoice.value = val
-  console.log(selectedInvoice.value)
-}
+  openNextInvoiceDialog.value = true;
+  selectedInvoice.value = val;
+  console.log(selectedInvoice.value);
+};
 const createNextInvoice = async () => {
-  loading.value = true
-  const id = selectedInvoice.value._id
+  loading.value = true;
+  const id = selectedInvoice.value._id;
   const body = {
     start_date: nextInvoice.value.start_date,
     end_date: nextInvoice.value.end_date,
-    period: nextInvoice.value.period
-  }
+    period: nextInvoice.value.period,
+  };
   const { data } = await axios.put(
     `${import.meta.env.VITE_API_URL}/invoice/nextInvoice/${id}`,
     body,
     {
       headers: {
-        'auth-token' : import.meta.env.VITE_TOKEN,
-        'Content-type' : 'application/json'
-      }
+        "auth-token": localStorage.getItem("ssgdToken"),
+        "Content-type": "application/json",
+      },
     }
-  )
+  );
   if (data.data && data.status) {
-    console.log(data.data)
-    nextInvoice.value = {}
-    selectedInvoice.value = {}
-    openNextInvoiceDialog.value = false
-    loading.value = false
+    console.log(data.data);
+    nextInvoice.value = {};
+    selectedInvoice.value = {};
+    openNextInvoiceDialog.value = false;
+    loading.value = false;
     Documents.getInvoices().then((data) => {
-      originalInvoices.value = data.data?.reverse()
+      originalInvoices.value = data.data?.reverse();
       //invoices.value = originalInvoices.value
-    })
+    });
   } else {
-    console.log(data.data)
-    loading.value = false
+    console.log(data.data);
+    loading.value = false;
   }
-}
+};
 
-const curfilter = ref('ทั้งหมด')
+const curfilter = ref("ทั้งหมด");
 /* const filterInvoice = () => {
   const filter = curfilter.value
   if ( filter === 'ยังไม่ครบ' ) {
@@ -3385,10 +4150,10 @@ const curfilter = ref('ทั้งหมด')
 
 const formatDateRef = (isoDateString) => {
   const isoDate = new Date(isoDateString);
-  
+
   // Convert to Buddhist Era (BE) by adding 543 years
   const thaiYear = isoDate.getFullYear() + 543;
-  
+
   const formattedDate = isoDate.toLocaleDateString("en-US", {
     day: "2-digit",
     month: "2-digit",
@@ -3396,39 +4161,39 @@ const formatDateRef = (isoDateString) => {
   });
 
   // Construct the final formatted date in "dd/mm/yyyy" format
-  const [month, day, year] = formattedDate.split('/');
+  const [month, day, year] = formattedDate.split("/");
   const formattedThaiDate = `${day}/${month}/${thaiYear}`;
 
   return formattedThaiDate;
 };
 
 const confirmDeleteChild = (event, id) => {
-    confirm.require({
-        target: event.currentTarget,
-        message: 'ต้องการลบใบแจ้งหนี้นี้หรือไม่ ?',
-        icon: 'pi pi-info-circle',
-        rejectClass: 'px-2',
-        acceptClass: 'px-2 border text-red-500 border-red-500',
-        rejectLabel: 'ยกเลิก',
-        acceptLabel: 'ลบ',
-        accept: () => {
-          deleteChild(id)
-        },
-        reject: () => null
-    });
+  confirm.require({
+    target: event.currentTarget,
+    message: "ต้องการลบใบแจ้งหนี้นี้หรือไม่ ?",
+    icon: "pi pi-info-circle",
+    rejectClass: "px-2",
+    acceptClass: "px-2 border text-red-500 border-red-500",
+    rejectLabel: "ยกเลิก",
+    acceptLabel: "ลบ",
+    accept: () => {
+      deleteChild(id);
+    },
+    reject: () => null,
+  });
 };
-
 </script>
 
 <style scoped>
 @keyframes bounce {
-  0%, 100% {
-      transform: translateY(-25%);
-      animation-timing-function: cubic-bezier(0.8,0,1,1);
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
   }
   50% {
-      transform: none;
-      animation-timing-function: cubic-bezier(0,0,0.2,1);
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
 }
 .animate-bounce {
