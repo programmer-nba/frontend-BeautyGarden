@@ -386,12 +386,12 @@
                     (formatNumberToText(
                       (totalPrice - data.data.discount + vat 
                       + (data.data.project.total || 0)
-                      )).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด')+ 'ถ้วน').replace('สตางค์ถ้วน', 'สตางค์')  
+                      )).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด')+ 'ถ้วน').replace('สตางค์ถ้วน', 'สตางค์').replace('หนึ่งสิบ', 'สิบ')  
                   }} )
                 </p>
                 <p v-else class="font-bold">
                   ( {{ 
-                    (formatNumberToText(data.data.amount_price).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด')
+                    (formatNumberToText(data.data.amount_price).replace('ยี่สิบหนึ่ง', 'ยี่สิบเอ็ด').replace('สิบหนึ่ง', 'สิบเอ็ด').replace('หนึ่งสิบ', 'สิบ')
                     + 'ถ้วน' ).replace('สตางค์ถ้วน', 'สตางค์') 
                   }} )
                 </p>
