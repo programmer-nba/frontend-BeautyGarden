@@ -396,9 +396,9 @@
                     </tr>
                     <tr v-if="data.data?.isVat" class="flex justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ราคารวม VAT 7%</span></td>
-                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice + (data.data.project.total || 0) - data.data.discount + (vat + (data.data.project?.vat_price || 0))) }}</span>บาท</td>
+                      <td style="text-align: right"><span class="pr-3">{{ formatCurrency((totalPrice+(data.data.project.total || 0)-(data.data.project?.vat_price) - data.data.discount)+(vat + (data.data.project?.vat_price || 0))) }}</span>บาท</td>
                     </tr>
-                    <tr v-if="data.data.invoiceRef_detail?.paid - data.data.amount_price > 0" class="flex justify-between w-full pt-2 mt-2 border-t">
+                    <tr v-if="data.data.invoiceRef_detail?.paid - data.data.amount_price > 0" class="hidden justify-between w-full pt-2 mt-2 border-t">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดที่ชำระแล้ว</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(data.data.invoiceRef_detail?.paid - data.data.amount_price) }}</span>บาท</td>
                     </tr>
@@ -425,7 +425,7 @@
                       </td>
                       <td style="text-align: right"><strong class="pr-3">{{ formatCurrency(data.data.amount_price) }}</strong>บาท</td>
                     </tr>
-                    <tr v-if="data.data?.isVat" class="flex justify-between w-full">
+                    <tr v-if="data.data?.isVat" class="hidden justify-between w-full">
                       <td style="text-align: left"><span class="pl-5 font-semibold">ยอดคงค้าง</span></td>
                       <td style="text-align: right"><span class="pr-3">{{ formatCurrency(totalPrice + (data.data.project.total || 0) - data.data.discount + (vat + (data.data.project?.vat_price || 0)) - (data.data.invoiceRef_detail?.paid || 0)) }}</span>บาท</td>
                     </tr>
@@ -443,7 +443,7 @@
                 </td>
                 <td style="text-align: left">
                     <span class="pl-5 font-semibold">
-                      มูลค่า ภาษีหัก ณ. ที่จ่าย <span class="px-2">{{ formatCurrency(withHolding) }}</span> บาท
+                      ภาษีหัก ณ. ที่จ่าย {{ data.data.vat.percen_deducted }}% <span class="px-2">{{ formatCurrency(withHolding) }}</span> บาท
                     </span>
                 </td>
               </tr>
